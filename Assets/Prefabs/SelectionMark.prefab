@@ -87,12 +87,12 @@ GameObject:
   - component: {fileID: 6830439664896079966}
   - component: {fileID: 6830439664896079965}
   m_Layer: 5
-  m_Name: SelectedMark
+  m_Name: SelectionMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6830439664896079964
 RectTransform:
   m_ObjectHideFlags: 0

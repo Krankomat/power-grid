@@ -7,33 +7,61 @@ public class Selector : MonoBehaviour
     
     public const float SelectionRaycastMaxDistance = 100f; 
 
-    public GameObject selectionMark;
-    public GameObject selectionColliderContainer; 
+    public GameObject selectionMarkPrefab;
+    public GameObject selectionColliderContainerPrefab; 
 
-    private GameObject selectionMarkInstance;
-    private GameObject selectionColliderInstance; 
+    private GameObject selectionMark;
+    private GameObject selectionCollider;
+
+    private bool isSelected; 
 
 
     private void Start()
     {
         AttachSelectionMarkToParent();
         AttachSelectionColliderToParent(); 
-        selectionMarkInstance.SetActive(false); 
+        selectionMark.SetActive(false); 
+    }
+
+
+    public void ToggleSelection()
+    {
+        if (isSelected)
+            DeactivateSelection(); 
+        else
+            ActivateSelection();
     }
 
 
     // Attaches the selection mark to the parent game object 
     private void AttachSelectionMarkToParent()
     {
-        selectionMarkInstance = Instantiate(selectionMark);
-        selectionMarkInstance.transform.SetParent(gameObject.transform); 
+        selectionMark = Instantiate(selectionMarkPrefab);
+        selectionMark.transform.SetParent(gameObject.transform); 
     }
 
     
     // Attaches a selection collider to the parent game object 
     private void AttachSelectionColliderToParent()
     {
-        selectionColliderInstance = Instantiate(selectionColliderContainer);
-        selectionColliderInstance.transform.SetParent(gameObject.transform);
+        selectionCollider = Instantiate(selectionColliderContainerPrefab);
+        selectionCollider.transform.SetParent(gameObject.transform);
     }
+
+
+    private void ActivateSelection()
+    {
+        isSelected = true;
+        selectionMark.SetActive(true);
+        Debug.Log(gameObject + " was selected! "); 
+    }
+
+
+    private void DeactivateSelection()
+    {
+        isSelected = false;
+        selectionMark.SetActive(false);
+        Debug.Log(gameObject + " was deselected! ");
+    }
+
 }

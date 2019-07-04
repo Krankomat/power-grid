@@ -39,7 +39,9 @@ public class PlayerManager : MonoBehaviour
                     return; 
                 }
 
-                Debug.Log("Hit Object does have a selector component! "); 
+                Debug.Log("Hit Object does have a selector component! ");
+
+                hitGameObject.GetComponent<Selector>().ToggleSelection(); 
                 
             }
         }
