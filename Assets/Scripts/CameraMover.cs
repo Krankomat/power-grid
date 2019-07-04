@@ -12,7 +12,7 @@ public class CameraMover : MonoBehaviour
     private float inputVertical; 
     
     
-    void Update()
+    void FixedUpdate()
     {
         inputHorizontal = Input.GetAxis("Horizontal");
         inputVertical = Input.GetAxis("Vertical");
