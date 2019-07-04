@@ -27,9 +27,25 @@ public class Selector : MonoBehaviour
     public void ToggleSelection()
     {
         if (isSelected)
-            DeactivateSelection(); 
+            Deselect(); 
         else
-            ActivateSelection();
+            Select();
+    }
+
+
+    public void Select()
+    {
+        isSelected = true;
+        selectionMark.SetActive(true);
+        Debug.Log(gameObject + " was selected! ");
+    }
+
+
+    public void Deselect()
+    {
+        isSelected = false;
+        selectionMark.SetActive(false);
+        Debug.Log(gameObject + " was deselected! ");
     }
 
 
@@ -46,22 +62,6 @@ public class Selector : MonoBehaviour
     {
         selectionCollider = Instantiate(selectionColliderContainerPrefab);
         selectionCollider.transform.SetParent(gameObject.transform);
-    }
-
-
-    private void ActivateSelection()
-    {
-        isSelected = true;
-        selectionMark.SetActive(true);
-        Debug.Log(gameObject + " was selected! "); 
-    }
-
-
-    private void DeactivateSelection()
-    {
-        isSelected = false;
-        selectionMark.SetActive(false);
-        Debug.Log(gameObject + " was deselected! ");
     }
 
 }
