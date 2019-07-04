@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    public GameObject gameHUD; 
 
     private RaycastHit hit;
     private Ray selectionRay;
     private GameObject hitColliderContainer; 
     private GameObject hitGameObject; 
     private LayerMask selectionMask;
-    private Selector hitSelector; 
+    private Selector hitSelector;
+
+    private GameHUDDisplayer hudDisplayer; 
 
     private GameObject selectedGameObject; 
 
 
     void Start()
     {
-        selectionMask = LayerMask.GetMask("ObjectSelecting"); 
+        selectionMask = LayerMask.GetMask("ObjectSelecting");
+        hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>(); 
     }
 
 
@@ -26,6 +30,7 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             MakeSingleSelectionRaycast(); 
+            RefreshGameHUDContent(); 
         }
     }
 
@@ -80,6 +85,24 @@ public class PlayerManager : MonoBehaviour
     {
         gameObject.GetComponent<Selector>().Select();
         selectedGameObject = gameObject; 
+    }
+
+
+    private void RefreshGameHUDContent()
+    {
+        string objectName, objectDescription;
+
+        if (selectedGameObject == null)
+        {
+            objectName = "";
+            objectDescription = ""; 
+        } else
+        {
+            objectName = selectedGameObject.GetComponent<Descriptor>().objectName; 
+            objectDescription = selectedGameObject.GetComponent<Descriptor>().description;
+        }
+
+        hudDisplayer.RefreshContent(objectName, objectDescription); 
     }
 
 }
