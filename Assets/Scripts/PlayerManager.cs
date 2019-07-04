@@ -23,27 +23,32 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            selectionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            selectedGameObject = GameObject.FindWithTag("Selectable");
-
-            if (Physics.Raycast(selectionRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask)) 
-            {
-                hitColliderContainer = hit.collider.gameObject;
-                hitGameObject = hitColliderContainer.transform.parent.gameObject; 
-
-                Debug.Log(hitGameObject); 
-
-                if (hitGameObject.GetComponent<Selector>() == null)
-                {
-                    Debug.Log("Hit object has no Selector component!");
-                    return; 
-                }
-
-                Debug.Log("Hit Object does have a selector component! ");
-
-                hitGameObject.GetComponent<Selector>().ToggleSelection(); 
-                
-            }
+            MakeSingleSelectionRaycast(); 
         }
     }
+
+    
+    private void MakeSingleSelectionRaycast()
+    {
+        selectionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        // Make raycast and return, if nothing was hit 
+        if (!Physics.Raycast(selectionRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
+            return; 
+
+        hitColliderContainer = hit.collider.gameObject;
+        hitGameObject = hitColliderContainer.transform.parent.gameObject;
+
+        if (hitGameObject.GetComponent<Selector>() == null)
+        {
+            Debug.Log("Hit object has no Selector component!");
+            return;
+        }
+
+        Debug.Log("Hit Object does have a selector component! ");
+
+        hitGameObject.GetComponent<Selector>().ToggleSelection();
+        
+    }
+
 }
