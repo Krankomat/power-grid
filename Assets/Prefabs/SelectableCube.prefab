@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8445709341329074765}
   - component: {fileID: 8445709341329074764}
   - component: {fileID: 8445709341329074767}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8445709341825081645}
   - component: {fileID: 4375605058237293809}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: SelectableCube
   m_TagString: Selectable
   m_Icon: {fileID: 0}

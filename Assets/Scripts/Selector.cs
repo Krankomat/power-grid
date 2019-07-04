@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class Selector : MonoBehaviour
 {
+    
+    public const float SelectionRaycastMaxDistance = 100f; 
 
     public GameObject selectionMark; 
-    private GameObject selectionMarkInstance; 
+    private GameObject selectionMarkInstance;
+
     
 
-    void Start()
+    private void Start()
     {
-        AttachSelectionMarkToParent(); 
+        AttachSelectionMarkToParent();
+        selectionMarkInstance.SetActive(false); 
     }
 
 
@@ -19,7 +23,7 @@ public class Selector : MonoBehaviour
     private void AttachSelectionMarkToParent()
     {
         selectionMarkInstance = Instantiate(selectionMark);
-        selectionMarkInstance.transform.parent = gameObject.transform;
+        selectionMarkInstance.transform.SetParent(gameObject.transform); 
     }
 
 }
