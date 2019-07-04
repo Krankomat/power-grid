@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class Selector : MonoBehaviour
 {
-    // Start is called before the first frame update
+
+    public GameObject selectionMark; 
+    private GameObject selectionMarkInstance; 
+    
+
     void Start()
     {
-        
+        AttachSelectionMarkToParent(); 
     }
 
-    // Update is called once per frame
-    void Update()
+
+    // Attaches the selection mark to the parent game object 
+    private void AttachSelectionMarkToParent()
     {
-        
+        selectionMarkInstance = Instantiate(selectionMark);
+        selectionMarkInstance.transform.parent = gameObject.transform;
     }
+
 }
