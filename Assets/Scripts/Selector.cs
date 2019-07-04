@@ -7,14 +7,17 @@ public class Selector : MonoBehaviour
     
     public const float SelectionRaycastMaxDistance = 100f; 
 
-    public GameObject selectionMark; 
-    private GameObject selectionMarkInstance;
+    public GameObject selectionMark;
+    public GameObject selectionColliderContainer; 
 
-    
+    private GameObject selectionMarkInstance;
+    private GameObject selectionColliderInstance; 
+
 
     private void Start()
     {
         AttachSelectionMarkToParent();
+        AttachSelectionColliderToParent(); 
         selectionMarkInstance.SetActive(false); 
     }
 
@@ -26,4 +29,11 @@ public class Selector : MonoBehaviour
         selectionMarkInstance.transform.SetParent(gameObject.transform); 
     }
 
+    
+    // Attaches a selection collider to the parent game object 
+    private void AttachSelectionColliderToParent()
+    {
+        selectionColliderInstance = Instantiate(selectionColliderContainer);
+        selectionColliderInstance.transform.SetParent(gameObject.transform);
+    }
 }

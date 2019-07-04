@@ -7,6 +7,7 @@ public class PlayerManager : MonoBehaviour
 
     private RaycastHit hit;
     private Ray selectionRay;
+    private GameObject hitColliderContainer; 
     private GameObject hitGameObject; 
     private GameObject selectedGameObject;
     private LayerMask selectionMask; 
@@ -27,7 +28,8 @@ public class PlayerManager : MonoBehaviour
 
             if (Physics.Raycast(selectionRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask)) 
             {
-                hitGameObject = hit.collider.gameObject;
+                hitColliderContainer = hit.collider.gameObject;
+                hitGameObject = hitColliderContainer.transform.parent.gameObject; 
 
                 Debug.Log(hitGameObject); 
 
@@ -38,8 +40,7 @@ public class PlayerManager : MonoBehaviour
                 }
 
                 Debug.Log("Hit Object does have a selector component! "); 
-
-                hit.collider.transform.tag = "select";
+                
             }
         }
     }
