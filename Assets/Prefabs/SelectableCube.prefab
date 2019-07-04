@@ -101,6 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8445709341825081645}
   - component: {fileID: 4375605058237293809}
+  - component: {fileID: 932246207141714683}
   m_Layer: 0
   m_Name: SelectableCube
   m_TagString: Selectable
@@ -139,3 +140,17 @@ MonoBehaviour:
     type: 3}
   selectionColliderContainerPrefab: {fileID: 5734482625099114596, guid: 1a7e97dc170ea254b85e170c0ce71723,
     type: 3}
+--- !u!114 &932246207141714683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8445709341825081644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 601db1db05452ab4c814bec2a1065edc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectName: Selectable Cube (Horst)
+  description: "This is Horst. It is a selectable cube. \nSuch fun!"

@@ -9,8 +9,10 @@ public class PlayerManager : MonoBehaviour
     private Ray selectionRay;
     private GameObject hitColliderContainer; 
     private GameObject hitGameObject; 
-    private GameObject selectedGameObject;
-    private LayerMask selectionMask; 
+    private LayerMask selectionMask;
+    private Selector hitSelector; 
+
+    private GameObject selectedGameObject; 
 
 
     void Start()
@@ -38,8 +40,9 @@ public class PlayerManager : MonoBehaviour
 
         hitColliderContainer = hit.collider.gameObject;
         hitGameObject = hitColliderContainer.transform.parent.gameObject;
+        hitSelector = hitGameObject.GetComponent<Selector>(); 
 
-        if (hitGameObject.GetComponent<Selector>() == null)
+        if (hitSelector == null)
         {
             Debug.Log("Hit object has no Selector component!");
             return;
@@ -47,8 +50,36 @@ public class PlayerManager : MonoBehaviour
 
         Debug.Log("Hit Object does have a selector component! ");
 
-        hitGameObject.GetComponent<Selector>().ToggleSelection();
+        if (selectedGameObject == null)
+        {
+            SelectGameObject(hitGameObject);
+            return; 
+        }
+
+        if (hitSelector.gameObject == selectedGameObject)
+        {
+            hitSelector.ToggleSelection(); 
+        } else
+        {
+            // deselect the previously selected and select the newly selected Selector 
+            ClearSelection();
+            SelectGameObject(hitGameObject); 
+        }
         
+    }
+
+
+    private void ClearSelection()
+    {
+        selectedGameObject.GetComponent<Selector>().Deselect();
+        selectedGameObject = null; 
+    }
+
+
+    private void SelectGameObject(GameObject gameObject)
+    {
+        gameObject.GetComponent<Selector>().Select();
+        selectedGameObject = gameObject; 
     }
 
 }
