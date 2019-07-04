@@ -52,16 +52,14 @@ public class Selector : MonoBehaviour
     // Attaches the selection mark to the parent game object 
     private void AttachSelectionMarkToParent()
     {
-        selectionMark = Instantiate(selectionMarkPrefab);
-        selectionMark.transform.SetParent(gameObject.transform); 
+        selectionMark = Instantiate(selectionMarkPrefab, gameObject.transform, false);
     }
 
     
     // Attaches a selection collider to the parent game object 
     private void AttachSelectionColliderToParent()
     {
-        selectionCollider = Instantiate(selectionColliderContainerPrefab);
-        selectionCollider.transform.SetParent(gameObject.transform);
+        selectionCollider = Instantiate(selectionColliderContainerPrefab, gameObject.transform, false);
     }
 
 }
