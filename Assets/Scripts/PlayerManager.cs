@@ -7,17 +7,16 @@ public class PlayerManager : MonoBehaviour
     public GameObject gameHUD;
     public GameObject selectableCubePrefab; 
 
+    // Selection 
     private RaycastHit hit;
     private Ray selectionRay;
     private GameObject hitColliderContainer; 
     private GameObject hitGameObject; 
     private LayerMask selectionMask;
     private Selector hitSelector;
-
-    private GameHUDDisplayer hudDisplayer; 
-
     private GameObject selectedGameObject;
 
+    // Placement 
     private bool isPlacingSelectableCube;
     private GameObject selectableCubeToBePlaced;
     private Ray placingPreviewRay;
@@ -25,58 +24,131 @@ public class PlayerManager : MonoBehaviour
     private LayerMask placingPreviewLayerMask; 
 
 
+    private GameHUDDisplayer hudDisplayer;
+    private InteractionState interactionState;
+    private const InteractionState InteractionStateDefault = InteractionState.Selecting; 
+
+
+    private enum InteractionState
+    {
+        Selecting, 
+        Placing 
+    }
+
+
     void Start()
     {
         selectionMask = LayerMask.GetMask("ObjectSelecting");
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing"); 
-        hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>(); 
+        hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
+        interactionState = InteractionState.Selecting; 
     }
 
 
     void Update()
     {
-        HandleInput();
-
-        if (!isPlacingSelectableCube)
-            return;
-
-
-        placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
-        if (Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
-        {
-            selectableCubeToBePlaced.transform.position = placingPreviewHit.point;
-            Debug.Log(placingPreviewHit.transform.position); 
-        }
+        SwitchInteractionStateIfNecessary(); 
+        HandleControlsInInteractionState();
+        HandleInteractionState(); 
     }
 
 
-    private void HandleInput()
+    private void SwitchInteractionStateIfNecessary()
     {
-        // Select object with left mouse button 
-        if (Input.GetMouseButtonDown(0))
-        {
-            MakeSingleSelectionRaycast();
-            RefreshGameHUDContent();
-        }
-
-        // Clear selection with escape key 
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
-            if (selectedGameObject != null)
-            {
-                ClearSelection();
-                RefreshGameHUDContent();
-            }
-        }
-
         // Place a new selectable cube with right mouse button 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetKeyUp(KeyCode.E))
         {
+            if (interactionState == InteractionState.Placing)
+                CancelPlacingSelectableCube(); 
+            else
+                StartPlacingSelectableCube();
+
+            /*
             if (isPlacingSelectableCube)
                 EndPlacingSelectableCube(); 
             else 
                 StartPlacingSelectableCube();
+            */
+        }
+    }
+
+
+    private void HandleControlsInInteractionState()
+    {
+        switch (interactionState)
+        {
+            case InteractionState.Selecting:
+
+                // Select object with left mouse button 
+                if (Input.GetMouseButtonDown(0))
+                {
+                    MakeSingleSelectionRaycast();
+                    RefreshGameHUDContent();
+                }
+
+                // Clear selection with escape key 
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+                    if (selectedGameObject != null)
+                    {
+                        ClearSelection();
+                        RefreshGameHUDContent();
+                    }
+                }
+                break;
+
+
+            case InteractionState.Placing: 
+                
+                if (Input.GetKeyUp(KeyCode.Escape))
+                {
+                    CancelPlacingSelectableCube(); 
+                }
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    CompletePlacingSelectableCube(); 
+                }
+
+                break; 
+
+
+            default:
+                Debug.LogError("Unsupported interaction state ");
+                break; 
+        }
+
+        if (interactionState == InteractionState.Selecting)
+        {
+            
+
+        }
+    }
+
+
+    private void HandleInteractionState()
+    {
+        switch (interactionState)
+        {
+            case InteractionState.Selecting:
+                break;
+
+
+            case InteractionState.Placing:
+
+                placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
+                {
+                    selectableCubeToBePlaced.transform.position = placingPreviewHit.point;
+                    Debug.Log(placingPreviewHit.transform.position);
+                }
+                break; 
+
+
+            default:
+                Debug.LogError("Unsupported interaction state ");
+                break;
         }
     }
 
@@ -156,15 +228,23 @@ public class PlayerManager : MonoBehaviour
 
     private void StartPlacingSelectableCube()
     {
+        interactionState = InteractionState.Placing; 
         selectableCubeToBePlaced = Instantiate(selectableCubePrefab);
         isPlacingSelectableCube = true; 
     }
 
 
-    private void EndPlacingSelectableCube()
+    private void CancelPlacingSelectableCube()
     {
-        isPlacingSelectableCube = false;
-        // TODO 
+        interactionState = InteractionStateDefault;
+        Destroy(selectableCubeToBePlaced); 
+    }
+
+
+    private void CompletePlacingSelectableCube()
+    {
+        interactionState = InteractionStateDefault;
+        selectableCubeToBePlaced = null; 
     }
 
 }
