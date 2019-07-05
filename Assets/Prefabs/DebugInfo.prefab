@@ -78,7 +78,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Use LMB on the cube to select. '
+  m_Text: "Press LMB on a cube to select it. \nPress E to start placing a cube. \nPress
+    ESC to clear selection or stop placing a cube. "
 --- !u!1 &7763437218101268199
 GameObject:
   m_ObjectHideFlags: 0
@@ -215,7 +216,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 5, y: -5}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 250, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &7763437218167350971
 CanvasRenderer:
