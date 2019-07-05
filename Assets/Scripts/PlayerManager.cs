@@ -62,95 +62,86 @@ public class PlayerManager : MonoBehaviour
                 CancelPlacingSelectableCube(); 
             else
                 StartPlacingSelectableCube();
-
-            /*
-            if (isPlacingSelectableCube)
-                EndPlacingSelectableCube(); 
-            else 
-                StartPlacingSelectableCube();
-            */
         }
     }
 
 
     private void HandleControlsInInteractionState()
     {
-        switch (interactionState)
-        {
-            case InteractionState.Selecting:
-
-                // Select object with left mouse button 
-                if (Input.GetMouseButtonDown(0))
-                {
-                    MakeSingleSelectionRaycast();
-                    RefreshGameHUDContent();
-                }
-
-                // Clear selection with escape key 
-                if (Input.GetKeyUp(KeyCode.Escape))
-                {
-                    if (selectedGameObject != null)
-                    {
-                        ClearSelection();
-                        RefreshGameHUDContent();
-                    }
-                }
-                break;
-
-
-            case InteractionState.Placing: 
-                
-                if (Input.GetKeyUp(KeyCode.Escape))
-                {
-                    CancelPlacingSelectableCube(); 
-                }
-
-                if (Input.GetMouseButtonDown(0))
-                {
-                    CompletePlacingSelectableCube(); 
-                }
-
-                break; 
-
-
-            default:
-                Debug.LogError("Unsupported interaction state ");
-                break; 
-        }
-
+        
         if (interactionState == InteractionState.Selecting)
         {
-            
+            // Select object with left mouse button 
+            if (Input.GetMouseButtonDown(0))
+            {
+                MakeSingleSelectionRaycast();
+                RefreshGameHUDContent();
+            }
 
+            // Clear selection with escape key 
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                if (selectedGameObject != null)
+                {
+                    ClearSelection();
+                    RefreshGameHUDContent();
+                }
+            }
+
+            return; 
         }
+
+
+        if (interactionState == InteractionState.Placing)
+        {
+
+            if (Input.GetKeyUp(KeyCode.Escape))
+            {
+                CancelPlacingSelectableCube();
+                return; 
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                CompletePlacingSelectableCube();
+                return; 
+            }
+
+            return; 
+        }
+
+        
+        // If not supported state 
+        Debug.LogError("Unsupported interaction state ");
+                
     }
 
 
     private void HandleInteractionState()
     {
-        switch (interactionState)
+
+        if (interactionState == InteractionState.Selecting)
         {
-            case InteractionState.Selecting:
-                break;
-
-
-            case InteractionState.Placing:
-
-                placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
-                {
-                    selectableCubeToBePlaced.transform.position = placingPreviewHit.point;
-                    Debug.Log(placingPreviewHit.transform.position);
-                }
-                break; 
-
-
-            default:
-                Debug.LogError("Unsupported interaction state ");
-                break;
+            // don't do anything 
+            return;
         }
-    }
+
+
+        if (interactionState == InteractionState.Placing)
+        {
+            placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
+                return;
+
+            selectableCubeToBePlaced.transform.position = placingPreviewHit.point;
+            return;
+        }
+
+
+        // If not supported state 
+        Debug.LogError("Unsupported interaction state ");
+    } 
 
     
     private void MakeSingleSelectionRaycast()
