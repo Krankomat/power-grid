@@ -32,6 +32,15 @@ public class PlayerManager : MonoBehaviour
             MakeSingleSelectionRaycast(); 
             RefreshGameHUDContent(); 
         }
+
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            if (selectedGameObject != null)
+            {
+                ClearSelection();
+                RefreshGameHUDContent(); 
+            }
+        }
     }
 
     
@@ -55,21 +64,23 @@ public class PlayerManager : MonoBehaviour
 
         Debug.Log("Hit Object does have a selector component! ");
 
+        // If there is no game object in selection so far 
         if (selectedGameObject == null)
         {
             SelectGameObject(hitGameObject);
             return; 
         }
 
-        if (hitSelector.gameObject == selectedGameObject)
+        // If the selected object is already in selection, remove it from it 
+        if (hitGameObject == selectedGameObject)
         {
-            hitSelector.ToggleSelection(); 
-        } else
-        {
-            // deselect the previously selected and select the newly selected Selector 
             ClearSelection();
-            SelectGameObject(hitGameObject); 
+            return; 
         }
+        
+        // Else clear the selection and select the current game object 
+        ClearSelection();
+        SelectGameObject(hitGameObject); 
         
     }
 
