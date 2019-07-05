@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    public GameObject gameHUD; 
+    public GameObject gameHUD;
+    public GameObject selectableCubePrefab; 
 
     private RaycastHit hit;
     private Ray selectionRay;
@@ -15,31 +16,67 @@ public class PlayerManager : MonoBehaviour
 
     private GameHUDDisplayer hudDisplayer; 
 
-    private GameObject selectedGameObject; 
+    private GameObject selectedGameObject;
+
+    private bool isPlacingSelectableCube;
+    private GameObject selectableCubeToBePlaced;
+    private Ray placingPreviewRay;
+    private RaycastHit placingPreviewHit;
+    private LayerMask placingPreviewLayerMask; 
 
 
     void Start()
     {
         selectionMask = LayerMask.GetMask("ObjectSelecting");
+        placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing"); 
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>(); 
     }
 
 
     void Update()
     {
+        HandleInput();
+
+        if (!isPlacingSelectableCube)
+            return;
+
+
+        placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
+        {
+            selectableCubeToBePlaced.transform.position = placingPreviewHit.point;
+            Debug.Log(placingPreviewHit.transform.position); 
+        }
+    }
+
+
+    private void HandleInput()
+    {
+        // Select object with left mouse button 
         if (Input.GetMouseButtonDown(0))
         {
-            MakeSingleSelectionRaycast(); 
-            RefreshGameHUDContent(); 
+            MakeSingleSelectionRaycast();
+            RefreshGameHUDContent();
         }
 
+        // Clear selection with escape key 
         if (Input.GetKeyUp(KeyCode.Escape))
         {
             if (selectedGameObject != null)
             {
                 ClearSelection();
-                RefreshGameHUDContent(); 
+                RefreshGameHUDContent();
             }
+        }
+
+        // Place a new selectable cube with right mouse button 
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (isPlacingSelectableCube)
+                EndPlacingSelectableCube(); 
+            else 
+                StartPlacingSelectableCube();
         }
     }
 
@@ -114,6 +151,20 @@ public class PlayerManager : MonoBehaviour
         }
 
         hudDisplayer.RefreshContent(objectName, objectDescription); 
+    }
+
+
+    private void StartPlacingSelectableCube()
+    {
+        selectableCubeToBePlaced = Instantiate(selectableCubePrefab);
+        isPlacingSelectableCube = true; 
+    }
+
+
+    private void EndPlacingSelectableCube()
+    {
+        isPlacingSelectableCube = false;
+        // TODO 
     }
 
 }

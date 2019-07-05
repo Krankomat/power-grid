@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 129943893}
   - component: {fileID: 129943892}
   - component: {fileID: 129943891}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -231,6 +231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameHUD: {fileID: 7390694494913256139}
+  selectableCubePrefab: {fileID: 0}
 --- !u!4 &278493590
 Transform:
   m_ObjectHideFlags: 0
