@@ -233,6 +233,7 @@ MonoBehaviour:
   gameHUD: {fileID: 7390694494913256139}
   selectableCubePrefab: {fileID: 8445709341825081644, guid: a3c55b168eff48c438424de6ce0a1ee7,
     type: 3}
+  gridCellDimensions: {x: 1, y: 1}
 --- !u!4 &278493590
 Transform:
   m_ObjectHideFlags: 0

@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public GameObject gameHUD;
-    public GameObject selectableCubePrefab; 
+    public GameObject selectableCubePrefab;
+    public Vector2 gridCellDimensions; 
 
     // Selection 
     private RaycastHit hit;
@@ -21,7 +22,8 @@ public class PlayerManager : MonoBehaviour
     private GameObject selectableCubeToBePlaced;
     private Ray placingPreviewRay;
     private RaycastHit placingPreviewHit;
-    private LayerMask placingPreviewLayerMask; 
+    private LayerMask placingPreviewLayerMask;
+    private Vector3 placementPosition; 
 
 
     private GameHUDDisplayer hudDisplayer;
@@ -41,7 +43,7 @@ public class PlayerManager : MonoBehaviour
         selectionMask = LayerMask.GetMask("ObjectSelecting");
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing"); 
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
-        interactionState = InteractionState.Selecting; 
+        interactionState = InteractionState.Selecting;
     }
 
 
@@ -129,12 +131,7 @@ public class PlayerManager : MonoBehaviour
 
         if (interactionState == InteractionState.Placing)
         {
-            placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
-                return;
-
-            selectableCubeToBePlaced.transform.position = placingPreviewHit.point;
+            MakePlacingPreviewRaycast(); 
             return;
         }
 
@@ -214,6 +211,20 @@ public class PlayerManager : MonoBehaviour
         }
 
         hudDisplayer.RefreshContent(objectName, objectDescription); 
+    }
+
+
+    private void MakePlacingPreviewRaycast()
+    {
+        placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
+            return;
+
+        placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x, gridCellDimensions.x);
+        placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z, gridCellDimensions.y); 
+
+        selectableCubeToBePlaced.transform.position = placementPosition;
     }
 
 
