@@ -18,7 +18,6 @@ public class PlayerManager : MonoBehaviour
     private GameObject selectedGameObject;
 
     // Placement 
-    private bool isPlacingSelectableCube;
     private GameObject selectableCubeToBePlaced;
     private Ray placingPreviewRay;
     private RaycastHit placingPreviewHit;
@@ -232,7 +231,6 @@ public class PlayerManager : MonoBehaviour
     {
         interactionState = InteractionState.Placing; 
         selectableCubeToBePlaced = Instantiate(selectableCubePrefab);
-        isPlacingSelectableCube = true; 
     }
 
 
