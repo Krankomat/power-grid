@@ -1,4 +1,10 @@
-# This .gitignore file should be placed at the root of your Unity project directory
+# .gitignore for Blender
+*.pyc
+*.blend[1-9]
+__pycache__
+/dist/
+
+# .gitignore for Unity 
 
 /[Ll]ibrary/
 /[Tt]emp/
