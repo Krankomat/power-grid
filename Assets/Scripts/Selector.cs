@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class Selector : MonoBehaviour
 
     private GameObject selectionMark;
     private GameObject selectionCollider;
+    private const string SelectionColliderName = "SelectionCollider"; 
 
     private bool isSelected; 
 
@@ -18,6 +20,7 @@ public class Selector : MonoBehaviour
     private void Start()
     {
         AttachSelectionMarkToParent();
+        CheckIfSelectionColliderIsAttached(); 
         selectionMark.SetActive(false); 
     }
 
@@ -51,6 +54,19 @@ public class Selector : MonoBehaviour
     private void AttachSelectionMarkToParent()
     {
         selectionMark = Instantiate(selectionMarkPrefab, gameObject.transform, false);
+    }
+
+
+    // Checks, if the GameObject "SelectionCollider" is a child object 
+    private void CheckIfSelectionColliderIsAttached()
+    {
+        foreach (Transform childTransform in transform)
+        {
+            if (String.Equals(childTransform.gameObject.name, SelectionColliderName))
+                return; 
+        }
+        Debug.LogError("Selector Error: There is no gameObject named \"" 
+                + SelectionColliderName + "\" attached to " + gameObject.name + "."); 
     }
 
 }
