@@ -1,41 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
 
     public GameObject closeButton;
-
-    private MenuState menuState; 
-
-
-    private enum MenuState
-    {
-        Opened, 
-        Closed
-    }
+    public UnityEvent OnMenuClose; 
 
 
     private void Start()
     {
-        closeButton.GetComponent<Button>().onClick.AddListener(CloseMenu);
-        CloseMenu(); 
+        closeButton.GetComponent<Button>().onClick.AddListener(HideMenu);
+        HideMenu(); 
     }
 
 
     public void ShowMenu()
     {
         gameObject.SetActive(true);
-        menuState = MenuState.Opened;
     }
 
 
-    public void CloseMenu()
+    public void HideMenu()
     {
         gameObject.SetActive(false);
-        menuState = MenuState.Closed; 
     }
 
 }

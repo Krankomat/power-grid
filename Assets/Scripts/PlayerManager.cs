@@ -6,8 +6,8 @@ public class PlayerManager : MonoBehaviour
 {
     
     public GameObject gameHUD;
-    public GameObject selectableCubePrefab;
     public Vector2 gridCellDimensions;
+    public MenuManager buildingMenu;
 
     // Selection 
     private RaycastHit hit;
@@ -18,8 +18,8 @@ public class PlayerManager : MonoBehaviour
     private Selector hitSelector;
     private GameObject selectedGameObject;
 
-    // Placement 
-    private GameObject selectableCubeToBePlaced;
+    // Building Placement 
+    private GameObject gameObjectToBePlaced;
     private Ray placingPreviewRay;
     private RaycastHit placingPreviewHit;
     private LayerMask placingPreviewLayerMask;
@@ -34,7 +34,8 @@ public class PlayerManager : MonoBehaviour
     private enum InteractionState
     {
         Selecting, 
-        Placing 
+        Placing, 
+        InMenu 
     }
 
 
@@ -44,12 +45,12 @@ public class PlayerManager : MonoBehaviour
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing"); 
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
         interactionState = InteractionState.Selecting;
+        buildingMenu.OnMenuClose.AddListener(ResetInteractionState); 
     }
 
 
     void Update()
     {
-        SwitchInteractionStateIfNecessary(); 
         HandleControlsInInteractionState();
         HandleInteractionState();
     }
@@ -57,14 +58,8 @@ public class PlayerManager : MonoBehaviour
 
     private void SwitchInteractionStateIfNecessary()
     {
-        // Place a new selectable cube with right mouse button 
         if (Input.GetKeyUp(KeyCode.E))
-        {
-            if (interactionState == InteractionState.Placing)
-                CancelPlacingSelectableCube(); 
-            else
-                StartPlacingSelectableCube();
-        }
+            OpenMenu(buildingMenu);
     }
 
 
@@ -73,6 +68,9 @@ public class PlayerManager : MonoBehaviour
         
         if (interactionState == InteractionState.Selecting)
         {
+            // Check if there are button presses that will change the interaction state
+            SwitchInteractionStateIfNecessary();
+
             // Select object with left mouse button 
             if (Input.GetMouseButtonDown(0))
             {
@@ -99,20 +97,29 @@ public class PlayerManager : MonoBehaviour
 
             if (Input.GetKeyUp(KeyCode.Escape))
             {
-                CancelPlacingSelectableCube();
+                CancelPlacingGameObject();
                 return; 
             }
 
             if (Input.GetMouseButtonDown(0))
             {
-                CompletePlacingSelectableCube();
+                CompletePlacingGameObject();
                 return; 
             }
 
             return; 
         }
 
+
+        if (interactionState == InteractionState.InMenu)
+        {
+            if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.E)) 
+                CloseMenu(buildingMenu);
+
+            return; 
+        }
         
+
         // If not supported state 
         Debug.LogError("Unsupported interaction state ");
                 
@@ -134,6 +141,10 @@ public class PlayerManager : MonoBehaviour
             MakePlacingPreviewRaycast(); 
             return;
         }
+
+
+        if (interactionState == InteractionState.InMenu)
+            return; 
 
 
         // If not supported state 
@@ -224,28 +235,48 @@ public class PlayerManager : MonoBehaviour
         placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x, gridCellDimensions.x);
         placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z, gridCellDimensions.y); 
 
-        selectableCubeToBePlaced.transform.position = placementPosition;
+        gameObjectToBePlaced.transform.position = placementPosition;
     }
 
 
-    private void StartPlacingSelectableCube()
+    public void StartPlacingGameObject(GameObject gameObjectPrefab)
     {
-        interactionState = InteractionState.Placing; 
-        selectableCubeToBePlaced = Instantiate(selectableCubePrefab);
+        interactionState = InteractionState.Placing;
+        gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
     }
 
 
-    private void CancelPlacingSelectableCube()
-    {
-        interactionState = InteractionStateDefault;
-        Destroy(selectableCubeToBePlaced); 
-    }
-
-
-    private void CompletePlacingSelectableCube()
+    public void CancelPlacingGameObject()
     {
         interactionState = InteractionStateDefault;
-        selectableCubeToBePlaced = null; 
+        Destroy(gameObjectToBePlaced); 
+    }
+
+
+    public void CompletePlacingGameObject()
+    {
+        interactionState = InteractionStateDefault;
+        gameObjectToBePlaced = null; 
+    }
+
+
+    private void OpenMenu(MenuManager menuManager)
+    {
+        menuManager.ShowMenu();
+        interactionState = InteractionState.InMenu; 
+    }
+
+
+    public void CloseMenu(MenuManager menuManager)
+    {
+        menuManager.HideMenu();
+        ResetInteractionState(); 
+    }
+
+
+    private void ResetInteractionState()
+    {
+        interactionState = InteractionStateDefault; 
     }
 
 }
