@@ -121,6 +121,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: 7e4dc919cdae9d448aa66830161aaacb, type: 2}
+  negativeHoverMaterial: {fileID: 2100000, guid: af17ac18eb59ea74fa13289d55aa7bf0,
+    type: 2}
   isDyed: 0
 --- !u!1 &4307228193581361184
 GameObject:

@@ -10,7 +10,8 @@ using UnityEngine;
 public class ModelDyer : MonoBehaviour
 {
 
-    public Material hoverMaterial; 
+    public Material hoverMaterial;
+    public Material negativeHoverMaterial; 
     [HideInInspector] public bool isDyed = false; 
 
     private const string ModelName = "Model";
@@ -36,7 +37,13 @@ public class ModelDyer : MonoBehaviour
 
     public void ChangeMaterialsToPositiveHover()
     {
-        ChangeMaterialsTo(hoverMaterial); 
+        ChangeMaterialsTo(hoverMaterial);
+    }
+
+
+    public void ChangeMaterialsToNegativeHover()
+    {
+        ChangeMaterialsTo(negativeHoverMaterial);
     }
 
 
