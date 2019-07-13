@@ -20,6 +20,7 @@ public class PlayerManager : MonoBehaviour
 
     // Building Placement 
     private GameObject gameObjectToBePlaced;
+    private ModelDyer modelDyer; 
     private Ray placingPreviewRay;
     private RaycastHit placingPreviewHit;
     private LayerMask placingPreviewLayerMask;
@@ -243,20 +244,25 @@ public class PlayerManager : MonoBehaviour
     {
         interactionState = InteractionState.Placing;
         gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
+        modelDyer = gameObjectToBePlaced.GetComponent<ModelDyer>();
+        modelDyer.ChangeMaterialsToPositiveHover(); 
     }
 
 
     public void CancelPlacingGameObject()
     {
         interactionState = InteractionStateDefault;
-        Destroy(gameObjectToBePlaced); 
+        Destroy(gameObjectToBePlaced);
+        modelDyer = null; 
     }
 
 
     public void CompletePlacingGameObject()
     {
         interactionState = InteractionStateDefault;
-        gameObjectToBePlaced = null; 
+        modelDyer.ChangeMaterialsBackToInitial(); 
+        gameObjectToBePlaced = null;
+        modelDyer = null; 
     }
 
 

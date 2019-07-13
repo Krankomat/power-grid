@@ -505,6 +505,7 @@ GameObject:
   - component: {fileID: 6477663504450860231}
   - component: {fileID: 3265678349792299669}
   - component: {fileID: 3528518613577276025}
+  - component: {fileID: -3650465847031657129}
   m_Layer: 0
   m_Name: RoadTJunction
   m_TagString: Untagged
@@ -556,8 +557,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectionMarkPrefab: {fileID: 6830439664896079963, guid: b7cf5f9da1f755c4189ac4790a4b34c9,
     type: 3}
-  selectionColliderContainerPrefab: {fileID: 5734482625099114596, guid: 1a7e97dc170ea254b85e170c0ce71723,
-    type: 3}
+--- !u!114 &-3650465847031657129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3265678349792299666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bd37c98501d96b498df9f4ba40f5e91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMaterial: {fileID: 2100000, guid: 7e4dc919cdae9d448aa66830161aaacb, type: 2}
+  isDyed: 0
 --- !u!1 &4196331376646408612
 GameObject:
   m_ObjectHideFlags: 0

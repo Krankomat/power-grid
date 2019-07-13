@@ -10,8 +10,7 @@ using UnityEngine;
 public class ModelDyer : MonoBehaviour
 {
 
-    public Material hoverMaterial;
-
+    public Material hoverMaterial; 
     [HideInInspector] public bool isDyed = false; 
 
     private const string ModelName = "Model";
@@ -20,18 +19,42 @@ public class ModelDyer : MonoBehaviour
     private Renderer materialRenderer;
 
 
-    void Start()
+    void Awake()
     {
         Transform modelTransform = GetModelTransformIfIsChild();
         materialRenderers = GetRenderersOfChildrenFromTransform(modelTransform);
-        initialMaterials = GetListOfMaterialsFromRenderers(materialRenderers).ToArray(); 
+        initialMaterials = GetListOfMaterialsFromRenderers(materialRenderers).ToArray();
     }
 
 
     void Update()
     {
         if (GameManager.Instance.isDebugging)
-            ChangeMaterialsOnButtonPress(); 
+            ChangeMaterialsOnButtonPress();
+    }
+
+
+    public void ChangeMaterialsToPositiveHover()
+    {
+        ChangeMaterialsTo(hoverMaterial); 
+    }
+
+
+    public void ChangeMaterialsBackToInitial()
+    {
+        for (int i = 0; i < initialMaterials.Length; i++)
+            materialRenderers[i].material = initialMaterials[i];
+
+        isDyed = false;
+    }
+
+
+    private void ChangeMaterialsTo(Material material)
+    {
+        foreach (Renderer materialRenderer in materialRenderers)
+            materialRenderer.material = hoverMaterial;
+
+        isDyed = true;
     }
 
 
@@ -73,24 +96,6 @@ public class ModelDyer : MonoBehaviour
             materials.Add(renderer.material); 
 
         return materials; 
-    }
-
-
-    private void ChangeMaterialsBackToInitial()
-    {
-        for (int i = 0; i < initialMaterials.Length; i++)
-            materialRenderers[i].material = initialMaterials[i];
-
-        isDyed = false; 
-    }
-
-
-    private void ChangeMaterialsTo(Material material)
-    {
-        foreach (Renderer materialRenderer in materialRenderers)
-            materialRenderer.material = hoverMaterial;
-
-        isDyed = true; 
     }
 
 
