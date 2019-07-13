@@ -10,12 +10,15 @@ using UnityEngine;
 public class ModelDyer : MonoBehaviour
 {
 
-    public Material hoverMaterial; 
+    public Material hoverMaterial;
+
+    [HideInInspector] public bool isDyed = false; 
 
     private const string ModelName = "Model";
     private List<Renderer> materialRenderers; 
     private Material[] initialMaterials;
-    private Renderer materialRenderer; 
+    private Renderer materialRenderer;
+    private bool isDebugging; 
 
 
     void Start()
@@ -23,22 +26,13 @@ public class ModelDyer : MonoBehaviour
         Transform modelTransform = GetModelTransformIfIsChild();
         materialRenderers = GetRenderersOfChildrenFromTransform(modelTransform);
         initialMaterials = GetListOfMaterialsFromRenderers(materialRenderers).ToArray(); 
-
-        foreach (Material material in initialMaterials) 
-            Debug.Log(material);
-
-        foreach (Renderer materialRenderer in materialRenderers)
-            materialRenderer.material = hoverMaterial; 
-
     }
 
 
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.C))
-        {
-            ChangeMaterialsBackToInitial(); 
-        }
+        if (isDebugging)
+            ChangeMaterialsOnButtonPress(); 
     }
 
 
@@ -87,6 +81,29 @@ public class ModelDyer : MonoBehaviour
     {
         for (int i = 0; i < initialMaterials.Length; i++)
             materialRenderers[i].material = initialMaterials[i];
+
+        isDyed = false; 
+    }
+
+
+    private void ChangeMaterialsTo(Material material)
+    {
+        foreach (Renderer materialRenderer in materialRenderers)
+            materialRenderer.material = hoverMaterial;
+
+        isDyed = true; 
+    }
+
+
+    private void ChangeMaterialsOnButtonPress()
+    {
+        if (Input.GetKeyUp(KeyCode.C))
+        {
+            if (isDyed)
+                ChangeMaterialsBackToInitial();
+            else
+                ChangeMaterialsTo(hoverMaterial);
+        }
     }
 
 }
