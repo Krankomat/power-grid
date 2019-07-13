@@ -139,8 +139,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectionMarkPrefab: {fileID: 6830439664896079963, guid: b7cf5f9da1f755c4189ac4790a4b34c9,
     type: 3}
-  selectionColliderContainerPrefab: {fileID: 5734482625099114596, guid: 1a7e97dc170ea254b85e170c0ce71723,
-    type: 3}
 --- !u!114 &932246207141714683
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Selectable Cube (Horst)
   description: "This is Horst. It is a selectable cube. \nSuch fun!"
+  footprint: {x: 1, y: 1}
 --- !u!1 &9182836870111304690
 GameObject:
   m_ObjectHideFlags: 0

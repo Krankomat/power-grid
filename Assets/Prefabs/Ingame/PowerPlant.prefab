@@ -1410,6 +1410,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Power Plant
   description: 'Burns fossil fuels and generates 500 MW. '
+  footprint: {x: 2, y: 2}
 --- !u!114 &9209277978122561923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1436,7 +1437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd37c98501d96b498df9f4ba40f5e91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverMaterialPrefab: {fileID: 2100000, guid: 7e4dc919cdae9d448aa66830161aaacb, type: 2}
   hoverMaterial: {fileID: 2100000, guid: 7e4dc919cdae9d448aa66830161aaacb, type: 2}
   isDyed: 0
 --- !u!1 &8805727288152118520

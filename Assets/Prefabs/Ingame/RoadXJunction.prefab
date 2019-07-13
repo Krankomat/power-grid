@@ -1044,6 +1044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Road (X Junction)
   description: A piece of road.
+  footprint: {x: 1, y: 1}
 --- !u!114 &7464548475412199853
 MonoBehaviour:
   m_ObjectHideFlags: 0

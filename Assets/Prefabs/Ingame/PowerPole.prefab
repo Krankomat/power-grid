@@ -669,6 +669,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Power Pole
   description: Used to create Electronic Networks.
+  footprint: {x: 1, y: 1}
 --- !u!114 &8897214581625352160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -695,7 +696,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd37c98501d96b498df9f4ba40f5e91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hoverMaterialPrefab: {fileID: 2100000, guid: 7e4dc919cdae9d448aa66830161aaacb, type: 2}
   hoverMaterial: {fileID: 2100000, guid: 7e4dc919cdae9d448aa66830161aaacb, type: 2}
   isDyed: 0
 --- !u!1 &9115450927558660763

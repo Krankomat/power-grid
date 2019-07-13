@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour
     public GameObject gameHUD;
     public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
+    public GameObject footprintColliderPrefab;
 
     // Selection 
     private RaycastHit hit;
@@ -20,7 +21,7 @@ public class PlayerManager : MonoBehaviour
 
     // Building Placement 
     private GameObject gameObjectToBePlaced;
-    private ModelDyer modelDyer; 
+    private ModelDyer modelDyer;
     private Ray placingPreviewRay;
     private RaycastHit placingPreviewHit;
     private LayerMask placingPreviewLayerMask;
@@ -245,7 +246,8 @@ public class PlayerManager : MonoBehaviour
         interactionState = InteractionState.Placing;
         gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
         modelDyer = gameObjectToBePlaced.GetComponent<ModelDyer>();
-        modelDyer.ChangeMaterialsToPositiveHover(); 
+        modelDyer.ChangeMaterialsToPositiveHover();
+        CreateAndAttachColliderFromFootprint(gameObjectToBePlaced); 
     }
 
 
@@ -285,4 +287,20 @@ public class PlayerManager : MonoBehaviour
         interactionState = InteractionStateDefault; 
     }
 
+
+    private void CreateAndAttachColliderFromFootprint(GameObject gameObjectToBePlaced)
+    {
+        Descriptor descriptor;
+        BoxCollider collider;
+        GameObject footprintCollider;
+
+        descriptor = gameObjectToBePlaced.GetComponent<Descriptor>();
+
+        footprintCollider = Instantiate(footprintColliderPrefab); 
+        footprintCollider.transform.SetParent(gameObjectToBePlaced.transform); 
+        collider = footprintCollider.GetComponent<BoxCollider>();
+
+        collider.size = new Vector3(descriptor.footprint.x, 1f, descriptor.footprint.y);
+        collider.center = new Vector3(0, collider.size.y / 2, 0); 
+    }
 }

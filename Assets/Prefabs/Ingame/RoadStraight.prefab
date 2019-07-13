@@ -93,6 +93,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Road (Straight)
   description: A piece of road.
+  footprint: {x: 1, y: 1}
 --- !u!114 &7020539142335987922
 MonoBehaviour:
   m_ObjectHideFlags: 0
