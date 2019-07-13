@@ -18,7 +18,6 @@ public class ModelDyer : MonoBehaviour
     private List<Renderer> materialRenderers; 
     private Material[] initialMaterials;
     private Renderer materialRenderer;
-    private bool isDebugging; 
 
 
     void Start()
@@ -31,7 +30,7 @@ public class ModelDyer : MonoBehaviour
 
     void Update()
     {
-        if (isDebugging)
+        if (GameManager.Instance.isDebugging)
             ChangeMaterialsOnButtonPress(); 
     }
 

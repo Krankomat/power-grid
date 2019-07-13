@@ -4,14 +4,10 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-
+    
     public GameObject gameHUD;
     public GameObject selectableCubePrefab;
     public Vector2 gridCellDimensions;
-
-    // Debugging 
-    public GameObject debuggingModeLabel;
-    [HideInInspector] public bool isDebugging; 
 
     // Selection 
     private RaycastHit hit;
@@ -35,8 +31,6 @@ public class PlayerManager : MonoBehaviour
     private const InteractionState InteractionStateDefault = InteractionState.Selecting; 
 
     
-
-
     private enum InteractionState
     {
         Selecting, 
@@ -58,12 +52,6 @@ public class PlayerManager : MonoBehaviour
         SwitchInteractionStateIfNecessary(); 
         HandleControlsInInteractionState();
         HandleInteractionState();
-        HandleInputToEnterDebugMode(); 
-
-        if (isDebugging)
-            debuggingModeLabel.SetActive(true);
-        else 
-            debuggingModeLabel.SetActive(false);
     }
 
 
@@ -258,15 +246,6 @@ public class PlayerManager : MonoBehaviour
     {
         interactionState = InteractionStateDefault;
         selectableCubeToBePlaced = null; 
-    }
-
-
-    private void HandleInputToEnterDebugMode()
-    {
-        if (Input.GetKeyUp(KeyCode.F4))
-        {
-            isDebugging = !isDebugging; 
-        }
     }
 
 }
