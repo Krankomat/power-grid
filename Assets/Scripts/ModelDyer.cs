@@ -59,7 +59,7 @@ public class ModelDyer : MonoBehaviour
     private void ChangeMaterialsTo(Material material)
     {
         foreach (Renderer materialRenderer in materialRenderers)
-            materialRenderer.material = hoverMaterial;
+            materialRenderer.material = material;
 
         isDyed = true;
     }
