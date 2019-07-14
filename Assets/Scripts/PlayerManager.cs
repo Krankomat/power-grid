@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,7 +25,8 @@ public class PlayerManager : MonoBehaviour
     private Ray placingPreviewRay;
     private RaycastHit placingPreviewHit;
     private LayerMask placingPreviewLayerMask;
-    private Vector3 placementPosition; 
+    private Vector3 placementPosition;
+    private FootprintCollisionHandler footprintCollisionHandler;
 
 
     private GameHUDDisplayer hudDisplayer;
@@ -104,9 +106,14 @@ public class PlayerManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                CompletePlacingGameObject();
+                if (footprintCollisionHandler.isColliding)
+                    HandleIntentToPlaceDownOnBlockedSpace(); 
+                else 
+                    CompletePlacingGameObject();
+
                 return; 
             }
+            
 
             return; 
         }
@@ -246,23 +253,29 @@ public class PlayerManager : MonoBehaviour
         gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
         modelDyer = gameObjectToBePlaced.GetComponent<ModelDyer>();
         modelDyer.ChangeMaterialsToPositiveHover();
+
+        GameObject footprintCollider = GetChildObject(gameObjectToBePlaced, "FootprintCollider");
+        footprintCollisionHandler = footprintCollider.GetComponent<FootprintCollisionHandler>();
+        LinkFootprintColliderHandlerToModelDyerMaterialChanging(); 
     }
 
 
     public void CancelPlacingGameObject()
     {
+        UnlinkFootprintColliderHandlerToModelDyerMaterialChanging(); 
         interactionState = InteractionStateDefault;
         Destroy(gameObjectToBePlaced);
-        modelDyer = null; 
+        modelDyer = null;
     }
 
 
     public void CompletePlacingGameObject()
     {
+        UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
         interactionState = InteractionStateDefault;
         modelDyer.ChangeMaterialsBackToInitial(); 
         gameObjectToBePlaced = null;
-        modelDyer = null; 
+        modelDyer = null;
     }
 
 
@@ -284,6 +297,36 @@ public class PlayerManager : MonoBehaviour
     {
         interactionState = InteractionStateDefault; 
     }
-    
+
+
+    // Method to get a child with name childObjectName of gameObject 
+    public static GameObject GetChildObject(GameObject gameObject, string childObjectName)
+    {
+        foreach (Transform childTransform in gameObject.transform)
+            if (String.Equals(childTransform.gameObject.name, childObjectName))
+                return childTransform.gameObject;
+
+        return null;
+    }
+
+
+    private void HandleIntentToPlaceDownOnBlockedSpace()
+    {
+        Debug.Log("You cannot place " + gameObjectToBePlaced + " here. "); 
+    }
+
+
+    private void LinkFootprintColliderHandlerToModelDyerMaterialChanging()
+    {
+        footprintCollisionHandler.OnFootprintCollisionEnter.AddListener(modelDyer.ChangeMaterialsToNegativeHover);
+        footprintCollisionHandler.OnFootprintCollisionExit.AddListener(modelDyer.ChangeMaterialsToPositiveHover);
+    }
+
+
+    private void UnlinkFootprintColliderHandlerToModelDyerMaterialChanging()
+    {
+        footprintCollisionHandler.OnFootprintCollisionEnter.RemoveListener(modelDyer.ChangeMaterialsToNegativeHover);
+        footprintCollisionHandler.OnFootprintCollisionExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
+    }
 
 }
