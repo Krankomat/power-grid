@@ -27,6 +27,7 @@ public class PlayerManager : MonoBehaviour
     private LayerMask placingPreviewLayerMask;
     private Vector3 placementPosition;
     private CollisionHandler footprintCollisionHandler;
+    private CollisionHandler electricCollisionHandler; 
 
 
     private GameHUDDisplayer hudDisplayer;
@@ -146,7 +147,14 @@ public class PlayerManager : MonoBehaviour
 
         if (interactionState == InteractionState.Placing)
         {
-            MakePlacingPreviewRaycast(); 
+            MakePlacingPreviewRaycast();
+
+            if (electricCollisionHandler == null)
+                return; 
+
+            if (electricCollisionHandler.isColliding)
+                Debug.Log("The gameObject, which gets placed, is currently colliding! "); 
+
             return;
         }
 
@@ -256,21 +264,35 @@ public class PlayerManager : MonoBehaviour
 
         GameObject footprintCollider = GetChildObject(gameObjectToBePlaced, "FootprintCollider");
         footprintCollisionHandler = footprintCollider.GetComponent<CollisionHandler>();
-        LinkFootprintColliderHandlerToModelDyerMaterialChanging(); 
+        LinkFootprintColliderHandlerToModelDyerMaterialChanging();
+
+        GameObject electricNetworkNodeCollider = GetChildObject(gameObjectToBePlaced, "ElectricNetworkNodeCollider");
+
+        // If there is no ElectricNetworkNodeCollider attached to the gameObject 
+        if (electricNetworkNodeCollider == null)
+            return; 
+
+        electricCollisionHandler = electricNetworkNodeCollider.GetComponent<CollisionHandler>();
+        electricCollisionHandler.colliderIntersectingIsCurrentlyActive = true; 
     }
 
 
     public void CancelPlacingGameObject()
     {
+        if (electricCollisionHandler != null)
+            electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
+
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging(); 
         interactionState = InteractionStateDefault;
         Destroy(gameObjectToBePlaced);
         modelDyer = null;
     }
 
-
     public void CompletePlacingGameObject()
     {
+        if (electricCollisionHandler != null)
+            electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
+
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
         interactionState = InteractionStateDefault;
         modelDyer.ChangeMaterialsBackToInitial(); 
