@@ -5,7 +5,10 @@ using UnityEngine;
 public class ElectricNetworkManager : MonoBehaviour
 {
 
-    [HideInInspector] public List<ElectricNetwork> electricNetworks;
+    [HideInInspector] public List<ElectricNetwork> electricNetworks; 
+
+    private ElectricNetworkConnector newlyAddedConnector;
+    private ElectricNetworkConnector[] interactedConnectors; 
 
 
     private void Awake()
@@ -22,17 +25,22 @@ public class ElectricNetworkManager : MonoBehaviour
 
     public void HandleElectricNetworkNodeAddOn(ElectricNetworkConnector placedConnector, CollisionHandler electricCollisionHandler)
     {
-
-        ElectricNetworkConnector[] connectors = GetInteractedNetworkNodes(placedConnector, electricCollisionHandler.intersectingColliders);
-        int numberOfInvolvedNetworksInConnectionAttempt = GetNumberOfInvolvedNetworksInConnectionAttempt(placedConnector, connectors);
+        newlyAddedConnector = placedConnector; 
+        interactedConnectors = GetInteractedNetworkNodes(placedConnector, electricCollisionHandler.intersectingColliders);
+        int numberOfInvolvedNetworksInConnectionAttempt = GetNumberOfInvolvedNetworksInConnectionAttempt(placedConnector, interactedConnectors);
 
         if (GameManager.Instance.isDebugging) 
-            for (int i = 0; i < connectors.Length; i++) 
-                Debug.Log(i + ": " + connectors[i]); 
-        
+            for (int i = 0; i < interactedConnectors.Length; i++) 
+                Debug.Log(i + ": " + interactedConnectors[i]);
+
+        // If there is no interaction with any other connector, return without creating a network 
+        if (interactedConnectors.Length == 0)
+            return;
+
+        // Handle addon to network 
         if (numberOfInvolvedNetworksInConnectionAttempt == 0)
         {
-            // Create new network 
+            HandleCreationOfANewNetwork(); 
         } else if (numberOfInvolvedNetworksInConnectionAttempt == 1)
         {
             // Connect to existing network 
@@ -44,7 +52,11 @@ public class ElectricNetworkManager : MonoBehaviour
             Debug.LogError("There is an illegal number of involved networks (" 
                     + numberOfInvolvedNetworksInConnectionAttempt + ") when trying to add a new node. "); 
         }
-        
+
+        //Handle nodes connecting with each other 
+        foreach (ElectricNetworkConnector connector in interactedConnectors)
+            connector.ConnectBothSidedTo(newlyAddedConnector); 
+
     }
 
 
@@ -83,5 +95,35 @@ public class ElectricNetworkManager : MonoBehaviour
         return involvedNetworksCount; 
     }
 
+
+    private void HandleCreationOfANewNetwork()
+    {
+        ElectricNetwork network = CreateNewElectricNetwork(); 
+
+        // Connect nodes to network 
+        newlyAddedConnector.ConnectBothSidedTo(network); 
+
+        // Connect each node with the network 
+        foreach (ElectricNetworkConnector connector in interactedConnectors)
+            connector.ConnectBothSidedTo(network);
+
+        Debug.Log("New Network was created and added! "); 
+    }
+
+
+    private ElectricNetwork CreateNewElectricNetwork()
+    {
+        ElectricNetwork network = new ElectricNetwork();
+        electricNetworks.Add(network);
+
+        return network; 
+    }
+
+
+    private void DestroyElectricNetwork(ElectricNetwork network)
+    {
+        electricNetworks.Remove(network);
+        network = null; 
+    }
 
 }
