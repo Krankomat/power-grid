@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 9077191857928275854}
   - component: {fileID: 3981318829038440014}
   - component: {fileID: 5883971593320802075}
+  - component: {fileID: -1377770370435798649}
   m_Layer: 0
   m_Name: Residence
   m_TagString: Untagged
@@ -190,6 +191,18 @@ MonoBehaviour:
   negativeHoverMaterial: {fileID: 2100000, guid: af17ac18eb59ea74fa13289d55aa7bf0,
     type: 2}
   isDyed: 0
+--- !u!114 &-1377770370435798649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819034094365071136}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 848b4bc07596c4e46880c670f3323876, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1854403504025499616
 GameObject:
   m_ObjectHideFlags: 0

@@ -1445,6 +1445,7 @@ GameObject:
   - component: {fileID: 291246982933152171}
   - component: {fileID: 9209277978122561923}
   - component: {fileID: 505957857171157866}
+  - component: {fileID: -3751862871232790131}
   m_Layer: 0
   m_Name: PowerPlant
   m_TagString: Untagged
@@ -1531,6 +1532,18 @@ MonoBehaviour:
   negativeHoverMaterial: {fileID: 2100000, guid: af17ac18eb59ea74fa13289d55aa7bf0,
     type: 2}
   isDyed: 0
+--- !u!114 &-3751862871232790131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8451925499503198687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 848b4bc07596c4e46880c670f3323876, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8805727288152118520
 GameObject:
   m_ObjectHideFlags: 0
