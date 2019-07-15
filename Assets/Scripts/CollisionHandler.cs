@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class FootprintCollisionHandler : MonoBehaviour
+public class CollisionHandler : MonoBehaviour
 {
 
     public bool isColliding = false;
 
 
-    public UnityEvent OnFootprintCollisionEnter; 
-    public UnityEvent OnFootprintCollisionExit;
+    public UnityEvent OnCollisionHandlerEnter; 
+    public UnityEvent OnCollisionHandlerExit;
 
 
     private bool previousIsColliding = false; 
@@ -20,9 +20,9 @@ public class FootprintCollisionHandler : MonoBehaviour
     private void Update()
     {
         if (previousIsColliding == false && isColliding == true)
-            OnFootprintCollisionEnter.Invoke(); 
+            OnCollisionHandlerEnter.Invoke(); 
         else if (previousIsColliding == true & isColliding == false)
-            OnFootprintCollisionExit.Invoke();
+            OnCollisionHandlerExit.Invoke();
 
         previousIsColliding = isColliding; 
     }
@@ -38,7 +38,7 @@ public class FootprintCollisionHandler : MonoBehaviour
     }
 
 
-    // Collisions only happen between Objects that have the LayerMask "ObjectFootprint" 
+    // Collisions should only happen between Objects, that have the same LayerMask like "ObjectFootprint" 
     private void OnTriggerStay(Collider other)
     {
         isColliding = true; 

@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
     private RaycastHit placingPreviewHit;
     private LayerMask placingPreviewLayerMask;
     private Vector3 placementPosition;
-    private FootprintCollisionHandler footprintCollisionHandler;
+    private CollisionHandler footprintCollisionHandler;
 
 
     private GameHUDDisplayer hudDisplayer;
@@ -255,7 +255,7 @@ public class PlayerManager : MonoBehaviour
         modelDyer.ChangeMaterialsToPositiveHover();
 
         GameObject footprintCollider = GetChildObject(gameObjectToBePlaced, "FootprintCollider");
-        footprintCollisionHandler = footprintCollider.GetComponent<FootprintCollisionHandler>();
+        footprintCollisionHandler = footprintCollider.GetComponent<CollisionHandler>();
         LinkFootprintColliderHandlerToModelDyerMaterialChanging(); 
     }
 
@@ -318,15 +318,15 @@ public class PlayerManager : MonoBehaviour
 
     private void LinkFootprintColliderHandlerToModelDyerMaterialChanging()
     {
-        footprintCollisionHandler.OnFootprintCollisionEnter.AddListener(modelDyer.ChangeMaterialsToNegativeHover);
-        footprintCollisionHandler.OnFootprintCollisionExit.AddListener(modelDyer.ChangeMaterialsToPositiveHover);
+        footprintCollisionHandler.OnCollisionHandlerEnter.AddListener(modelDyer.ChangeMaterialsToNegativeHover);
+        footprintCollisionHandler.OnCollisionHandlerExit.AddListener(modelDyer.ChangeMaterialsToPositiveHover);
     }
 
 
     private void UnlinkFootprintColliderHandlerToModelDyerMaterialChanging()
     {
-        footprintCollisionHandler.OnFootprintCollisionEnter.RemoveListener(modelDyer.ChangeMaterialsToNegativeHover);
-        footprintCollisionHandler.OnFootprintCollisionExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
+        footprintCollisionHandler.OnCollisionHandlerEnter.RemoveListener(modelDyer.ChangeMaterialsToNegativeHover);
+        footprintCollisionHandler.OnCollisionHandlerExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
     }
 
 }
