@@ -9,6 +9,7 @@ public class PlayerManager : MonoBehaviour
     public GameObject gameHUD;
     public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
+    public ElectricNetworkManager electricNetworkManager; 
 
     // Selection 
     private RaycastHit hit;
@@ -291,7 +292,11 @@ public class PlayerManager : MonoBehaviour
     public void CompletePlacingGameObject()
     {
         if (electricCollisionHandler != null)
+        {
+            ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
+            electricNetworkManager.HandleElectricNetworkNodeAddOn(electricNetworkConnector, electricCollisionHandler); 
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
+        }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
         interactionState = InteractionStateDefault;

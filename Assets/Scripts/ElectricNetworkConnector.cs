@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Synonym: ElectricNetworkNode 
 public class ElectricNetworkConnector : MonoBehaviour
 {
-
-    public GameObject electricNetworkNodeCollider; 
-    /*[HideInEditor]*/ public List<ElectricNetwork> connectedElectricNetworks; 
+    
+    public ElectricNetwork connectedNetwork = null; 
 
 
     private enum RoleInElectricityNetwork
