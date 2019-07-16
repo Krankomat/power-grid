@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ElectricNetworkManager : MonoBehaviour
@@ -27,7 +28,10 @@ public class ElectricNetworkManager : MonoBehaviour
     {
         newlyAddedConnector = placedConnector; 
         interactedConnectors = GetInteractedNetworkNodes(placedConnector, electricCollisionHandler.intersectingColliders);
-        int numberOfInvolvedNetworksInConnectionAttempt = GetNumberOfInvolvedNetworksInConnectionAttempt(placedConnector, interactedConnectors);
+        int numberOfInvolvedNetworksInConnectionAttempt = GetDifferentNetworksOf(interactedConnectors).Length;
+
+        Debug.Log("Number of involved Networks: " + numberOfInvolvedNetworksInConnectionAttempt);
+        Debug.Log("Involved Networks: " + GetDifferentNetworksOf(interactedConnectors));
 
         if (GameManager.Instance.isDebugging) 
             for (int i = 0; i < interactedConnectors.Length; i++) 
@@ -41,13 +45,16 @@ public class ElectricNetworkManager : MonoBehaviour
         if (numberOfInvolvedNetworksInConnectionAttempt == 0)
         {
             HandleCreationOfANewNetwork(); 
-        } else if (numberOfInvolvedNetworksInConnectionAttempt == 1)
+        }
+        else if (numberOfInvolvedNetworksInConnectionAttempt == 1)
         {
-            // Connect to existing network 
-        } else if (numberOfInvolvedNetworksInConnectionAttempt > 1)
+            HandleAddonToAnExistingNetwork(); 
+        }
+        else if (numberOfInvolvedNetworksInConnectionAttempt > 1)
         {
-            // Check who is bigger network and then add to it 
-        } else
+            HandleAddonToMultipleExistingNetworks(); 
+        }
+        else
         {
             Debug.LogError("There is an illegal number of involved networks (" 
                     + numberOfInvolvedNetworksInConnectionAttempt + ") when trying to add a new node. "); 
@@ -84,15 +91,20 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    private int GetNumberOfInvolvedNetworksInConnectionAttempt(ElectricNetworkConnector justAddedconnector, ElectricNetworkConnector[] connectors)
+    private ElectricNetwork[] GetDifferentNetworksOf(ElectricNetworkConnector[] connectors)
     {
-        int involvedNetworksCount = 0;
+        List<ElectricNetwork> networks = new List<ElectricNetwork>();
 
         foreach (ElectricNetworkConnector connector in connectors)
-            if (connector.connectedNetwork != null)
-                involvedNetworksCount++;
+        {
+            if (connector.connectedNetwork == null)
+                continue; 
 
-        return involvedNetworksCount; 
+            if (!networks.Contains(connector.connectedNetwork))
+                networks.Add(connector.connectedNetwork);
+        }
+
+        return networks.ToArray(); 
     }
 
 
@@ -107,7 +119,50 @@ public class ElectricNetworkManager : MonoBehaviour
         foreach (ElectricNetworkConnector connector in interactedConnectors)
             connector.ConnectBothSidedTo(network);
 
-        Debug.Log("New Network was created and added! "); 
+        SortElectricNetworks(); 
+
+        Debug.Log("New Network was created and added! ");
+    }
+
+
+    // Idealy, a new connector without a network gets added 
+    // But it can happen, that the newly placed connector also connects with an orphan node. Then, 
+    // this orphan node also has to be added to the single existing network, that gets an addon. 
+    private void HandleAddonToAnExistingNetwork()
+    {
+        ElectricNetwork network = interactedConnectors[0].connectedNetwork;
+
+        newlyAddedConnector.ConnectBothSidedTo(network);
+
+        // Handle orphan connectors 
+        foreach (ElectricNetworkConnector connector in interactedConnectors)
+            if (connector.connectedNetwork == null)
+                connector.ConnectBothSidedTo(network);
+
+        SortElectricNetworks();
+    }
+
+
+    private void HandleAddonToMultipleExistingNetworks()
+    {
+        ElectricNetwork[] existingNetworks = GetDifferentNetworksOf(interactedConnectors);
+        existingNetworks = ElectricNetwork.SortBySize(existingNetworks);
+        ElectricNetwork biggestNetwork = existingNetworks[0]; 
+
+        // Integrate smaller networks into the biggest one 
+        foreach (ElectricNetwork disintegratedNetwork in existingNetworks)
+        {
+            if (disintegratedNetwork == biggestNetwork)
+                continue;
+
+            // Could be problematic, because it's iterating over a list that destroys its members 
+            IntegrateElectricNetworkIntoAnother(biggestNetwork, disintegratedNetwork); 
+        }
+
+        // Add placed down connetor to the network, all other networks get integrated into 
+        newlyAddedConnector.ConnectBothSidedTo(biggestNetwork);
+
+        SortElectricNetworks();
     }
 
 
@@ -115,6 +170,8 @@ public class ElectricNetworkManager : MonoBehaviour
     {
         ElectricNetwork network = new ElectricNetwork();
         electricNetworks.Add(network);
+
+        Debug.Log("New network created! "); 
 
         return network; 
     }
@@ -124,6 +181,25 @@ public class ElectricNetworkManager : MonoBehaviour
     {
         electricNetworks.Remove(network);
         network = null; 
+    }
+
+
+    private void IntegrateElectricNetworkIntoAnother(ElectricNetwork targetNetwork, ElectricNetwork disintegratingNetwork)
+    {
+        List<ElectricNetworkConnector> integratedNodes = disintegratingNetwork.connectedNodes;
+        
+        foreach (ElectricNetworkConnector node in integratedNodes)
+            node.connectedNetwork = targetNetwork; 
+        
+        targetNetwork.connectedNodes.AddRange(integratedNodes);
+
+        DestroyElectricNetwork(disintegratingNetwork); 
+    }
+    
+
+    private void SortElectricNetworks()
+    {
+        electricNetworks = ElectricNetwork.SortBySize(electricNetworks); 
     }
 
 }

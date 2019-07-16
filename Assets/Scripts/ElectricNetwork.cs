@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ElectricNetwork 
@@ -23,6 +24,19 @@ public class ElectricNetwork
     public override string ToString()
     {
         return base.ToString() + ", id: " + id; 
+    }
+
+    
+    public static List<ElectricNetwork> SortBySize(List<ElectricNetwork> networks)
+    {
+        return networks.OrderByDescending(network => network.connectedNodes.Count).ToList();
+    }
+
+
+    public static ElectricNetwork[] SortBySize(ElectricNetwork[] networks)
+    {
+        List<ElectricNetwork> sortedNetworks = SortBySize(networks.ToList()); 
+        return sortedNetworks.ToArray();
     }
 
 }

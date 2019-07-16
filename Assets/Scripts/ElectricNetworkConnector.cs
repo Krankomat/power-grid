@@ -7,7 +7,7 @@ public class ElectricNetworkConnector : MonoBehaviour
 {
     
     public ElectricNetwork connectedNetwork = null;
-
+    /* for debugging */ public string connectedNetworkString; 
     /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes; 
 
 
@@ -22,6 +22,14 @@ public class ElectricNetworkConnector : MonoBehaviour
     private void Awake()
     {
         connectedNodes = new List<ElectricNetworkConnector>(); 
+    }
+
+
+    private void Update()
+    {
+        if (connectedNetwork == null)
+            return; 
+        connectedNetworkString = connectedNetwork.ToString(); 
     }
 
 
