@@ -9,15 +9,17 @@ public class PlayerManager : MonoBehaviour
     public GameObject gameHUD;
     public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
-    public ElectricNetworkManager electricNetworkManager; 
+    public ElectricNetworkManager electricNetworkManager;
+
+    // Hover 
+    private RaycastHit hit;
+    private Ray hoverRay;
+    private GameObject hoveredGameObject; 
+    private GameObject hoveredColliderContainer; 
+    private Selector hoveredSelector;
 
     // Selection 
-    private RaycastHit hit;
-    private Ray selectionRay;
-    private GameObject hitColliderContainer; 
-    private GameObject hitGameObject; 
     private LayerMask selectionMask;
-    private Selector hitSelector;
     private GameObject selectedGameObject;
 
     // Building Placement 
@@ -33,12 +35,12 @@ public class PlayerManager : MonoBehaviour
 
     private GameHUDDisplayer hudDisplayer;
     private InteractionState interactionState;
-    private const InteractionState InteractionStateDefault = InteractionState.Selecting; 
+    private const InteractionState InteractionStateDefault = InteractionState.Hovering; 
 
     
     private enum InteractionState
     {
-        Selecting, 
+        Hovering, 
         Placing, 
         InMenu 
     }
@@ -49,7 +51,7 @@ public class PlayerManager : MonoBehaviour
         selectionMask = LayerMask.GetMask("ObjectSelecting");
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing"); 
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
-        interactionState = InteractionState.Selecting;
+        interactionState = InteractionState.Hovering;
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState); 
     }
 
@@ -71,7 +73,7 @@ public class PlayerManager : MonoBehaviour
     private void HandleControlsInInteractionState()
     {
         
-        if (interactionState == InteractionState.Selecting)
+        if (interactionState == InteractionState.Hovering)
         {
             // Check if there are button presses that will change the interaction state
             SwitchInteractionStateIfNecessary();
@@ -79,7 +81,11 @@ public class PlayerManager : MonoBehaviour
             // Select object with left mouse button 
             if (Input.GetMouseButtonDown(0))
             {
-                MakeSingleSelectionRaycast();
+                if (selectedGameObject != null && hoveredGameObject == null)
+                    ClearSelection(); 
+                else if (hoveredGameObject != null) 
+                    HandleSelectionOf(hoveredGameObject); 
+
                 RefreshGameHUDContent();
             }
 
@@ -139,9 +145,9 @@ public class PlayerManager : MonoBehaviour
     private void HandleInteractionState()
     {
 
-        if (interactionState == InteractionState.Selecting)
+        if (interactionState == InteractionState.Hovering)
         {
-            // don't do anything 
+            MakeHoverRaycast(); 
             return;
         }
 
@@ -161,52 +167,60 @@ public class PlayerManager : MonoBehaviour
 
 
         if (interactionState == InteractionState.InMenu)
+        {
             return; 
+        }
 
 
         // If not supported state 
         Debug.LogError("Unsupported interaction state ");
     } 
 
-    
-    private void MakeSingleSelectionRaycast()
+
+    private void MakeHoverRaycast()
     {
-        selectionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
+        hoverRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
         // Make raycast and return, if nothing was hit 
-        if (!Physics.Raycast(selectionRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
-            return; 
-
-        hitColliderContainer = hit.collider.gameObject;
-        hitGameObject = hitColliderContainer.transform.parent.gameObject;
-        hitSelector = hitGameObject.GetComponent<Selector>(); 
-
-        if (hitSelector == null)
+        if (!Physics.Raycast(hoverRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
         {
-            Debug.Log("Hit object has no Selector component!");
+            ClearHover(); 
             return;
         }
 
-        Debug.Log("Hit Object does have a selector component! ");
+        hoveredColliderContainer = hit.collider.gameObject;
+        hoveredGameObject = hoveredColliderContainer.transform.parent.gameObject;
+        hoveredSelector = hoveredGameObject.GetComponent<Selector>();
 
+        if (hoveredSelector == null)
+            Debug.LogError("Hit object " + gameObject + " has no Selector component! "); 
+    }
+
+
+    private void ClearHover()
+    {
+        hoveredColliderContainer = null;
+        hoveredGameObject = null;
+        hoveredSelector = null;
+    }
+
+
+    private void HandleSelectionOf(GameObject gameObject)
+    {
         // If there is no game object in selection so far 
         if (selectedGameObject == null)
-        {
-            SelectGameObject(hitGameObject);
-            return; 
-        }
+            Select(gameObject);
 
         // If the selected object is already in selection, remove it from it 
-        if (hitGameObject == selectedGameObject)
-        {
+        else if (selectedGameObject == gameObject)
             ClearSelection();
-            return; 
-        }
         
         // Else clear the selection and select the current game object 
-        ClearSelection();
-        SelectGameObject(hitGameObject); 
-        
+        else
+        {
+            ClearSelection();
+            Select(gameObject); 
+        }
     }
 
 
@@ -217,7 +231,7 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void SelectGameObject(GameObject gameObject)
+    private void Select(GameObject gameObject)
     {
         gameObject.GetComponent<Selector>().Select();
         selectedGameObject = gameObject; 
