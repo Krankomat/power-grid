@@ -23,7 +23,6 @@ public class Selector : MonoBehaviour
     {
         AttachSelectionMarkToParent();
         CheckIfSelectionColliderIsAttached(); 
-        selectionMark.SetActive(false); 
     }
 
 
@@ -39,7 +38,6 @@ public class Selector : MonoBehaviour
     public void Select()
     {
         IsSelected = true;
-        selectionMark.SetActive(true);
         selectionMark.GetComponent<SelectionMarkDisplayer>().Select();
         Debug.Log(gameObject + " was selected! ");
     }
@@ -48,7 +46,7 @@ public class Selector : MonoBehaviour
     public void Deselect()
     {
         IsSelected = false;
-        selectionMark.SetActive(false);
+        selectionMark.GetComponent<SelectionMarkDisplayer>().Deselect();
         Debug.Log(gameObject + " was deselected! ");
     }
 
@@ -56,7 +54,6 @@ public class Selector : MonoBehaviour
     public void Hover()
     {
         IsHovered = true;
-        selectionMark.SetActive(true);
         selectionMark.GetComponent<SelectionMarkDisplayer>().Hover();
     }
 
@@ -64,7 +61,7 @@ public class Selector : MonoBehaviour
     public void Unhover()
     {
         IsHovered = false;
-        selectionMark.SetActive(false);
+        selectionMark.GetComponent<SelectionMarkDisplayer>().Unhover();
     }
 
 

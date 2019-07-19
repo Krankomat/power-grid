@@ -6,63 +6,53 @@ using UnityEngine.UI;
 public class SelectionMarkDisplayer : MonoBehaviour
 {
 
-    public GameObject markingRing;
-    public Sprite selectionRingShape;
-    public Sprite hoverRingShape;
+    public GameObject selectionRing;
+    public GameObject hoverRing; 
     public float rotationSpeed;
-    public DisplayState currentState;
 
-    private Color selectionColor;
-    private Color hoverColor; 
-    private Image image; 
+    public bool isSelected;
+    public bool isHovered; 
+
+
+    private void Awake()
+    {
+        Unhover();
+        Deselect(); 
+    }
+
+
+    private void Update()
+    {
+        if (isHovered)
+            hoverRing.transform.Rotate(new Vector3(0, 0, 1f * rotationSpeed * Time.deltaTime));
+    }
 
     
-    public enum DisplayState
-    {
-        Selecting, 
-        Hovering
-    }
-
-
-    void Start()
-    {
-        image = markingRing.GetComponent<Image>(); 
-        selectionColor = image.color;
-        hoverColor = new Color(selectionColor.r, selectionColor.g, selectionColor.b, selectionColor.a / 2); 
-    }
-
-
-    void Update()
-    {
-        if (currentState == DisplayState.Selecting)
-        {
-            markingRing.transform.localRotation = Quaternion.identity;
-            image.sprite = selectionRingShape;
-            image.color = selectionColor;
-            return; 
-        }
-
-        if (currentState == DisplayState.Hovering)
-        {
-            markingRing.transform.Rotate(new Vector3(0, 0, 1f * rotationSpeed *  Time.deltaTime));
-            image.sprite = hoverRingShape;
-            image.color = hoverColor;
-            return; 
-        }
-
-        Debug.LogError("Unsupported display state in SelectionMarkDisplayer of object " + gameObject); 
-    }
-
-
     public void Hover()
     {
-        currentState = DisplayState.Hovering; 
+        isHovered = true;
+        hoverRing.SetActive(true);
+    }
+
+
+    public void Unhover()
+    {
+        isHovered = false;
+        hoverRing.SetActive(false);
     }
 
 
     public void Select()
     {
-        currentState = DisplayState.Selecting; 
+        isSelected = true;
+        selectionRing.SetActive(true);
+    }
+
+
+    public void Deselect()
+    {
+        isSelected = false;
+        selectionRing.SetActive(false);
     }
 
 }
