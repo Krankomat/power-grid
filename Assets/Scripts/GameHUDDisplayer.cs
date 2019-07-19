@@ -7,13 +7,34 @@ public class GameHUDDisplayer : MonoBehaviour
 {
 
     public Text selectedObjectNameLabel;
-    public Text selectedObjectDescriptionLabel; 
+    public Text selectedObjectDescriptionLabel;
+    public UIStateIndicator stateIndicator; 
     
 
-    public void RefreshContent(string objectName, string objectDescription)
+    public void RefreshSelectionInfoPanel(string objectName, string objectDescription)
     {
         selectedObjectNameLabel.text = objectName;
         selectedObjectDescriptionLabel.text = objectDescription; 
+    }
+
+
+    public void DisplayStateIndicatorFor(InteractionState state)
+    {
+        switch (state)
+        {
+            case InteractionState.Hovering:
+            case InteractionState.InMenu:
+                stateIndicator.currentState = UIStateIndicator.IndicatorState.None;
+                break;
+
+            case InteractionState.Placing:
+                stateIndicator.currentState = UIStateIndicator.IndicatorState.Placing;
+                break;
+
+            default:
+                Debug.Log("Unsupported Interaction State in " + gameObject);
+                break; 
+        }
     }
 
 }

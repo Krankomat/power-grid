@@ -43,15 +43,7 @@ public class PlayerManager : MonoBehaviour
 
     public UnityEvent OnHoveringStart;
     public UnityEvent OnHoveringEnd;
-    public UnityEvent OnInteractionStateChanged; 
-
-
-    private enum InteractionState
-    {
-        Hovering,
-        Placing,
-        InMenu
-    }
+    public InteractionStateEvent OnInteractionStateChanged; 
 
 
     void Start()
@@ -64,7 +56,8 @@ public class PlayerManager : MonoBehaviour
 
         OnHoveringStart.AddListener(OnHoveringStarted);
         OnHoveringEnd.AddListener(OnHoveringEnded);
-        OnInteractionStateChanged.AddListener(HandleInteractionStateChange); 
+        OnInteractionStateChanged.AddListener(HandleInteractionStateChange);
+        OnInteractionStateChanged.AddListener(hudDisplayer.DisplayStateIndicatorFor); 
     }
 
 
@@ -74,7 +67,7 @@ public class PlayerManager : MonoBehaviour
         HandleCurrentInteractionState(); 
 
         if (currentInteractionState != previousInteractionState)
-            OnInteractionStateChanged.Invoke(); 
+            OnInteractionStateChanged.Invoke(currentInteractionState); 
 
         previousInteractionState = currentInteractionState; 
     }
@@ -103,7 +96,7 @@ public class PlayerManager : MonoBehaviour
                 else if (hoveredGameObject != null)
                     HandleSelectionOf(hoveredGameObject);
 
-                RefreshGameHUDContent();
+                RefreshSelectionInfoPanel();
             }
 
             // Clear selection with escape key 
@@ -112,7 +105,7 @@ public class PlayerManager : MonoBehaviour
                 if (selectedGameObject != null)
                 {
                     ClearSelection();
-                    RefreshGameHUDContent();
+                    RefreshSelectionInfoPanel();
                 }
             }
 
@@ -217,10 +210,10 @@ public class PlayerManager : MonoBehaviour
 
 
     // Is called every time, the state changes 
-    private void HandleInteractionStateChange()
+    private void HandleInteractionStateChange(InteractionState state)
     {
 
-        if (currentInteractionState == InteractionState.Hovering)
+        if (state == InteractionState.Hovering)
         {
             // Temporarily removes display of hover display 
             if (hoveredSelector != null)
@@ -230,7 +223,7 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        if (currentInteractionState == InteractionState.Placing)
+        if (state == InteractionState.Placing)
         {
             // Temporarily removes display of hover display 
             if (hoveredSelector != null) 
@@ -240,7 +233,7 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        if (currentInteractionState == InteractionState.InMenu)
+        if (state == InteractionState.InMenu)
         {
             // Temporarily removes display of hover display 
             if (hoveredSelector != null)
@@ -316,7 +309,7 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void RefreshGameHUDContent()
+    private void RefreshSelectionInfoPanel()
     {
         string objectName, objectDescription;
 
@@ -330,7 +323,7 @@ public class PlayerManager : MonoBehaviour
             objectDescription = selectedGameObject.GetComponent<Descriptor>().description;
         }
 
-        hudDisplayer.RefreshContent(objectName, objectDescription);
+        hudDisplayer.RefreshSelectionInfoPanel(objectName, objectDescription);
     }
 
 

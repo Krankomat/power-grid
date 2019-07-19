@@ -49,12 +49,14 @@ public class UIStateIndicator : MonoBehaviour
 
         if (currentState == IndicatorState.Placing)
         {
+            Show(); 
             DisplayStyle(IndicatorStyle.Placing); 
             return; 
         }
 
         if (currentState == IndicatorState.Demolishing)
         {
+            Show();
             DisplayStyle(IndicatorStyle.Demolishing);
             return; 
         }
