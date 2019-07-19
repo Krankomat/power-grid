@@ -36,12 +36,14 @@ public class PlayerManager : MonoBehaviour
 
 
     private GameHUDDisplayer hudDisplayer;
-    private InteractionState interactionState;
+    private InteractionState currentInteractionState;
+    private InteractionState previousInteractionState; 
     private const InteractionState InteractionStateDefault = InteractionState.Hovering;
 
 
     public UnityEvent OnHoveringStart;
     public UnityEvent OnHoveringEnd;
+    public UnityEvent OnInteractionStateChanged; 
 
 
     private enum InteractionState
@@ -57,18 +59,24 @@ public class PlayerManager : MonoBehaviour
         selectionMask = LayerMask.GetMask("ObjectSelecting");
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
-        interactionState = InteractionState.Hovering;
+        currentInteractionState = InteractionState.Hovering;
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
 
         OnHoveringStart.AddListener(OnHoveringStarted);
         OnHoveringEnd.AddListener(OnHoveringEnded);
+        OnInteractionStateChanged.AddListener(HandleInteractionStateChange); 
     }
 
 
     void Update()
     {
         HandleControlsInInteractionState();
-        HandleInteractionState();
+        HandleCurrentInteractionState(); 
+
+        if (currentInteractionState != previousInteractionState)
+            OnInteractionStateChanged.Invoke(); 
+
+        previousInteractionState = currentInteractionState; 
     }
 
 
@@ -82,7 +90,7 @@ public class PlayerManager : MonoBehaviour
     private void HandleControlsInInteractionState()
     {
 
-        if (interactionState == InteractionState.Hovering)
+        if (currentInteractionState == InteractionState.Hovering)
         {
             // Check if there are button presses that will change the interaction state
             SwitchInteractionStateIfNecessary();
@@ -112,7 +120,7 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        if (interactionState == InteractionState.Placing)
+        if (currentInteractionState == InteractionState.Placing)
         {
 
             if (Input.GetKeyUp(KeyCode.Escape))
@@ -136,7 +144,7 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        if (interactionState == InteractionState.InMenu)
+        if (currentInteractionState == InteractionState.InMenu)
         {
             if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.E))
                 CloseMenu(buildingMenu);
@@ -151,10 +159,10 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void HandleInteractionState()
+    private void HandleCurrentInteractionState()
     {
 
-        if (interactionState == InteractionState.Hovering)
+        if (currentInteractionState == InteractionState.Hovering)
         {
             MakeHoverRaycast();
 
@@ -183,7 +191,7 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        if (interactionState == InteractionState.Placing)
+        if (currentInteractionState == InteractionState.Placing)
         {
             MakePlacingPreviewRaycast();
 
@@ -197,8 +205,47 @@ public class PlayerManager : MonoBehaviour
         }
 
 
-        if (interactionState == InteractionState.InMenu)
+        if (currentInteractionState == InteractionState.InMenu)
         {
+            return;
+        }
+
+
+        // If not supported state 
+        Debug.LogError("Unsupported interaction state ");
+    }
+
+
+    // Is called every time, the state changes 
+    private void HandleInteractionStateChange()
+    {
+
+        if (currentInteractionState == InteractionState.Hovering)
+        {
+            // Temporarily removes display of hover display 
+            if (hoveredSelector != null)
+                hoveredSelector.Hover();
+
+            return;
+        }
+
+
+        if (currentInteractionState == InteractionState.Placing)
+        {
+            // Temporarily removes display of hover display 
+            if (hoveredSelector != null) 
+                hoveredSelector.Unhover(); 
+            
+            return;
+        }
+
+
+        if (currentInteractionState == InteractionState.InMenu)
+        {
+            // Temporarily removes display of hover display 
+            if (hoveredSelector != null)
+                hoveredSelector.Unhover();
+            
             return;
         }
 
@@ -303,7 +350,7 @@ public class PlayerManager : MonoBehaviour
 
     public void StartPlacingGameObject(GameObject gameObjectPrefab)
     {
-        interactionState = InteractionState.Placing;
+        currentInteractionState = InteractionState.Placing;
         gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
         modelDyer = gameObjectToBePlaced.GetComponent<ModelDyer>();
         modelDyer.ChangeMaterialsToPositiveHover();
@@ -329,7 +376,7 @@ public class PlayerManager : MonoBehaviour
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
-        interactionState = InteractionStateDefault;
+        currentInteractionState = InteractionStateDefault;
         Destroy(gameObjectToBePlaced);
         modelDyer = null;
     }
@@ -344,7 +391,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
-        interactionState = InteractionStateDefault;
+        currentInteractionState = InteractionStateDefault;
         modelDyer.ChangeMaterialsBackToInitial();
         gameObjectToBePlaced = null;
         modelDyer = null;
@@ -354,7 +401,7 @@ public class PlayerManager : MonoBehaviour
     private void OpenMenu(MenuManager menuManager)
     {
         menuManager.ShowMenu();
-        interactionState = InteractionState.InMenu;
+        currentInteractionState = InteractionState.InMenu;
     }
 
 
@@ -367,7 +414,7 @@ public class PlayerManager : MonoBehaviour
 
     private void ResetInteractionState()
     {
-        interactionState = InteractionStateDefault;
+        currentInteractionState = InteractionStateDefault;
     }
 
 
