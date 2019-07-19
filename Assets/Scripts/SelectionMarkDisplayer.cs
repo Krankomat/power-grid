@@ -53,4 +53,16 @@ public class SelectionMarkDisplayer : MonoBehaviour
         Debug.LogError("Unsupported display state in SelectionMarkDisplayer of object " + gameObject); 
     }
 
+
+    public void Hover()
+    {
+        currentState = DisplayState.Hovering; 
+    }
+
+
+    public void Select()
+    {
+        currentState = DisplayState.Selecting; 
+    }
+
 }

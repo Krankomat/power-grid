@@ -12,9 +12,11 @@ public class Selector : MonoBehaviour
 
     private GameObject selectionMark;
     private GameObject selectionCollider;
-    private const string SelectionColliderName = "SelectionCollider"; 
+    private const string SelectionColliderName = "SelectionCollider";
 
-    private bool isSelected; 
+    // Bool and not enum, because both can be true at the same time 
+    public bool IsSelected { get; private set; }
+    public bool IsHovered { get; private set; }
 
 
     private void Start()
@@ -27,7 +29,7 @@ public class Selector : MonoBehaviour
 
     public void ToggleSelection()
     {
-        if (isSelected)
+        if (IsSelected)
             Deselect(); 
         else
             Select();
@@ -36,17 +38,33 @@ public class Selector : MonoBehaviour
 
     public void Select()
     {
-        isSelected = true;
+        IsSelected = true;
         selectionMark.SetActive(true);
+        selectionMark.GetComponent<SelectionMarkDisplayer>().Select();
         Debug.Log(gameObject + " was selected! ");
     }
 
 
     public void Deselect()
     {
-        isSelected = false;
+        IsSelected = false;
         selectionMark.SetActive(false);
         Debug.Log(gameObject + " was deselected! ");
+    }
+
+
+    public void Hover()
+    {
+        IsHovered = true;
+        selectionMark.SetActive(true);
+        selectionMark.GetComponent<SelectionMarkDisplayer>().Hover();
+    }
+
+
+    public void Unhover()
+    {
+        IsHovered = false;
+        selectionMark.SetActive(false);
     }
 
 
@@ -68,5 +86,8 @@ public class Selector : MonoBehaviour
         Debug.LogError("Selector Error: There is no gameObject named \"" 
                 + SelectionColliderName + "\" attached to " + gameObject.name + "."); 
     }
+
+
+
 
 }

@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerManager : MonoBehaviour
 {
-    
+
     public GameObject gameHUD;
     public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
@@ -14,9 +15,10 @@ public class PlayerManager : MonoBehaviour
     // Hover 
     private RaycastHit hit;
     private Ray hoverRay;
-    private GameObject hoveredGameObject; 
-    private GameObject hoveredColliderContainer; 
+    private GameObject hoveredGameObject;
+    private GameObject hoveredColliderContainer;
     private Selector hoveredSelector;
+    private GameObject previouslyHoveredGameObject;
 
     // Selection 
     private LayerMask selectionMask;
@@ -30,29 +32,36 @@ public class PlayerManager : MonoBehaviour
     private LayerMask placingPreviewLayerMask;
     private Vector3 placementPosition;
     private CollisionHandler footprintCollisionHandler;
-    private CollisionHandler electricCollisionHandler; 
+    private CollisionHandler electricCollisionHandler;
 
 
     private GameHUDDisplayer hudDisplayer;
     private InteractionState interactionState;
-    private const InteractionState InteractionStateDefault = InteractionState.Hovering; 
+    private const InteractionState InteractionStateDefault = InteractionState.Hovering;
 
-    
+
+    public UnityEvent OnHoveringStart;
+    public UnityEvent OnHoveringEnd;
+
+
     private enum InteractionState
     {
-        Hovering, 
-        Placing, 
-        InMenu 
+        Hovering,
+        Placing,
+        InMenu
     }
 
 
     void Start()
     {
         selectionMask = LayerMask.GetMask("ObjectSelecting");
-        placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing"); 
+        placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
         interactionState = InteractionState.Hovering;
-        buildingMenu.OnMenuClose.AddListener(ResetInteractionState); 
+        buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
+
+        OnHoveringStart.AddListener(OnHoveringStarted);
+        OnHoveringEnd.AddListener(OnHoveringEnded);
     }
 
 
@@ -72,7 +81,7 @@ public class PlayerManager : MonoBehaviour
 
     private void HandleControlsInInteractionState()
     {
-        
+
         if (interactionState == InteractionState.Hovering)
         {
             // Check if there are button presses that will change the interaction state
@@ -82,9 +91,9 @@ public class PlayerManager : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 if (selectedGameObject != null && hoveredGameObject == null)
-                    ClearSelection(); 
-                else if (hoveredGameObject != null) 
-                    HandleSelectionOf(hoveredGameObject); 
+                    ClearSelection();
+                else if (hoveredGameObject != null)
+                    HandleSelectionOf(hoveredGameObject);
 
                 RefreshGameHUDContent();
             }
@@ -99,7 +108,7 @@ public class PlayerManager : MonoBehaviour
                 }
             }
 
-            return; 
+            return;
         }
 
 
@@ -109,36 +118,36 @@ public class PlayerManager : MonoBehaviour
             if (Input.GetKeyUp(KeyCode.Escape))
             {
                 CancelPlacingGameObject();
-                return; 
+                return;
             }
 
             if (Input.GetMouseButtonDown(0))
             {
                 if (footprintCollisionHandler.isColliding)
-                    HandleIntentToPlaceDownOnBlockedSpace(); 
-                else 
+                    HandleIntentToPlaceDownOnBlockedSpace();
+                else
                     CompletePlacingGameObject();
 
-                return; 
+                return;
             }
-            
 
-            return; 
+
+            return;
         }
 
 
         if (interactionState == InteractionState.InMenu)
         {
-            if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.E)) 
+            if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.E))
                 CloseMenu(buildingMenu);
 
-            return; 
+            return;
         }
-        
+
 
         // If not supported state 
         Debug.LogError("Unsupported interaction state ");
-                
+
     }
 
 
@@ -147,7 +156,29 @@ public class PlayerManager : MonoBehaviour
 
         if (interactionState == InteractionState.Hovering)
         {
-            MakeHoverRaycast(); 
+            MakeHoverRaycast();
+
+            // nothing hovered --> something hovered 
+            if (hoveredGameObject != null &&
+                previouslyHoveredGameObject == null)
+            {
+                OnHoveringStart.Invoke();
+            }
+            // something hovered --> nothing hovered 
+            else if (hoveredGameObject == null &&
+                previouslyHoveredGameObject != null)
+            {
+                OnHoveringEnd.Invoke();
+            }
+            // something hovered --> something else hovered 
+            else if (hoveredGameObject != previouslyHoveredGameObject)
+            {
+                OnHoveringEnd.Invoke();
+                OnHoveringStart.Invoke();
+            }
+
+            previouslyHoveredGameObject = hoveredGameObject;
+
             return;
         }
 
@@ -157,10 +188,10 @@ public class PlayerManager : MonoBehaviour
             MakePlacingPreviewRaycast();
 
             if (electricCollisionHandler == null)
-                return; 
+                return;
 
             if (electricCollisionHandler.isColliding)
-                Debug.Log("The gameObject, which gets placed, is currently colliding! "); 
+                Debug.Log("The gameObject, which gets placed, is currently colliding! ");
 
             return;
         }
@@ -168,13 +199,13 @@ public class PlayerManager : MonoBehaviour
 
         if (interactionState == InteractionState.InMenu)
         {
-            return; 
+            return;
         }
 
 
         // If not supported state 
         Debug.LogError("Unsupported interaction state ");
-    } 
+    }
 
 
     private void MakeHoverRaycast()
@@ -184,7 +215,7 @@ public class PlayerManager : MonoBehaviour
         // Make raycast and return, if nothing was hit 
         if (!Physics.Raycast(hoverRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
         {
-            ClearHover(); 
+            ClearHover();
             return;
         }
 
@@ -193,7 +224,7 @@ public class PlayerManager : MonoBehaviour
         hoveredSelector = hoveredGameObject.GetComponent<Selector>();
 
         if (hoveredSelector == null)
-            Debug.LogError("Hit object " + gameObject + " has no Selector component! "); 
+            Debug.LogError("Hit object " + gameObject + " has no Selector component! ");
     }
 
 
@@ -214,12 +245,12 @@ public class PlayerManager : MonoBehaviour
         // If the selected object is already in selection, remove it from it 
         else if (selectedGameObject == gameObject)
             ClearSelection();
-        
+
         // Else clear the selection and select the current game object 
         else
         {
             ClearSelection();
-            Select(gameObject); 
+            Select(gameObject);
         }
     }
 
@@ -227,14 +258,14 @@ public class PlayerManager : MonoBehaviour
     private void ClearSelection()
     {
         selectedGameObject.GetComponent<Selector>().Deselect();
-        selectedGameObject = null; 
+        selectedGameObject = null;
     }
 
 
     private void Select(GameObject gameObject)
     {
         gameObject.GetComponent<Selector>().Select();
-        selectedGameObject = gameObject; 
+        selectedGameObject = gameObject;
     }
 
 
@@ -245,14 +276,14 @@ public class PlayerManager : MonoBehaviour
         if (selectedGameObject == null)
         {
             objectName = "";
-            objectDescription = ""; 
+            objectDescription = "";
         } else
         {
-            objectName = selectedGameObject.GetComponent<Descriptor>().objectName; 
+            objectName = selectedGameObject.GetComponent<Descriptor>().objectName;
             objectDescription = selectedGameObject.GetComponent<Descriptor>().description;
         }
 
-        hudDisplayer.RefreshContent(objectName, objectDescription); 
+        hudDisplayer.RefreshContent(objectName, objectDescription);
     }
 
 
@@ -264,7 +295,7 @@ public class PlayerManager : MonoBehaviour
             return;
 
         placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x, gridCellDimensions.x);
-        placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z, gridCellDimensions.y); 
+        placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z, gridCellDimensions.y);
 
         gameObjectToBePlaced.transform.position = placementPosition;
     }
@@ -285,10 +316,10 @@ public class PlayerManager : MonoBehaviour
 
         // If there is no ElectricNetworkNodeCollider attached to the gameObject 
         if (electricNetworkNodeCollider == null)
-            return; 
+            return;
 
         electricCollisionHandler = electricNetworkNodeCollider.GetComponent<CollisionHandler>();
-        electricCollisionHandler.colliderIntersectingIsCurrentlyActive = true; 
+        electricCollisionHandler.colliderIntersectingIsCurrentlyActive = true;
     }
 
 
@@ -297,7 +328,7 @@ public class PlayerManager : MonoBehaviour
         if (electricCollisionHandler != null)
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
 
-        UnlinkFootprintColliderHandlerToModelDyerMaterialChanging(); 
+        UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
         interactionState = InteractionStateDefault;
         Destroy(gameObjectToBePlaced);
         modelDyer = null;
@@ -308,13 +339,13 @@ public class PlayerManager : MonoBehaviour
         if (electricCollisionHandler != null)
         {
             ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
-            electricNetworkManager.HandleElectricNetworkNodeAddOn(electricNetworkConnector, electricCollisionHandler); 
+            electricNetworkManager.HandleElectricNetworkNodeAddOn(electricNetworkConnector, electricCollisionHandler);
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
         }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
         interactionState = InteractionStateDefault;
-        modelDyer.ChangeMaterialsBackToInitial(); 
+        modelDyer.ChangeMaterialsBackToInitial();
         gameObjectToBePlaced = null;
         modelDyer = null;
     }
@@ -323,20 +354,20 @@ public class PlayerManager : MonoBehaviour
     private void OpenMenu(MenuManager menuManager)
     {
         menuManager.ShowMenu();
-        interactionState = InteractionState.InMenu; 
+        interactionState = InteractionState.InMenu;
     }
 
 
     public void CloseMenu(MenuManager menuManager)
     {
         menuManager.HideMenu();
-        ResetInteractionState(); 
+        ResetInteractionState();
     }
 
 
     private void ResetInteractionState()
     {
-        interactionState = InteractionStateDefault; 
+        interactionState = InteractionStateDefault;
     }
 
 
@@ -353,7 +384,7 @@ public class PlayerManager : MonoBehaviour
 
     private void HandleIntentToPlaceDownOnBlockedSpace()
     {
-        Debug.Log("You cannot place " + gameObjectToBePlaced + " here. "); 
+        Debug.Log("You cannot place " + gameObjectToBePlaced + " here. ");
     }
 
 
@@ -368,6 +399,20 @@ public class PlayerManager : MonoBehaviour
     {
         footprintCollisionHandler.OnCollisionHandlerEnter.RemoveListener(modelDyer.ChangeMaterialsToNegativeHover);
         footprintCollisionHandler.OnCollisionHandlerExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
+    }
+
+
+    private void OnHoveringStarted()
+    {
+        hoveredSelector.Hover();
+        Debug.Log("Hover started on object " + hoveredGameObject);
+    }
+
+
+    private void OnHoveringEnded()
+    {
+        previouslyHoveredGameObject.GetComponent<Selector>().Unhover();
+        Debug.Log("Hover ended on object " + previouslyHoveredGameObject);
     }
 
 }
