@@ -31,6 +31,10 @@ public class GameHUDDisplayer : MonoBehaviour
                 stateIndicator.currentState = UIStateIndicator.IndicatorState.Placing;
                 break;
 
+            case InteractionState.Demolishing: 
+                stateIndicator.currentState = UIStateIndicator.IndicatorState.Demolishing;
+                break; 
+
             default:
                 Debug.Log("Unsupported Interaction State in " + gameObject);
                 break; 

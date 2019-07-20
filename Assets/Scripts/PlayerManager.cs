@@ -35,16 +35,22 @@ public class PlayerManager : MonoBehaviour
     private CollisionHandler electricCollisionHandler;
 
 
+    // Demolishing 
+    private Ray demolishingPreviewRay;
+    private RaycastHit demolishingPreviewHit;
+    private GameObject demolishingPreviewGameObject; 
+
     private GameHUDDisplayer hudDisplayer;
     private InteractionState currentInteractionState;
     private InteractionState previousInteractionState; 
     private const InteractionState InteractionStateDefault = InteractionState.Hovering;
-
+    
 
     public UnityEvent OnHoveringStart;
     public UnityEvent OnHoveringEnd;
-    public InteractionStateEvent OnInteractionStateChanged; 
-
+    public InteractionStateEvent OnInteractionStateEntered; 
+    public InteractionStateEvent OnInteractionStateLeft; 
+    
 
     void Start()
     {
@@ -56,8 +62,9 @@ public class PlayerManager : MonoBehaviour
 
         OnHoveringStart.AddListener(OnHoveringStarted);
         OnHoveringEnd.AddListener(OnHoveringEnded);
-        OnInteractionStateChanged.AddListener(HandleInteractionStateChange);
-        OnInteractionStateChanged.AddListener(hudDisplayer.DisplayStateIndicatorFor); 
+        OnInteractionStateEntered.AddListener(hudDisplayer.DisplayStateIndicatorFor);
+        OnInteractionStateEntered.AddListener(HandleInteractionStateEntered);
+        OnInteractionStateLeft.AddListener(HandleInteractionStateLeft); 
     }
 
 
@@ -67,8 +74,12 @@ public class PlayerManager : MonoBehaviour
         HandleCurrentInteractionState(); 
 
         if (currentInteractionState != previousInteractionState)
-            OnInteractionStateChanged.Invoke(currentInteractionState); 
+        {
+            OnInteractionStateEntered.Invoke(currentInteractionState);
+            OnInteractionStateLeft.Invoke(previousInteractionState); 
+        }
 
+        previouslyHoveredGameObject = hoveredGameObject;
         previousInteractionState = currentInteractionState; 
     }
 
@@ -76,7 +87,17 @@ public class PlayerManager : MonoBehaviour
     private void SwitchInteractionStateIfNecessary()
     {
         if (Input.GetKeyUp(KeyCode.E))
+        {
             OpenMenu(buildingMenu);
+            return; 
+        }
+
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            StartDemolishingOnClick();
+            Debug.Log("Start demolishing! "); 
+            return;
+        }
     }
 
 
@@ -145,106 +166,154 @@ public class PlayerManager : MonoBehaviour
             return;
         }
 
+        if (currentInteractionState == InteractionState.Demolishing)
+        {
+            if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.R))
+                StopDemolishingOnClick();
+
+            if (Input.GetMouseButtonDown(0))
+                if (demolishingPreviewGameObject != null)
+                    Demolish(demolishingPreviewGameObject); 
+            
+            return; 
+        }
 
         // If not supported state 
         Debug.LogError("Unsupported interaction state ");
 
     }
-
+    
 
     private void HandleCurrentInteractionState()
     {
 
-        if (currentInteractionState == InteractionState.Hovering)
+        switch(currentInteractionState)
         {
-            MakeHoverRaycast();
+            case InteractionState.Hovering:
+                HandleHovering();
+                break;
 
-            // nothing hovered --> something hovered 
-            if (hoveredGameObject != null &&
-                previouslyHoveredGameObject == null)
-            {
-                OnHoveringStart.Invoke();
-            }
-            // something hovered --> nothing hovered 
-            else if (hoveredGameObject == null &&
-                previouslyHoveredGameObject != null)
-            {
-                OnHoveringEnd.Invoke();
-            }
-            // something hovered --> something else hovered 
-            else if (hoveredGameObject != previouslyHoveredGameObject)
-            {
-                OnHoveringEnd.Invoke();
-                OnHoveringStart.Invoke();
-            }
+            case InteractionState.Placing:
+                HandlePlacing();
+                break;
 
-            previouslyHoveredGameObject = hoveredGameObject;
+            case InteractionState.InMenu:
+                break;
 
-            return;
+            case InteractionState.Demolishing:
+                HandleHovering(); 
+                //HandleDemolishing();
+                break;
+
+            default:
+                Debug.LogError("Unsupported interaction state ");
+                break; 
+        }
+        
+    }
+
+
+    private void HandleHovering()
+    {
+        MakeHoverRaycast();
+
+        // nothing hovered --> something hovered 
+        if (hoveredGameObject != null &&
+            previouslyHoveredGameObject == null)
+        {
+            OnHoveringStart.Invoke();
+        }
+        // something hovered --> nothing hovered 
+        else if (hoveredGameObject == null &&
+            previouslyHoveredGameObject != null)
+        {
+            OnHoveringEnd.Invoke();
+        }
+        // something hovered --> something else hovered 
+        else if (hoveredGameObject != previouslyHoveredGameObject)
+        {
+            OnHoveringEnd.Invoke();
+            OnHoveringStart.Invoke();
         }
 
+    }
 
-        if (currentInteractionState == InteractionState.Placing)
-        {
-            MakePlacingPreviewRaycast();
 
-            if (electricCollisionHandler == null)
-                return;
+    private void HandlePlacing()
+    {
+        MakePlacingPreviewRaycast();
 
-            if (electricCollisionHandler.isColliding)
-                Debug.Log("The gameObject, which gets placed, is currently colliding! ");
-
+        if (electricCollisionHandler == null)
             return;
-        }
+
+        if (electricCollisionHandler.isColliding)
+            Debug.Log("The gameObject, which gets placed, is currently colliding! ");
+    }
 
 
-        if (currentInteractionState == InteractionState.InMenu)
-        {
-            return;
-        }
+    private void MakeDemolishingPreview()
+    {
+        demolishingPreviewGameObject = hoveredGameObject;
+        demolishingPreviewGameObject.GetComponent<ModelDyer>().ChangeMaterialsToNegativeHover();
+    }
 
 
-        // If not supported state 
-        Debug.LogError("Unsupported interaction state ");
+    private void HideDemolishingPreview()
+    {
+        demolishingPreviewGameObject.GetComponent<ModelDyer>().ChangeMaterialsBackToInitial();
+        demolishingPreviewGameObject = null; 
     }
 
 
     // Is called every time, the state changes 
-    private void HandleInteractionStateChange(InteractionState state)
+    private void HandleInteractionStateEntered(InteractionState enteredState)
     {
-
-        if (state == InteractionState.Hovering)
+        switch (enteredState)
         {
-            // Temporarily removes display of hover display 
-            if (hoveredSelector != null)
-                hoveredSelector.Hover();
+            case InteractionState.Hovering:
+                // Used, when state is changed and display of hover is temporarily removed (?) 
+                if (hoveredSelector != null)
+                    hoveredSelector.Hover();
+                break;
 
-            return;
+            case InteractionState.Placing:
+            case InteractionState.InMenu:
+                break;
+
+            case InteractionState.Demolishing:
+                OnHoveringStart.AddListener(MakeDemolishingPreview);
+                OnHoveringEnd.AddListener(HideDemolishingPreview);
+                break; 
+
+            default:
+                Debug.LogError("Unsupported interaction state ");
+                break;
         }
+    }
 
 
-        if (state == InteractionState.Placing)
+    private void HandleInteractionStateLeft(InteractionState lastState)
+    {
+        switch (lastState)
         {
-            // Temporarily removes display of hover display 
-            if (hoveredSelector != null) 
-                hoveredSelector.Unhover(); 
-            
-            return;
+            case InteractionState.Hovering:
+                if (hoveredSelector != null)
+                    hoveredSelector.Unhover();
+                break;
+
+            case InteractionState.Placing: 
+            case InteractionState.InMenu: 
+                break;
+
+            case InteractionState.Demolishing:
+                OnHoveringStart.RemoveListener(MakeDemolishingPreview);
+                OnHoveringEnd.RemoveListener(HideDemolishingPreview);
+                break; 
+
+            default:
+                Debug.LogError("Unsupported interaction state ");
+                break; 
         }
-
-
-        if (state == InteractionState.InMenu)
-        {
-            // Temporarily removes display of hover display 
-            if (hoveredSelector != null)
-                hoveredSelector.Unhover();
-            
-            return;
-        }
-
-
-        // If not supported state 
-        Debug.LogError("Unsupported interaction state ");
     }
 
 
@@ -374,6 +443,7 @@ public class PlayerManager : MonoBehaviour
         modelDyer = null;
     }
 
+
     public void CompletePlacingGameObject()
     {
         if (electricCollisionHandler != null)
@@ -441,7 +511,7 @@ public class PlayerManager : MonoBehaviour
         footprintCollisionHandler.OnCollisionHandlerExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
     }
 
-
+    
     private void OnHoveringStarted()
     {
         hoveredSelector.Hover();
@@ -453,6 +523,24 @@ public class PlayerManager : MonoBehaviour
     {
         previouslyHoveredGameObject.GetComponent<Selector>().Unhover();
         Debug.Log("Hover ended on object " + previouslyHoveredGameObject);
+    } 
+
+
+    private void StartDemolishingOnClick()
+    {
+        currentInteractionState = InteractionState.Demolishing; 
+    }
+
+
+    private void StopDemolishingOnClick()
+    {
+        currentInteractionState = InteractionStateDefault;
+    }
+    
+
+    private void Demolish(GameObject gameObject)
+    {
+        gameObject.SetActive(false); 
     }
 
 }

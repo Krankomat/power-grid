@@ -8,5 +8,6 @@ public enum InteractionState
 {
     Hovering,
     Placing,
+    Demolishing, 
     InMenu
 }
