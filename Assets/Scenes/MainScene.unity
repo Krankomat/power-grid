@@ -494,6 +494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2104e4e86bbdb9f42a75ded402c6f863, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cablePrefab: {fileID: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

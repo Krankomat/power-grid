@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &847501100680557481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1927214840928361231}
+  m_Layer: 0
+  m_Name: ConnectionPointA
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1927214840928361231
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847501100680557481}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.255, y: 0.5, z: 0.226}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4162735991359794248}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1497552468070522434
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,6 +157,8 @@ Transform:
   - {fileID: 3557139566683264378}
   - {fileID: 1922628362232391337}
   - {fileID: 3983426325323926851}
+  - {fileID: 1927214840928361231}
+  - {fileID: 7114424820111180245}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -203,6 +235,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 848b4bc07596c4e46880c670f3323876, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cableConnectionPrefab: {fileID: 1815557656542328517, guid: bbde3bb7505b7cf4f8294c1d4cd55536,
+    type: 3}
+  connectionPointA: {fileID: 1927214840928361231}
+  connectionPointB: {fileID: 7114424820111180245}
+  connectedNetworkString: 
+  connectedNodes: []
+  cableConnections: []
 --- !u!1 &1854403504025499616
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,6 +781,36 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4887832609567293044
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7114424820111180245}
+  m_Layer: 0
+  m_Name: ConnectionPointB
+  m_TagString: Untagged
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7114424820111180245
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4887832609567293044}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.006, y: 0.5, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4162735991359794248}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5498947523972553128
 GameObject:
   m_ObjectHideFlags: 0

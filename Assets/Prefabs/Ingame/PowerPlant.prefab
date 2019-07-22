@@ -682,6 +682,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &4216155505286207628
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1181292503233495113}
+  m_Layer: 0
+  m_Name: ConnectionPointB
+  m_TagString: Untagged
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1181292503233495113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4216155505286207628}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.46, y: 0.428, z: -0.763}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1957177899182568868}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4716674541374736900
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,6 +804,36 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!1 &4755515656194126470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7610626579221738082}
+  m_Layer: 0
+  m_Name: ConnectionPointA
+  m_TagString: Untagged
+  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7610626579221738082
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4755515656194126470}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.191, y: 0.428, z: -0.88}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1957177899182568868}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5268613933254227941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1468,6 +1528,8 @@ Transform:
   - {fileID: 8043710538393025639}
   - {fileID: 246429196502885791}
   - {fileID: 2925705936416294505}
+  - {fileID: 7610626579221738082}
+  - {fileID: 1181292503233495113}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1544,6 +1606,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 848b4bc07596c4e46880c670f3323876, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cableConnectionPrefab: {fileID: 1815557656542328517, guid: bbde3bb7505b7cf4f8294c1d4cd55536,
+    type: 3}
+  connectionPointA: {fileID: 7610626579221738082}
+  connectionPointB: {fileID: 1181292503233495113}
+  connectedNetworkString: 
+  connectedNodes: []
+  cableConnections: []
 --- !u!1 &8805727288152118520
 GameObject:
   m_ObjectHideFlags: 0
