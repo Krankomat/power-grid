@@ -102,4 +102,10 @@ public class MathUtil
     }
     #endregion
 
+
+    public static Vector3 Midpoint(Vector3 pointA, Vector3 pointB)
+    {
+        return (pointA + pointB) / 2; 
+    }
+
 }
