@@ -15,8 +15,9 @@ public class ElectricNetworkCableConnection : MonoBehaviour
 
     private void Awake()
     {
-        cableA = Instantiate(cablePrefab);
-        cableB = Instantiate(cablePrefab);
+        cableA = Instantiate(cablePrefab, gameObject.transform);
+        cableB = Instantiate(cablePrefab, gameObject.transform); 
+
     }
     
 
@@ -24,6 +25,8 @@ public class ElectricNetworkCableConnection : MonoBehaviour
     {
         cableA.GetComponent<CableDrawer>().SetTransforms(startConnector.connectionPointA, endConnector.connectionPointA); 
         cableB.GetComponent<CableDrawer>().SetTransforms(startConnector.connectionPointB, endConnector.connectionPointB);
+
+        gameObject.transform.position = MathUtil.Midpoint(startConnector.transform.position, endConnector.transform.position); 
     }
 
 }
