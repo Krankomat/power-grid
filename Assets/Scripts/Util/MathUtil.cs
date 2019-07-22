@@ -44,30 +44,62 @@ public class MathUtil
         return steppedNumber; 
     }
 
-    
-    public Vector3 SampleParabola(Vector3 start, Vector3 end, float height, float t)
+
+    // based on: https://forum.unity.com/threads/generating-dynamic-parabola.211681/ 
+    // author: hpjohn, edited by JOHNMCLAY 
+    // date: Nov 20, 2013 (edited: Jun 19, 2015) 
+
+    #region Parabola sampling function
+    /// <summary>
+    /// Get position from a parabola defined by start and end, height, and time
+    /// </summary>
+    /// <param name='start'>
+    /// The start point of the parabola
+    /// </param>
+    /// <param name='end'>
+    /// The end point of the parabola
+    /// </param>
+    /// <param name='height'>
+    /// The height of the parabola at its maximum
+    /// </param>
+    /// <param name='t'>
+    /// Normalized time (0->1)
+    /// </param>
+
+    public static Vector3 Parabola(Vector3 start, Vector3 end, float height, float t, bool isAlignedToLevelDirection = false)
     {
+        Vector3 travelDirection, levelDirection, upDirection, rightDirection, result;
         float parabolicT = t * 2 - 1;
-        if (Mathf.Abs(start.y - end.y) < 0.1f)
+        bool startAndEndAreRoughlyLevel = Mathf.Abs(start.y - end.y) < 0.1f;
+
+
+        travelDirection = end - start;
+
+        //simpler solution with less steps, if start and end are roughly on same level (y axis) 
+        if (startAndEndAreRoughlyLevel)
         {
-            //start and end are roughly level, pretend they are - simpler solution with less steps
-            Vector3 travelDirection = end - start;
-            Vector3 result = start + t * travelDirection;
+            result = start + t * travelDirection;
             result.y += (-parabolicT * parabolicT + 1) * height;
             return result;
         }
+
+        //start and end are not level (more complex solution) 
+        levelDirection = end - new Vector3(start.x, end.y, start.z);
+        rightDirection = Vector3.Cross(travelDirection, levelDirection);
+
+        if (isAlignedToLevelDirection)
+            upDirection = Vector3.Cross(rightDirection, levelDirection);
         else
-        {
-            //start and end are not level, gets more complicated
-            Vector3 travelDirection = end - start;
-            Vector3 levelDirecteion = end - new Vector3(start.x, end.y, start.z);
-            Vector3 right = Vector3.Cross(travelDirection, levelDirecteion);
-            Vector3 up = Vector3.Cross(right, travelDirection);
-            if (end.y > start.y) up = -up;
-            Vector3 result = start + t * travelDirection;
-            result += ((-parabolicT * parabolicT + 1) * height) * up.normalized;
-            return result;
-        }
+            upDirection = Vector3.Cross(rightDirection, travelDirection);
+
+        if (end.y > start.y)
+            upDirection = -upDirection;
+
+        result = start + t * travelDirection;
+        result += ((-parabolicT * parabolicT + 1) * height) * upDirection.normalized;
+
+        return result;
     }
-    
+    #endregion
+
 }
