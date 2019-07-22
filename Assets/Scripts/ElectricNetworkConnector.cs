@@ -5,10 +5,14 @@ using UnityEngine;
 // Synonym: ElectricNetworkNode 
 public class ElectricNetworkConnector : MonoBehaviour
 {
-    
+
+    public GameObject cableConnectionPrefab; 
+    public Transform connectionPointA;
+    public Transform connectionPointB; 
     public ElectricNetwork connectedNetwork = null;
     /* for debugging */ public string connectedNetworkString; 
-    /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes; 
+    /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes;
+    public List<ElectricNetworkCableConnection> cableConnections; 
 
 
     private enum RoleInElectricityNetwork
@@ -19,7 +23,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     }
 
 
-    private void Awake()
+    private void  Awake()
     {
         connectedNodes = new List<ElectricNetworkConnector>(); 
     }
@@ -65,7 +69,20 @@ public class ElectricNetworkConnector : MonoBehaviour
         }
 
         connectedNodes.Add(targetConnector);
-        targetConnector.connectedNodes.Add(this); 
+        targetConnector.connectedNodes.Add(this);
+
+        CreateCableConnectionTo(targetConnector); 
+    }
+
+
+    public void CreateCableConnectionTo(ElectricNetworkConnector targetConnector)
+    {
+        GameObject cableConnectionGameObject = Instantiate(cableConnectionPrefab);
+        ElectricNetworkCableConnection cableConnection = 
+                cableConnectionGameObject.GetComponent<ElectricNetworkCableConnection>(); 
+
+        cableConnection.Connect(this, targetConnector); 
+        cableConnections.Add(cableConnection); 
     }
 
 }

@@ -6,7 +6,8 @@ using UnityEngine;
 public class ElectricNetworkManager : MonoBehaviour
 {
 
-    [HideInInspector] public List<ElectricNetwork> electricNetworks; 
+    public GameObject cablePrefab; 
+    public List<ElectricNetwork> electricNetworks; 
 
     private ElectricNetworkConnector newlyAddedConnector;
     private ElectricNetworkConnector[] interactedConnectors; 

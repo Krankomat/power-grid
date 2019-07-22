@@ -34,4 +34,19 @@ public class CableDrawer : MonoBehaviour
         cableModel.transform.localScale = new Vector3(direction.magnitude / cableModelLength, 1, 1); 
     }
     #endif
+
+
+    public void SetPositions(Vector3 start, Vector3 end)
+    {
+        startPoint.position = start;
+        endPoint.position = end;
+    }
+
+
+    public void SetTransforms(Transform start, Transform end)
+    {
+        startPoint = start;
+        endPoint = end;
+    }
+
 }
