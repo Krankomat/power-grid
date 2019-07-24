@@ -429,13 +429,18 @@ public class PlayerManager : MonoBehaviour
 
         electricCollisionHandler = electricNetworkNodeCollider.GetComponent<CollisionHandler>();
         electricCollisionHandler.colliderIntersectingIsCurrentlyActive = true;
+
+        LinkElectricColliderToCablePreview(); 
     }
 
 
     public void CancelPlacingGameObject()
     {
         if (electricCollisionHandler != null)
+        {
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
+
+        }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
         currentInteractionState = InteractionStateDefault;
@@ -543,4 +548,29 @@ public class PlayerManager : MonoBehaviour
         gameObject.SetActive(false); 
     }
 
+
+    private void LinkElectricColliderToCablePreview()
+    {
+        electricCollisionHandler.OnCollisionHandlerEnter.AddListener(UpdateCablePreview);
+        electricCollisionHandler.OnCollisionHandlerExit.AddListener(UpdateCablePreview);
+    }
+
+
+    private void UnlinkElectricColliderFromCablePreview()
+    {
+        electricCollisionHandler.OnCollisionHandlerEnter.RemoveListener(UpdateCablePreview);
+        electricCollisionHandler.OnCollisionHandlerExit.RemoveListener(UpdateCablePreview);
+    }
+
+
+    private void UpdateCablePreview()
+    {
+        ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
+
+        // First, clear all preview cables 
+        electricNetworkManager.ClearPreviewCablesOf(electricNetworkConnector); 
+
+        // Then add them for each electric node collider 
+        electricNetworkManager.ShowPreviewOfElectricNetworkNodeAddOn(electricNetworkConnector, electricCollisionHandler); 
+    }
 }

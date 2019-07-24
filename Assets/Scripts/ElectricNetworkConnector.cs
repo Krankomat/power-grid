@@ -12,7 +12,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     public ElectricNetwork connectedNetwork = null;
     /* for debugging */ public string connectedNetworkString; 
     /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes;
-    public List<ElectricNetworkCableConnection> cableConnections; 
+    public List<ElectricNetworkCableConnection> cableConnections;
 
 
     private enum RoleInElectricityNetwork
@@ -81,7 +81,7 @@ public class ElectricNetworkConnector : MonoBehaviour
         ElectricNetworkCableConnection cableConnection = 
                 cableConnectionGameObject.GetComponent<ElectricNetworkCableConnection>(); 
 
-        cableConnection.Connect(this, targetConnector); 
+        cableConnection.Connect(this, targetConnector);
         cableConnections.Add(cableConnection); 
     }
 

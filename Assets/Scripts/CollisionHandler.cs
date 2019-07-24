@@ -32,14 +32,15 @@ public class CollisionHandler : MonoBehaviour
     // Detects, if isColliding changes state from one frame to another 
     private void Update()
     {
-        if (previousIsColliding == false && isColliding == true)
-            OnCollisionHandlerEnter.Invoke(); 
-        else if (previousIsColliding == true & isColliding == false)
+        if (previousIsColliding == true & isColliding == false)
             OnCollisionHandlerExit.Invoke();
 
         if (isRegisteringColliderIntersections && colliderIntersectingIsCurrentlyActive) 
             if (isColliding) 
-                HandleIntersectingColliders(); 
+                HandleIntersectingColliders();
+
+        if (previousIsColliding == false && isColliding == true)
+            OnCollisionHandlerEnter.Invoke();
 
         previousIsColliding = isColliding; 
     }

@@ -10,12 +10,14 @@ public class ElectricNetworkManager : MonoBehaviour
     public List<ElectricNetwork> electricNetworks; 
 
     private ElectricNetworkConnector newlyAddedConnector;
-    private ElectricNetworkConnector[] interactedConnectors; 
+    private ElectricNetworkConnector[] interactedConnectors;
+    private List<ElectricNetworkCableConnection> previewCables; 
 
 
     private void Awake()
     {
-        electricNetworks = new List<ElectricNetwork>(); 
+        electricNetworks = new List<ElectricNetwork>();
+        previewCables = new List<ElectricNetworkCableConnection>(); 
     }
 
 
@@ -65,6 +67,17 @@ public class ElectricNetworkManager : MonoBehaviour
         foreach (ElectricNetworkConnector connector in interactedConnectors)
             connector.ConnectBothSidedTo(newlyAddedConnector); 
 
+    }
+
+
+    public void ShowPreviewOfElectricNetworkNodeAddOn(ElectricNetworkConnector previewConnector, CollisionHandler electricCollisionHandler)
+    {
+        interactedConnectors = GetInteractedNetworkNodes(previewConnector, electricCollisionHandler.intersectingColliders);
+
+        foreach (ElectricNetworkConnector connector in interactedConnectors)
+            previewConnector.CreateCableConnectionTo(connector);
+
+        previewCables.AddRange(previewConnector.cableConnections); 
     }
 
 
@@ -201,6 +214,26 @@ public class ElectricNetworkManager : MonoBehaviour
     private void SortElectricNetworks()
     {
         electricNetworks = ElectricNetwork.SortBySize(electricNetworks); 
+    }
+
+
+    public void ClearPreviewCablesOf(ElectricNetworkConnector previewConnector)
+    {
+        if (previewCables.Count == 0)
+            return; 
+
+        //foreach (ElectricNetworkCableConnection cableConnection in previewCables)
+        //    Destroy(cableConnection.gameObject);
+        //
+        //previewCables.Clear(); 
+
+        for (int i = previewCables.Count -1; i >= 0; i--)
+        {
+            previewConnector.cableConnections.Clear(); 
+            Destroy(previewCables[i].gameObject); 
+            previewCables.RemoveAt(i); 
+        }
+
     }
 
 }

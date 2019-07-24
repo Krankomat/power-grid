@@ -7,7 +7,7 @@ public class ElectricNetworkCableConnection : MonoBehaviour
 
     public GameObject cablePrefab;
     public ElectricNetworkConnector connectorA;
-    public ElectricNetworkConnector connectorB;
+    public ElectricNetworkConnector connectorB; 
 
     private GameObject cableA;
     private GameObject cableB;
