@@ -398,13 +398,15 @@ public class PlayerManager : MonoBehaviour
 
     private void MakePlacingPreviewRaycast()
     {
+        Vector2Int footprint = gameObjectToBePlaced.GetComponent<Descriptor>().footprint;
+        Vector3 offset = GetFootprintOffsetFrom(footprint); 
         placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
             return;
 
-        placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x, gridCellDimensions.x);
-        placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z, gridCellDimensions.y);
+        placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x + offset.x, gridCellDimensions.x) - offset.x; 
+        placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z + offset.z, gridCellDimensions.y) - offset.z;
 
         gameObjectToBePlaced.transform.position = placementPosition;
     }
@@ -483,6 +485,17 @@ public class PlayerManager : MonoBehaviour
     private void ResetInteractionState()
     {
         currentInteractionState = InteractionStateDefault;
+    }
+
+
+    private static Vector3 GetFootprintOffsetFrom(Vector2Int footprint)
+    {
+        Vector3 offset = new Vector3();
+
+        offset.x = ((float)(footprint.x % 2) / 2); 
+        offset.z = ((float)(footprint.y % 2) / 2);
+
+        return offset; 
     }
 
 
