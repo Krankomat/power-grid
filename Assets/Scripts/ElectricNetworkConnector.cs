@@ -54,6 +54,27 @@ public class ElectricNetworkConnector : MonoBehaviour
     }
 
 
+    public void RemoveBothSidedFromNetwork()
+    {
+        if (connectedNetwork == null)
+        {
+            Debug.LogError("This ElectricnetworkConnector does not have a electric network, even though it should, " +
+                    "because RemoveBothSidedFromNetwork() is called. ");
+            return; 
+        }
+
+        if (!connectedNetwork.connectedNodes.Contains(this))
+        {
+            Debug.LogError("This ElectricNetworkConnector has a connection listed to a network, " +
+                    "but the network itself does not have a connection to the connector. "); 
+            return; 
+        }
+
+        connectedNetwork.connectedNodes.Remove(this); 
+        connectedNetwork = null; 
+    }
+
+
     public void ConnectBothSidedTo(ElectricNetworkConnector targetConnector)
     {
         if (connectedNodes.Contains(targetConnector))
@@ -71,7 +92,27 @@ public class ElectricNetworkConnector : MonoBehaviour
         connectedNodes.Add(targetConnector);
         targetConnector.connectedNodes.Add(this);
 
-        CreateCableConnectionTo(targetConnector); 
+        CreateCableConnectionTo(targetConnector);
+    }
+
+
+    public void RemoveBothSidedFrom(ElectricNetworkConnector targetConnector)
+    {
+        if (!connectedNodes.Contains(targetConnector))
+        {
+            Debug.LogError("This connector does not contain the target connector as connected node, even tough it should. ");
+            return; 
+        }
+
+        if (!targetConnector.connectedNodes.Contains(this))
+        {
+            Debug.LogError("The target connector does not contain this connector as connected node, even though it should. ");
+            return; 
+        }
+
+        targetConnector.connectedNodes.Remove(this);
+        connectedNodes.Remove(targetConnector); 
+
     }
 
 
@@ -81,8 +122,57 @@ public class ElectricNetworkConnector : MonoBehaviour
         ElectricNetworkCableConnection cableConnection = 
                 cableConnectionGameObject.GetComponent<ElectricNetworkCableConnection>(); 
 
+        // Ordering is important! ConnectorA should always be this connector! See RemoveCableConnectionFrom() for details. 
         cableConnection.Connect(this, targetConnector);
         cableConnections.Add(cableConnection); 
+    }
+
+
+    // It actually would be more efficient to create a dictionary with all connections at a singleton like the scene manager. 
+    // The problem is, that this actually makes it more complicated, because now non-static classes access a static class 
+    // for dynamically generated game objects. Because this seems careless at the moment, it is solved this (complicated) way. 
+    public void RemoveCableConnectionFrom(ElectricNetworkConnector targetConnector)
+    {
+        GameObject cableToBeRemoved = null;
+        ElectricNetworkCableConnection cableConnectionToBeRemoved = null;
+        bool cableWasNotConnectedToThisButToTargetConnector = false; 
+
+        // Either the cable is linked to this connector ... 
+        foreach (ElectricNetworkCableConnection cableConnection in cableConnections)
+            // Connector A should always be the the connector, which initially called the cable creation method. 
+            if (cableConnection.connectorB == targetConnector)
+            {
+                cableToBeRemoved = cableConnection.gameObject;
+                cableConnectionToBeRemoved = cableConnection;
+                break; 
+            }
+
+        // ... or the cable is linked to the target connector. 
+        if (cableToBeRemoved == null)
+            foreach (ElectricNetworkCableConnection cableConnection in targetConnector.cableConnections)
+                if (cableConnection.connectorB == this)
+                {
+                    cableToBeRemoved = cableConnection.gameObject;
+                    cableConnectionToBeRemoved = cableConnection;
+                    cableWasNotConnectedToThisButToTargetConnector = true; 
+                    break;
+                }
+
+        // But if there still is no cable, then there's a problem. 
+        if (cableToBeRemoved == null)
+        {
+            Debug.LogError("Cable connection could no be removed. " +
+                    "There is no cable connection between " + this + " and " + targetConnector + ". ");
+            return; 
+        }
+
+        // Actually destroy the connection 
+        if (cableWasNotConnectedToThisButToTargetConnector)
+            targetConnector.cableConnections.Remove(cableConnectionToBeRemoved);
+        else
+            cableConnections.Remove(cableConnectionToBeRemoved);
+
+        Destroy(cableToBeRemoved); 
     }
 
 }
