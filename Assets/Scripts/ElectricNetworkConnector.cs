@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 // Synonym: ElectricNetworkNode 
 public class ElectricNetworkConnector : MonoBehaviour
@@ -13,6 +14,9 @@ public class ElectricNetworkConnector : MonoBehaviour
     /* for debugging */ public string connectedNetworkString; 
     /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes;
     public List<ElectricNetworkCableConnection> cableConnections;
+
+
+    public UnityEvent OnConnectorDemolished; 
 
 
     private enum RoleInElectricityNetwork
@@ -140,7 +144,7 @@ public class ElectricNetworkConnector : MonoBehaviour
         // Either the cable is linked to this connector ... 
         foreach (ElectricNetworkCableConnection cableConnection in cableConnections)
             // Connector A should always be the the connector, which initially called the cable creation method. 
-            if (cableConnection.connectorB == targetConnector)
+            if (cableConnection.endConnector == targetConnector)
             {
                 cableToBeRemoved = cableConnection.gameObject;
                 cableConnectionToBeRemoved = cableConnection;
@@ -150,7 +154,7 @@ public class ElectricNetworkConnector : MonoBehaviour
         // ... or the cable is linked to the target connector. 
         if (cableToBeRemoved == null)
             foreach (ElectricNetworkCableConnection cableConnection in targetConnector.cableConnections)
-                if (cableConnection.connectorB == this)
+                if (cableConnection.endConnector == this)
                 {
                     cableToBeRemoved = cableConnection.gameObject;
                     cableConnectionToBeRemoved = cableConnection;
@@ -173,6 +177,13 @@ public class ElectricNetworkConnector : MonoBehaviour
             cableConnections.Remove(cableConnectionToBeRemoved);
 
         Destroy(cableToBeRemoved); 
+    }
+
+
+    public void Demolish()
+    {
+        OnConnectorDemolished.Invoke();
+        Destroy(this); 
     }
 
 }
