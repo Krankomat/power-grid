@@ -83,29 +83,27 @@ public class ElectricNetworkManager : MonoBehaviour
 
     public void HandleElectricNetworkNodeRemoval(ElectricNetworkConnector connectorToBeRemoved, CollisionHandler electricCollisionHandler)
     {
+        List<ElectricNetworkConnector> neighboringConnectorsThatWillRemainInANetwork = new List<ElectricNetworkConnector>();
+
+        neighboringConnectorsThatWillRemainInANetwork.AddRange(connectorToBeRemoved.connectedNodes);
         connectorToBeRemoved.RemoveBothSidedFromNetwork();
 
         // Reverse iteration, because the elements are removed while iterating through the collection. 
         for (int i = connectorToBeRemoved.connectedNodes.Count - 1; i >= 0; i--)
         {
             ElectricNetworkConnector connectedNode = connectorToBeRemoved.connectedNodes[i]; 
-            //connectorToBeRemoved.RemoveCableConnectionFrom(connectedNode);
             connectorToBeRemoved.RemoveBothSidedFrom(connectedNode);
 
-            if (connectedNode.connectedNodes.Count < 1)
+            if (connectedNode.connectedNodes.Count == 0)
             {
                 connectedNode.RemoveBothSidedFromNetwork();
+                neighboringConnectorsThatWillRemainInANetwork.Remove(connectedNode); 
             }
-            else if (connectedNode.connectedNodes.Count >= 2)
-            {
-                NetworkResolver networkResolver = new NetworkResolver();
-                ElectricNetwork resolvedNetwork = networkResolver.GetResolvedNetworkAt(connectedNode);
-                Debug.Log("The resolved network has " + resolvedNetwork.connectedNodes.Count + " nodes in it! ");
-            }
-
-            connectorToBeRemoved.Demolish();
         }
 
+        connectorToBeRemoved.Demolish();
+
+        HandleNeighboringConnectorsNetworkResolvement(neighboringConnectorsThatWillRemainInANetwork); 
     }
 
 
@@ -265,16 +263,87 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
+    private void HandleNeighboringConnectorsNetworkResolvement(List<ElectricNetworkConnector> neighboringConnectors)
+    {
+        bool allNeighborsAreConnectedWithEachOther = true;
+
+        // Case 1: There is only one neighbor 
+        if (neighboringConnectors.Count == 1)
+        {
+            ElectricNetworkConnector connector = neighboringConnectors[0];
+
+            if (connector.connectedNetwork.connectedNodes.Count < 2)
+                connector.RemoveBothSidedFromNetwork(); 
+
+            return; 
+        }
+
+        // Case 2: There are at least two neighbors and they are connected with each other 
+        foreach (ElectricNetworkConnector neighborA in neighboringConnectors)
+            foreach(ElectricNetworkConnector neighborB in neighboringConnectors)
+            {
+                if (neighborA == neighborB)
+                    continue; 
+
+                if (!neighborA.connectedNodes.Contains(neighborB))
+                {
+                    allNeighborsAreConnectedWithEachOther = false;
+                    break;
+                }
+            }
+        if (allNeighborsAreConnectedWithEachOther)
+            Debug.Log("All Neighbors (neighbor = node with at least one connected node) are connected with each other! "); 
+
+        if (allNeighborsAreConnectedWithEachOther) 
+            return; 
+
+        // Case 3: There are at least two neighbors and AT LEAST ONE is NOT connected with each other 
+        NetworkResolver networkResolver = new NetworkResolver();
+        List<ElectricNetwork> resolvedNetworks = networkResolver.GetResolvedElectricNetworksFor(neighboringConnectors);
+
+        for (int i = 0; i < resolvedNetworks.Count; i++) 
+            Debug.Log("Resolved network " + i + " : There are " + resolvedNetworks[i].connectedNodes.Count + " nodes in it! ");
+
+    }
+
+
     // Class to recursively resolve networks, when a connector is being removed 
     private class NetworkResolver
     {
+
         ElectricNetwork resolverNetwork = new ElectricNetwork();
 
-
+        
         public ElectricNetwork GetResolvedNetworkAt(ElectricNetworkConnector node)
         {
             TraverseNode(node);
             return resolverNetwork; 
+        }
+
+
+        public List<ElectricNetwork> GetResolvedElectricNetworksFor(List<ElectricNetworkConnector> nodes)
+        {
+            List<NetworkResolver> networkResolver = new List<NetworkResolver>(); 
+            List<ElectricNetwork> resolvedNetworks = new List<ElectricNetwork>();
+            List<ElectricNetworkConnector> nodesToBeTraversed = new List<ElectricNetworkConnector>();
+
+            nodesToBeTraversed.AddRange(nodes); 
+
+            ElectricNetworkConnector currentConnector = nodesToBeTraversed[0]; 
+            
+            while (nodesToBeTraversed.Count > 0)
+            {
+                ElectricNetworkConnector currentlyTraversedNode = nodesToBeTraversed[0];
+                NetworkResolver currentlyResolvedNetwork = new NetworkResolver();
+                
+                nodesToBeTraversed.Remove(currentlyTraversedNode);
+                currentlyResolvedNetwork.TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(
+                        currentlyTraversedNode, nodesToBeTraversed);
+
+                resolvedNetworks.Add(currentlyResolvedNetwork.resolverNetwork); 
+            }
+            
+            return resolvedNetworks; 
         }
 
 
@@ -289,6 +358,24 @@ public class ElectricNetworkManager : MonoBehaviour
                 TraverseNode(childNode); 
             }
         }
+
+        
+        private void TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(ElectricNetworkConnector node, 
+                                                                          List<ElectricNetworkConnector> subsequentlyTraversedNodes)
+        {
+            foreach (ElectricNetworkConnector childNode in node.connectedNodes)
+            {
+                if (subsequentlyTraversedNodes.Contains(childNode))
+                    subsequentlyTraversedNodes.Remove(childNode); 
+
+                if (resolverNetwork.connectedNodes.Contains(childNode))
+                    continue;
+
+                resolverNetwork.connectedNodes.Add(childNode);
+                TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(childNode, subsequentlyTraversedNodes);
+            }
+        }
+        
 
     }
 }
