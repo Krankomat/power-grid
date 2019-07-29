@@ -36,8 +36,9 @@ public class ElectricNetworkConnector : MonoBehaviour
     private void Update()
     {
         if (connectedNetwork == null)
-            return; 
-        connectedNetworkString = connectedNetwork.ToString(); 
+            connectedNetworkString = ""; 
+        else 
+            connectedNetworkString = connectedNetwork.ToString(); 
     }
 
 
