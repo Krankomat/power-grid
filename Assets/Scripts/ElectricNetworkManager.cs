@@ -91,7 +91,19 @@ public class ElectricNetworkManager : MonoBehaviour
             ElectricNetworkConnector connectedNode = connectorToBeRemoved.connectedNodes[i]; 
             //connectorToBeRemoved.RemoveCableConnectionFrom(connectedNode);
             connectorToBeRemoved.RemoveBothSidedFrom(connectedNode);
-            connectorToBeRemoved.Demolish(); 
+
+            if (connectedNode.connectedNodes.Count < 1)
+            {
+                connectedNode.RemoveBothSidedFromNetwork();
+            }
+            else if (connectedNode.connectedNodes.Count >= 2)
+            {
+                NetworkResolver networkResolver = new NetworkResolver();
+                ElectricNetwork resolvedNetwork = networkResolver.GetResolvedNetworkAt(connectedNode);
+                Debug.Log("The resolved network has " + resolvedNetwork.connectedNodes.Count + " nodes in it! ");
+            }
+
+            connectorToBeRemoved.Demolish();
         }
 
     }
@@ -252,4 +264,31 @@ public class ElectricNetworkManager : MonoBehaviour
 
     }
 
+
+    // Class to recursively resolve networks, when a connector is being removed 
+    private class NetworkResolver
+    {
+        ElectricNetwork resolverNetwork = new ElectricNetwork();
+
+
+        public ElectricNetwork GetResolvedNetworkAt(ElectricNetworkConnector node)
+        {
+            TraverseNode(node);
+            return resolverNetwork; 
+        }
+
+
+        private void TraverseNode(ElectricNetworkConnector node)
+        {
+            foreach (ElectricNetworkConnector childNode in node.connectedNodes)
+            {
+                if (resolverNetwork.connectedNodes.Contains(childNode))
+                    continue;
+
+                resolverNetwork.connectedNodes.Add(childNode);
+                TraverseNode(childNode); 
+            }
+        }
+
+    }
 }
