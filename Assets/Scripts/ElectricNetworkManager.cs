@@ -299,49 +299,20 @@ public class ElectricNetworkManager : MonoBehaviour
 
         // Case 3: There are at least two neighbors and AT LEAST ONE is NOT connected with each other 
         NetworkResolver networkResolver = new NetworkResolver();
-        List<ElectricNetwork> resolvedNetworks = networkResolver.GetResolvedElectricNetworksFor(neighboringConnectors);
+        List<List<ElectricNetworkConnector>> listsOfResolvedConnectors = 
+                networkResolver.GetListsOfResolvedNodesAt(neighboringConnectors);
 
-        electricNetworks.AddRange(resolvedNetworks);
-
-        for (int i = 0; i < resolvedNetworks.Count; i++)
-            Debug.Log("Resolved network " + i + " : There are " + resolvedNetworks[i].connectedNodes.Count + " nodes in it! ");
-
-        if (resolvedNetworks.Count == 1)
-            return; 
-
-        foreach (ElectricNetwork resolvedNetwork in resolvedNetworks)
+        foreach(List<ElectricNetworkConnector> resolvedConnectors in listsOfResolvedConnectors)
         {
-            ElectricNetwork oldNetwork = resolvedNetwork.connectedNodes[0].connectedNetwork;
-            SwapNetworkForAllConnectors(oldNetwork, resolvedNetwork);
-            SwapCablesBetweenNetworks(oldNetwork, resolvedNetwork); 
+            ElectricNetwork electricNetwork = CreateNewElectricNetwork(); 
+            
+            foreach (ElectricNetworkConnector connector in resolvedConnectors)
+            {
+                connector.RemoveBothSidedFromNetwork();
+                connector.ConnectBothSidedTo(electricNetwork);
+            }
         }
 
-    }
-
-
-    private static void SwapNetworkForAllConnectors(ElectricNetwork oldNetwork, ElectricNetwork newNetwork)
-    {
-        foreach (ElectricNetworkConnector node in newNetwork.connectedNodes)
-        {
-            node.RemoveBothSidedFromNetwork();
-            node.ConnectBothSidedTo(newNetwork); 
-        }
-    }
-
-
-    // It seems that there are actually no cables connected to a network when creating a connection 
-    private static void SwapCablesBetweenNetworks(ElectricNetwork oldNetwork, ElectricNetwork newNetwork)
-    {
-        List<ElectricNetworkCableConnection> tempCables = new List<ElectricNetworkCableConnection>();
-
-        if (oldNetwork.cables == null && newNetwork.cables == null)
-            return; 
-
-        tempCables.AddRange(oldNetwork.cables);
-        oldNetwork.cables.Clear();
-        oldNetwork.cables.AddRange(newNetwork.cables);
-        newNetwork.cables.Clear();
-        newNetwork.cables.AddRange(tempCables); 
     }
 
 
@@ -349,20 +320,20 @@ public class ElectricNetworkManager : MonoBehaviour
     private class NetworkResolver
     {
 
-        ElectricNetwork resolverNetwork = new ElectricNetwork();
+        List<ElectricNetworkConnector> resolvedNodes = new List<ElectricNetworkConnector>();
 
         
-        public ElectricNetwork GetResolvedNetworkAt(ElectricNetworkConnector node)
+        public List<ElectricNetworkConnector> GetResolvedNodesAt(ElectricNetworkConnector node)
         {
             TraverseNode(node);
-            return resolverNetwork; 
+            return resolvedNodes; 
         }
 
 
-        public List<ElectricNetwork> GetResolvedElectricNetworksFor(List<ElectricNetworkConnector> nodes)
+        public List<List<ElectricNetworkConnector>> GetListsOfResolvedNodesAt(List<ElectricNetworkConnector> nodes)
         {
-            List<NetworkResolver> networkResolver = new List<NetworkResolver>(); 
-            List<ElectricNetwork> resolvedNetworks = new List<ElectricNetwork>();
+            List<NetworkResolver> networkResolver = new List<NetworkResolver>();
+            List<List<ElectricNetworkConnector>> listOfResolvedNodes = new List<List<ElectricNetworkConnector>>();
             List<ElectricNetworkConnector> nodesToBeTraversed = new List<ElectricNetworkConnector>();
 
             nodesToBeTraversed.AddRange(nodes); 
@@ -378,10 +349,10 @@ public class ElectricNetworkManager : MonoBehaviour
                 currentlyResolvedNetwork.TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(
                         currentlyTraversedNode, nodesToBeTraversed);
 
-                resolvedNetworks.Add(currentlyResolvedNetwork.resolverNetwork); 
+                listOfResolvedNodes.Add(currentlyResolvedNetwork.resolvedNodes); 
             }
             
-            return resolvedNetworks; 
+            return listOfResolvedNodes; 
         }
 
 
@@ -389,10 +360,10 @@ public class ElectricNetworkManager : MonoBehaviour
         {
             foreach (ElectricNetworkConnector childNode in node.connectedNodes)
             {
-                if (resolverNetwork.connectedNodes.Contains(childNode))
+                if (resolvedNodes.Contains(childNode))
                     continue;
 
-                resolverNetwork.connectedNodes.Add(childNode);
+                resolvedNodes.Add(childNode);
                 TraverseNode(childNode); 
             }
         }
@@ -406,10 +377,10 @@ public class ElectricNetworkManager : MonoBehaviour
                 if (subsequentlyTraversedNodes.Contains(childNode))
                     subsequentlyTraversedNodes.Remove(childNode); 
 
-                if (resolverNetwork.connectedNodes.Contains(childNode))
+                if (resolvedNodes.Contains(childNode))
                     continue;
 
-                resolverNetwork.connectedNodes.Add(childNode);
+                resolvedNodes.Add(childNode);
                 // Also transfer the cables referenced in the script? 
                 TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(childNode, subsequentlyTraversedNodes);
             }
