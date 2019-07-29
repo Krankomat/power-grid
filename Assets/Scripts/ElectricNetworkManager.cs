@@ -81,6 +81,22 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
+    public void HandleElectricNetworkNodeRemoval(ElectricNetworkConnector connectorToBeRemoved, CollisionHandler electricCollisionHandler)
+    {
+        connectorToBeRemoved.RemoveBothSidedFromNetwork();
+
+        // Reverse iteration, because the elements are removed while iterating through the collection. 
+        for (int i = connectorToBeRemoved.connectedNodes.Count - 1; i >= 0; i--)
+        {
+            ElectricNetworkConnector connectedNode = connectorToBeRemoved.connectedNodes[i]; 
+            //connectorToBeRemoved.RemoveCableConnectionFrom(connectedNode);
+            connectorToBeRemoved.RemoveBothSidedFrom(connectedNode);
+            connectorToBeRemoved.Demolish(); 
+        }
+
+    }
+
+
     // Returns the Connector/Nodes, which are already there and get interacted with by the justAddedConnector. 
     // The justAddedConnector is not included in the returned value. 
     private ElectricNetworkConnector[] GetInteractedNetworkNodes(ElectricNetworkConnector justAddedConnector, Collider[] colliders)
@@ -226,7 +242,7 @@ public class ElectricNetworkManager : MonoBehaviour
         //    Destroy(cableConnection.gameObject);
         //
         //previewCables.Clear(); 
-
+        
         for (int i = previewCables.Count -1; i >= 0; i--)
         {
             previewConnector.cableConnections.Clear(); 

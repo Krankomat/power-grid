@@ -558,7 +558,16 @@ public class PlayerManager : MonoBehaviour
 
     private void Demolish(GameObject gameObject)
     {
-        gameObject.SetActive(false); 
+        ElectricNetworkConnector electricNetworkConnector = gameObject.GetComponent<ElectricNetworkConnector>();
+        
+        if (electricNetworkConnector != null)
+        {
+            CollisionHandler electricCollisionHandler = GetChildObject(gameObject, "ElectricNetworkNodeCollider")
+                    .GetComponent<CollisionHandler>();
+            electricNetworkManager.HandleElectricNetworkNodeRemoval(electricNetworkConnector, electricCollisionHandler); 
+        }
+
+        Destroy(gameObject); 
     }
 
 

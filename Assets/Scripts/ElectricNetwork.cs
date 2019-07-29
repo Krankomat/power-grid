@@ -7,8 +7,7 @@ public class ElectricNetwork
 
     public int id;
     public List<ElectricNetworkConnector> connectedNodes = new List<ElectricNetworkConnector>();
-    public List<ElectricNetworkCableConnection> cables; 
-
+    public List<ElectricNetworkCableConnection> cables;
 
     private static int idCounter; 
 
