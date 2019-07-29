@@ -120,11 +120,14 @@ public class ElectricNetworkConnector : MonoBehaviour
     }
 
 
-    public void CreateCableConnectionTo(ElectricNetworkConnector targetConnector)
+    public void CreateCableConnectionTo(ElectricNetworkConnector targetConnector, bool isPreview = false)
     {
         GameObject cableConnectionGameObject = Instantiate(cableConnectionPrefab);
         ElectricNetworkCableConnection cableConnection = 
-                cableConnectionGameObject.GetComponent<ElectricNetworkCableConnection>(); 
+                cableConnectionGameObject.GetComponent<ElectricNetworkCableConnection>();
+
+        if (isPreview)
+            cableConnection.isPreviewCable = true; 
 
         // Ordering is important! ConnectorA should always be this connector! See RemoveCableConnectionFrom() for details. 
         cableConnection.Connect(this, targetConnector);

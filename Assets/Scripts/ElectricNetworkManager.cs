@@ -75,7 +75,7 @@ public class ElectricNetworkManager : MonoBehaviour
         interactedConnectors = GetInteractedNetworkNodes(previewConnector, electricCollisionHandler.intersectingColliders);
 
         foreach (ElectricNetworkConnector connector in interactedConnectors)
-            previewConnector.CreateCableConnectionTo(connector);
+            previewConnector.CreateCableConnectionTo(connector, true);
 
         previewCables.AddRange(previewConnector.cableConnections); 
     }

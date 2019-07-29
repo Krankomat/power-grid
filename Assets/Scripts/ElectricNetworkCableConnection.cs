@@ -7,7 +7,8 @@ public class ElectricNetworkCableConnection : MonoBehaviour
 
     public GameObject cablePrefab;
     public ElectricNetworkConnector startConnector;
-    public ElectricNetworkConnector endConnector; 
+    public ElectricNetworkConnector endConnector;
+    public bool isPreviewCable; 
 
     private GameObject cableA;
     private GameObject cableB;
