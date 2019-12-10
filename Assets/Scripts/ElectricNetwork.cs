@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
+using CustomEvents;
+using System;
 
+[Serializable] 
 public class ElectricNetwork 
 {
 
@@ -9,7 +13,8 @@ public class ElectricNetwork
     public List<ElectricNetworkConnector> connectedNodes = new List<ElectricNetworkConnector>();
     public List<ElectricNetworkCableConnection> cables;
 
-    private static int idCounter; 
+
+    private static int idCounter;
 
 
     // Should not be called directly. 

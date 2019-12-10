@@ -159,7 +159,7 @@ public class ElectricNetworkManager : MonoBehaviour
         foreach (ElectricNetworkConnector connector in interactedConnectors)
             connector.ConnectBothSidedTo(network);
 
-        SortElectricNetworks(); 
+        SortElectricNetworks();
 
         Debug.Log("New Network was created and added! ");
     }
@@ -273,7 +273,10 @@ public class ElectricNetworkManager : MonoBehaviour
             ElectricNetworkConnector connector = neighboringConnectors[0];
 
             if (connector.connectedNetwork.connectedNodes.Count < 2)
+            {
+                electricNetworks.Remove(connector.connectedNetwork); 
                 connector.RemoveBothSidedFromNetwork(); 
+            }
 
             return; 
         }
@@ -313,6 +316,20 @@ public class ElectricNetworkManager : MonoBehaviour
             }
         }
 
+    }
+
+
+    private void HandleElectricNetworkConnectorRemoval(ElectricNetwork network)
+    {
+        // If there are at least two connected nodes in network, do nothing 
+        if (network.connectedNodes.Count > 1)
+            return; 
+
+        // Else if there is only one or no node left, destroy the network 
+        if (network.connectedNodes.Count == 1)
+            network.connectedNodes[0].RemoveBothSidedFromNetwork();
+        
+        electricNetworks.Remove(network); 
     }
 
 

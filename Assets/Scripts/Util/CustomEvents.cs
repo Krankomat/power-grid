@@ -15,5 +15,10 @@ namespace CustomEvents
     public class InteractionStateEvent : UnityEvent<InteractionState>
     {
     }
-    
+
+    [System.Serializable]
+    public class ElectricNetworkEvent : UnityEvent<ElectricNetwork>
+    {
+    }
+
 }

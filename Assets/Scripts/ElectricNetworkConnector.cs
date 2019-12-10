@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using CustomEvents; 
 
 // Synonym: ElectricNetworkNode 
 public class ElectricNetworkConnector : MonoBehaviour
@@ -16,7 +17,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     public List<ElectricNetworkCableConnection> cableConnections;
 
 
-    public UnityEvent OnConnectorDemolished; 
+    public UnityEvent OnConnectorDemolished;
 
 
     private enum RoleInElectricityNetwork
@@ -54,8 +55,9 @@ public class ElectricNetworkConnector : MonoBehaviour
                     + network + ", even though it shouldn't be. ");
             return; 
         }
-
+        
         network.connectedNodes.Add(this); 
+
     }
 
 
@@ -75,8 +77,8 @@ public class ElectricNetworkConnector : MonoBehaviour
             return; 
         }
 
-        connectedNetwork.connectedNodes.Remove(this); 
-        connectedNetwork = null; 
+        connectedNetwork.connectedNodes.Remove(this);
+        connectedNetwork = null;
     }
 
 
