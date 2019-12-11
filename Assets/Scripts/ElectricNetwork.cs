@@ -10,7 +10,7 @@ public class ElectricNetwork
 {
 
     public int id;
-    public List<ElectricNetworkConnector> connectedNodes = new List<ElectricNetworkConnector>();
+    public List<ElectricNetworkConnector> nodes = new List<ElectricNetworkConnector>();
     public List<ElectricNetworkCableConnection> cables;
 
 
@@ -34,7 +34,7 @@ public class ElectricNetwork
     
     public static List<ElectricNetwork> SortBySize(List<ElectricNetwork> networks)
     {
-        return networks.OrderByDescending(network => network.connectedNodes.Count).ToList();
+        return networks.OrderByDescending(network => network.nodes.Count).ToList();
     }
 
 

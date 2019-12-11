@@ -49,14 +49,14 @@ public class ElectricNetworkConnector : MonoBehaviour
         connectedNetwork = network;
 
         // Add this to network 
-        if(network.connectedNodes.Contains(this))
+        if(network.nodes.Contains(this))
         {
             Debug.LogError("There already is a connector " + this + " connected to network "
                     + network + ", even though it shouldn't be. ");
             return; 
         }
         
-        network.connectedNodes.Add(this); 
+        network.nodes.Add(this); 
 
     }
 
@@ -70,14 +70,14 @@ public class ElectricNetworkConnector : MonoBehaviour
             return; 
         }
 
-        if (!connectedNetwork.connectedNodes.Contains(this))
+        if (!connectedNetwork.nodes.Contains(this))
         {
             Debug.LogError("This ElectricNetworkConnector has a connection listed to a network, " +
                     "but the network itself does not have a connection to the connector. "); 
             return; 
         }
 
-        connectedNetwork.connectedNodes.Remove(this);
+        connectedNetwork.nodes.Remove(this);
         connectedNetwork = null;
     }
 

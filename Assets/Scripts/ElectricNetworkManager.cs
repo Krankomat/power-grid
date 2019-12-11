@@ -226,12 +226,12 @@ public class ElectricNetworkManager : MonoBehaviour
 
     private void IntegrateElectricNetworkIntoAnother(ElectricNetwork targetNetwork, ElectricNetwork disintegratingNetwork)
     {
-        List<ElectricNetworkConnector> integratedNodes = disintegratingNetwork.connectedNodes;
+        List<ElectricNetworkConnector> integratedNodes = disintegratingNetwork.nodes;
         
         foreach (ElectricNetworkConnector node in integratedNodes)
             node.connectedNetwork = targetNetwork; 
         
-        targetNetwork.connectedNodes.AddRange(integratedNodes);
+        targetNetwork.nodes.AddRange(integratedNodes);
 
         DestroyElectricNetwork(disintegratingNetwork); 
     }
@@ -272,7 +272,7 @@ public class ElectricNetworkManager : MonoBehaviour
         {
             ElectricNetworkConnector connector = neighboringConnectors[0];
 
-            if (connector.connectedNetwork.connectedNodes.Count < 2)
+            if (connector.connectedNetwork.nodes.Count < 2)
             {
                 electricNetworks.Remove(connector.connectedNetwork); 
                 connector.RemoveBothSidedFromNetwork(); 
@@ -322,12 +322,12 @@ public class ElectricNetworkManager : MonoBehaviour
     private void HandleElectricNetworkConnectorRemoval(ElectricNetwork network)
     {
         // If there are at least two connected nodes in network, do nothing 
-        if (network.connectedNodes.Count > 1)
+        if (network.nodes.Count > 1)
             return; 
 
         // Else if there is only one or no node left, destroy the network 
-        if (network.connectedNodes.Count == 1)
-            network.connectedNodes[0].RemoveBothSidedFromNetwork();
+        if (network.nodes.Count == 1)
+            network.nodes[0].RemoveBothSidedFromNetwork();
         
         electricNetworks.Remove(network); 
     }
