@@ -783,7 +783,7 @@ MonoBehaviour:
   connectionPointA: {fileID: 7715610338744695346}
   connectionPointB: {fileID: 6706105991607197132}
   connectedNetwork:
-    id: 13
+    id: -1
     nodes: []
     cables: []
   connectedNetworkString: 
@@ -866,6 +866,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: FootprintCollider
       objectReference: {fileID: 0}
+    - target: {fileID: 5626823383701330338, guid: 4d9b01c09fe776c48a003d40538d71e6,
+        type: 3}
+      propertyPath: m_Size.x
+      value: 0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 5626823383701330338, guid: 4d9b01c09fe776c48a003d40538d71e6,
+        type: 3}
+      propertyPath: m_Size.z
+      value: 0.95
+      objectReference: {fileID: 0}
     - target: {fileID: 9056287938751714975, guid: 4d9b01c09fe776c48a003d40538d71e6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -921,16 +931,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5626823383701330338, guid: 4d9b01c09fe776c48a003d40538d71e6,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.95
-      objectReference: {fileID: 0}
-    - target: {fileID: 5626823383701330338, guid: 4d9b01c09fe776c48a003d40538d71e6,
-        type: 3}
-      propertyPath: m_Size.z
-      value: 0.95
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d9b01c09fe776c48a003d40538d71e6, type: 3}
 --- !u!4 &5302791729794343299 stripped
@@ -946,11 +946,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2278230892048774087}
     m_Modifications:
-    - target: {fileID: 6609406000887641698, guid: 29a424ee62313ba4488a0d584353c24c,
-        type: 3}
-      propertyPath: m_Name
-      value: ElectricNetworkNodeCollider
-      objectReference: {fileID: 0}
     - target: {fileID: 6609406000887641692, guid: 29a424ee62313ba4488a0d584353c24c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1005,6 +1000,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6609406000887641698, guid: 29a424ee62313ba4488a0d584353c24c,
+        type: 3}
+      propertyPath: m_Name
+      value: ElectricNetworkNodeCollider
       objectReference: {fileID: 0}
     - target: {fileID: 6609406000887641699, guid: 29a424ee62313ba4488a0d584353c24c,
         type: 3}

@@ -11,7 +11,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     public GameObject cableConnectionPrefab; 
     public Transform connectionPointA;
     public Transform connectionPointB; 
-    public ElectricNetwork connectedNetwork = null;
+    public ElectricNetwork connectedNetwork;
     /* for debugging */ public string connectedNetworkString; 
     /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes;
     public List<ElectricNetworkCableConnection> cableConnections;
@@ -30,7 +30,8 @@ public class ElectricNetworkConnector : MonoBehaviour
 
     private void  Awake()
     {
-        connectedNodes = new List<ElectricNetworkConnector>(); 
+        connectedNodes = new List<ElectricNetworkConnector>();
+        connectedNetwork = null; 
     }
 
 
