@@ -57,8 +57,8 @@ public class ElectricNetworkConnector : MonoBehaviour
             return; 
         }
         
-        network.nodes.Add(this); 
-
+        network.nodes.Add(this);
+        Debug.Log(this + " was added as node to " + network); 
     }
 
 
@@ -135,10 +135,14 @@ public class ElectricNetworkConnector : MonoBehaviour
 
         // Ordering is important! ConnectorA should always be this connector! See RemoveCableConnectionFrom() for details. 
         cableConnection.Connect(this, targetConnector);
-        cableConnections.Add(cableConnection); 
+        cableConnections.Add(cableConnection);
+
+        // Connection of cable is being handled my ElectricNetworkCableConnection 
+        // TODO: This is bad. Connection actions should be handled by the CONNECTOR not the CONNECTION itself. 
+        // Maybe best thing would be to handle all that connecting stuff with the ElectricNetworkManager. (Or an inner class?) 
     }
 
-
+    // TODO 2019.12.11: It seems that this method doesn't get called anywhere --> Refactor/Remove 
     // It actually would be more efficient to create a dictionary with all connections at a singleton like the scene manager. 
     // The problem is, that this actually makes it more complicated, because now non-static classes access a static class 
     // for dynamically generated game objects. Because this seems careless at the moment, it is solved this (complicated) way. 
@@ -182,8 +186,9 @@ public class ElectricNetworkConnector : MonoBehaviour
             targetConnector.cableConnections.Remove(cableConnectionToBeRemoved);
         else
             cableConnections.Remove(cableConnectionToBeRemoved);
-
-        Destroy(cableToBeRemoved); 
+        
+        Debug.Log(cableToBeRemoved + " has been destroyed! "); 
+        Destroy(cableToBeRemoved);
     }
 
 
