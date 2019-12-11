@@ -6,12 +6,14 @@ using UnityEngine;
 public class ElectricNetworkManager : MonoBehaviour
 {
 
-    public GameObject cablePrefab; 
+    public GameObject cablePrefab;
+    public GameObject debugConnectionLinePrefab; 
     public List<ElectricNetwork> electricNetworks; 
 
     private ElectricNetworkConnector newlyAddedConnector;
     private ElectricNetworkConnector[] interactedConnectors;
-    private List<ElectricNetworkCableConnection> previewCables; 
+    private List<ElectricNetworkCableConnection> previewCables;
+    private DebugDrawer debugDrawer; 
 
 
     private void Awake()
@@ -23,7 +25,15 @@ public class ElectricNetworkManager : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log("There are currently " + electricNetworks.Count + " electronic networks. "); 
+        Debug.Log("There are currently " + electricNetworks.Count + " electronic networks. ");
+
+        if (Input.GetKeyUp(KeyCode.U))
+        {
+            if (debugDrawer == null)
+                debugDrawer = new DebugDrawer(electricNetworks, debugConnectionLinePrefab);
+
+            debugDrawer.CreateDebugLinesForNetworks(); 
+        }
     }
 
 
@@ -402,7 +412,35 @@ public class ElectricNetworkManager : MonoBehaviour
                 TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(childNode, subsequentlyTraversedNodes);
             }
         }
-        
 
+
+    }
+    private class DebugDrawer
+    {
+        List<ElectricNetwork> electricNetworks;
+        GameObject debugConnectionLinePrefab;
+
+        private Dictionary<ElectricNetworkCableConnection, GameObject> debugLinesByConnection; 
+
+
+        public DebugDrawer(List<ElectricNetwork> electricNetworks, GameObject debugConnectionLinePrefab)
+        {
+            this.electricNetworks = electricNetworks;
+            this.debugConnectionLinePrefab = debugConnectionLinePrefab; 
+        }
+
+
+        public void CreateDebugLinesForNetworks()
+        {
+            debugLinesByConnection = new Dictionary<ElectricNetworkCableConnection, GameObject>(); 
+
+            foreach (ElectricNetwork network in electricNetworks)
+                foreach (ElectricNetworkCableConnection cable in network.cables)
+                {
+                    GameObject debugLine = Instantiate(debugConnectionLinePrefab);
+                    debugLinesByConnection.Add(cable, debugLine);
+                    Debug.Log("Debug Line created! ");
+                }
+        }
     }
 }

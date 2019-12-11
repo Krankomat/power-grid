@@ -58,3 +58,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cablePrefab: {fileID: 0}
+  debugConnectionLinePrefab: {fileID: 3485483380144484864, guid: 1efaeff12a7d0074cac4c4727eae944e,
+    type: 3}
+  electricNetworks: []
