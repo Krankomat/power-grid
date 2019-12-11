@@ -59,7 +59,8 @@ public class CollisionHandler : MonoBehaviour
     // Collisions should only happen between Objects, that have the same LayerMask like "ObjectFootprint" 
     private void OnTriggerStay(Collider other)
     {
-        isColliding = true; 
+        isColliding = true;
+        Debug.Log("There is a collision! "); 
     }
 
 
