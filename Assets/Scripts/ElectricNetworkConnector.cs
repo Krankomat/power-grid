@@ -17,23 +17,52 @@ public class ElectricNetworkConnector : MonoBehaviour
 
     private void  Awake()
     {
-        node = new ElectricNetworkNode(this); 
+        node = new ElectricNetworkNode(this);
     }
 
 
     public void HandlePlacement(ElectricNetworkManager electricNetworkManager, CollisionHandler electricCollisionHandler)
     {
-        ElectricNetworkConnector[] interactedConnectors = 
-            ElectricNetworkManager.GetInteractedNetworkConnectors(this, electricCollisionHandler.intersectingColliders);
+        List<ElectricNetworkNode> interactedNodes = GetInteractedNetworkNodes(this, electricCollisionHandler); 
+        electricNetworkManager.HandleElectricNetworkNodeAddOn(this.node, interactedNodes);
+    }
+
+    
+    private static List<ElectricNetworkNode> GetInteractedNetworkNodes(ElectricNetworkConnector triggeringConnector, CollisionHandler electricCollisionHandler)
+    {
+        ElectricNetworkConnector[] interactedConnectors = GetInteractedNetworkConnectors(triggeringConnector, electricCollisionHandler.intersectingColliders);
         List<ElectricNetworkNode> interactedNodes = new List<ElectricNetworkNode>();
         foreach (ElectricNetworkConnector interactedConnector in interactedConnectors)
         {
-            if (interactedConnector == this)
+            if (interactedConnector == triggeringConnector)
                 continue;
             interactedNodes.Add(interactedConnector.node);
         }
+        return interactedNodes;
+    }
 
-        electricNetworkManager.HandleElectricNetworkNodeAddOn(this.node, interactedNodes);
+
+    // Returns the Connector/Nodes, which are already there and get interacted with by the justAddedConnector. 
+    // The justAddedConnector is not included in the returned value. 
+    private static ElectricNetworkConnector[] GetInteractedNetworkConnectors(ElectricNetworkConnector justAddedConnector, Collider[] colliders)
+    {
+        List<ElectricNetworkConnector> connectorsList = new List<ElectricNetworkConnector>();
+
+        foreach (Collider collider in colliders)
+        {
+            ElectricNetworkConnector connector = collider.transform.parent.gameObject.GetComponent<ElectricNetworkConnector>();
+
+            if (connector == null)
+                Debug.LogError("There is no ElectricNetworkConnector component connected to "
+                        + collider.transform.parent.gameObject + ". ");
+
+            if (connector == justAddedConnector)
+                continue;
+
+            connectorsList.Add(connector);
+        }
+
+        return connectorsList.ToArray();
     }
 
 

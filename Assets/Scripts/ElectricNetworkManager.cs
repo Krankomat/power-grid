@@ -181,30 +181,6 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    // Returns the Connector/Nodes, which are already there and get interacted with by the justAddedConnector. 
-    // The justAddedConnector is not included in the returned value. 
-    public static ElectricNetworkConnector[] GetInteractedNetworkConnectors(ElectricNetworkConnector justAddedConnector, Collider[] colliders)
-    {
-        List<ElectricNetworkConnector> connectorsList = new List<ElectricNetworkConnector>();
-
-        foreach (Collider collider in colliders)
-        {
-            ElectricNetworkConnector connector = collider.transform.parent.gameObject.GetComponent<ElectricNetworkConnector>();
-
-            if (connector == null)
-                Debug.LogError("There is no ElectricNetworkConnector component connected to " 
-                        + collider.transform.parent.gameObject + ". "); 
-
-            if (connector == justAddedConnector)
-                continue;
-
-            connectorsList.Add(connector);
-        }
-
-        return connectorsList.ToArray();
-    }
-
-
     private ElectricNetwork[] GetDifferentNetworksOf(ElectricNetworkNode[] nodes)
     {
         List<ElectricNetwork> networks = new List<ElectricNetwork>();
