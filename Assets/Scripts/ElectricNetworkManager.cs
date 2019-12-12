@@ -125,6 +125,45 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
+    // Effectively destroys the edge 
+    public static void Disconnect(ElectricNetworkEdge edge)
+    {
+        // Disconnect nodes from each other 
+        ElectricNetworkNode node1 = edge.nodes.Item1; 
+        ElectricNetworkNode node2 = edge.nodes.Item2;
+        node1.connectedNodes.Remove(node2); 
+        node2.connectedNodes.Remove(node1);
+
+        // "Destroy" edge between nodes 
+        edge.nodes.Item1.connectedEdges.Remove(edge); 
+        edge.nodes.Item2.connectedEdges.Remove(edge);
+
+        // Unregister edge from network 
+        Unregister(edge.connectedNetwork, edge); 
+    }
+
+
+    public static void Disconnect(ElectricNetworkNode node1, ElectricNetworkNode node2)
+    {
+        // Check if both nodes are connected with each other 
+        if (!node1.connectedNodes.Contains(node2) && !node2.connectedNodes.Contains(node1))
+            Debug.LogError($"ERROR DISCONNECTING: Node 1 {node1} and Node 2 {node2} are not connected with each other. ");
+        else if (!node1.connectedNodes.Contains(node2))
+            Debug.LogError($"ERROR DISCONNECTING: Node 1 {node1} is not connected to Node 2 {node2}. ");
+        else if (!node2.connectedNodes.Contains(node1))
+            Debug.LogError($"ERROR DISCONNECTING: Node 2 {node2} is not connected to Node 1 {node1}. ");
+
+        List<ElectricNetworkEdge> commonEdges = node1.connectedEdges.Intersect(node2.connectedEdges).ToList();
+        if (commonEdges.Count() == 0)
+            Debug.LogError($"ERROR DISCONNECTING: There is no common edge between Node 1 {node1} and Node 2 {node2}. ");
+        else if (commonEdges.Count() > 1)
+            Debug.LogError($"ERROR DISCONNECTING: There are {commonEdges.Count()} edges between Node 1 {node1} and Node 2 {node2}, " +
+                $"but there should be only 1. ");
+        else
+            Disconnect(commonEdges[0]);
+    }
+
+
     public void HandleElectricNetworkNodeAddOn(ElectricNetworkNode addedNode, List<ElectricNetworkNode> interactedNodes)
     {
         int numberOfInvolvedNetworksInConnectionAttempt = GetDifferentNetworksOf(interactedNodes.ToArray()).Length;
