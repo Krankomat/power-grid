@@ -142,21 +142,6 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    public void HandleElectricNetworkNodeAddOn(ElectricNetworkConnector placedConnector, CollisionHandler electricCollisionHandler)
-    {
-        ElectricNetworkConnector[] interactedConnectors =GetInteractedNetworkConnectors(placedConnector, electricCollisionHandler.intersectingColliders);
-        List<ElectricNetworkNode> interactedNodes = new List<ElectricNetworkNode>();
-        foreach (ElectricNetworkConnector interactedConnector in interactedConnectors)
-        {
-            if (interactedConnector == placedConnector)
-                continue; 
-            interactedNodes.Add(interactedConnector.node); 
-        }
-
-        HandleElectricNetworkNodeAddOn(placedConnector.node, interactedNodes); 
-    }
-
-
     public void ShowPreviewOfElectricNetworkNodeAddOn(ElectricNetworkConnector previewConnector, CollisionHandler electricCollisionHandler)
     {
         interactedConnectors = GetInteractedNetworkConnectors(previewConnector, electricCollisionHandler.intersectingColliders);

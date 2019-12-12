@@ -468,7 +468,7 @@ public class PlayerManager : MonoBehaviour
 
             UnlinkElectricColliderFromCablePreview(); 
             electricNetworkManager.ClearPreviewCablesOf(electricNetworkConnector);
-            electricNetworkManager.HandleElectricNetworkNodeAddOn(electricNetworkConnector, electricCollisionHandler);
+            electricNetworkConnector.HandlePlacement(electricNetworkManager, electricCollisionHandler); 
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
             electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
         }
