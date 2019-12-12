@@ -213,29 +213,24 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    public void HandleElectricNetworkNodeRemoval(ElectricNetworkConnector connectorToBeRemoved, CollisionHandler electricCollisionHandler)
+    public void DestroyNode(ElectricNetworkNode node)
     {
-        List<ElectricNetworkConnector> neighboringConnectorsThatWillRemainInANetwork = new List<ElectricNetworkConnector>();
+        // Could throw error, when "node.connectedNodes = null" and then "adjacentNodes[0]"? 
+        List<ElectricNetworkNode> adjacentNodes = new List<ElectricNetworkNode>(node.connectedNodes); 
 
-        neighboringConnectorsThatWillRemainInANetwork.AddRange(connectorToBeRemoved.connectedNodes);
-        connectorToBeRemoved.RemoveBothSidedFromNetwork();
+        // Unregister from network 
+        Unregister(node.connectedNetwork, node);
 
-        // Reverse iteration, because the elements are removed while iterating through the collection. 
-        for (int i = connectorToBeRemoved.connectedNodes.Count - 1; i >= 0; i--)
-        {
-            ElectricNetworkConnector connectedNode = connectorToBeRemoved.connectedNodes[i]; 
-            connectorToBeRemoved.RemoveBothSidedFrom(connectedNode);
+        // If no nodes are connected, return 
+        if (node.connectedNodes.Count() == 0 && node.connectedEdges.Count() == 0)
+            return; 
 
-            if (connectedNode.connectedNodes.Count == 0)
-            {
-                connectedNode.RemoveBothSidedFromNetwork();
-                neighboringConnectorsThatWillRemainInANetwork.Remove(connectedNode); 
-            }
-        }
+        // "Destroy" Edges 
+        foreach (ElectricNetworkEdge edge in node.connectedEdges)
+            Disconnect(edge);
 
-        connectorToBeRemoved.Demolish();
-
-        HandleNeighboringConnectorsNetworkResolvement(neighboringConnectorsThatWillRemainInANetwork); 
+        // Handle adjacent nodes 
+        HandleAdjacentNodesAfterNodeRemoval(adjacentNodes); 
     }
 
 
@@ -371,77 +366,34 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    private void HandleNeighboringConnectorsNetworkResolvement(List<ElectricNetworkConnector> neighboringConnectors)
+    private void HandleAdjacentNodesAfterNodeRemoval(List<ElectricNetworkNode> adjacentNodes)
     {
-        bool allNeighborsAreConnectedWithEachOther = true;
-
-        // Case 1: There is only one neighbor 
-        if (neighboringConnectors.Count == 1)
-        {
-            ElectricNetworkConnector connector = neighboringConnectors[0];
-
-            if (connector.connectedNetwork.nodes.Count < 2)
-            {
-                electricNetworks.Remove(connector.connectedNetwork); 
-                connector.RemoveBothSidedFromNetwork(); 
-            }
-
-            return; 
-        }
-
-        // Case 2: There are at least two neighbors and they are connected with each other 
-        foreach (ElectricNetworkConnector neighborA in neighboringConnectors)
-            foreach(ElectricNetworkConnector neighborB in neighboringConnectors)
-            {
-                if (neighborA == neighborB)
-                    continue; 
-
-                if (!neighborA.connectedNodes.Contains(neighborB))
-                {
-                    allNeighborsAreConnectedWithEachOther = false;
-                    break;
-                }
-            }
-        if (allNeighborsAreConnectedWithEachOther)
-            Debug.Log("All Neighbors (neighbor = node with at least one connected node) are connected with each other! "); 
-
-        if (allNeighborsAreConnectedWithEachOther) 
+        if (adjacentNodes == null || adjacentNodes.Count == 0)
             return; 
 
-        // Case 3: There are at least two neighbors and AT LEAST ONE is NOT connected with each other 
+        // Case 1: There is only one adjacent node on removal 
+        if (adjacentNodes.Count == 1)
+            return;
+
+        // Case 2: There are at least two adjacent nodes and AT LEAST ONE is NOT connected with each other 
         NetworkResolver networkResolver = new NetworkResolver();
-        List<List<ElectricNetworkConnector>> listsOfResolvedConnectors = 
-                networkResolver.GetListsOfResolvedNodesAt(neighboringConnectors);
+        List<List<ElectricNetworkNode>> listsOfResolvedNodes = 
+                networkResolver.GetListsOfResolvedNodesAt(adjacentNodes);
 
-        foreach(List<ElectricNetworkConnector> resolvedConnectors in listsOfResolvedConnectors)
+        foreach(List<ElectricNetworkNode> resolvedNodes in listsOfResolvedNodes)
         {
             ElectricNetwork electricNetwork = CreateNewElectricNetwork(); 
-            
-            foreach (ElectricNetworkConnector connector in resolvedConnectors)
-            {
-                connector.RemoveBothSidedFromNetwork();
-                connector.ConnectBothSidedTo(electricNetwork);
-            }
+            foreach (ElectricNetworkNode resolvedNode in resolvedNodes)
+                Register(electricNetwork, resolvedNode); 
         }
 
-    }
-
-
-    private void HandleElectricNetworkConnectorRemoval(ElectricNetwork network)
-    {
-        // If there are at least two connected nodes in network, do nothing 
-        if (network.nodes.Count > 1)
-            return; 
-
-        // Else if there is only one or no node left, destroy the network 
-        if (network.nodes.Count == 1)
-            Unregister(network, network.nodes[0]);
-        
-        electricNetworks.Remove(network); 
+        // Case 3: (Special case) There are at least two adjacent nodes and all are connected with each other on removal. 
+        // This case is not handled here, because it also gets resolved by the NetworkResolver. 
     }
 
 
     // Class to recursively resolve networks, when a connector is being removed 
+    //TODO: Handle edges and their connectedNetwork when traversing nodes 
     private class NetworkResolver
     {
 

@@ -73,8 +73,9 @@ public class ElectricNetworkConnector : MonoBehaviour
     }
 
 
-    public void Demolish()
+    public void HandleDemolishingBy(ElectricNetworkManager electricNetworkManager)
     {
+        electricNetworkManager.DestroyNode(node); 
         OnConnectorDemolished.Invoke();
         Destroy(this); 
     }
