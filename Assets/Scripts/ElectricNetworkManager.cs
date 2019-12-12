@@ -85,6 +85,8 @@ public class ElectricNetworkManager : MonoBehaviour
         edge.connectedNetwork = null;
     }
 
+    //TODO: Iterate over electric network and create cable objects for each edge 
+
 
     public static void Connect(ElectricNetworkNode node1, ElectricNetworkNode node2)
     {
