@@ -435,7 +435,7 @@ public class ElectricNetworkManager : MonoBehaviour
             debugLinesByConnection = new Dictionary<ElectricNetworkCableConnection, GameObject>(); 
 
             foreach (ElectricNetwork network in electricNetworks)
-                foreach (ElectricNetworkCableConnection cable in network.cables)
+                foreach (ElectricNetworkCableConnection cable in network.edges)
                 {
                     GameObject debugLine = Instantiate(debugConnectionLinePrefab);
                     debugLinesByConnection.Add(cable, debugLine);

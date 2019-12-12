@@ -49,7 +49,7 @@ public class ElectricNetworkCableConnection : MonoBehaviour
 
     private void ConnectBothSidedTo(ElectricNetwork electricNetwork)
     {
-        electricNetwork.cables.Add(this);
+        electricNetwork.edges.Add(this);
         connectedNetwork = electricNetwork;
         Debug.Log(this + " was added as edge to " + connectedNetwork);
     }
@@ -58,7 +58,7 @@ public class ElectricNetworkCableConnection : MonoBehaviour
     private void RemoveBothSidedFromElectricNetwork()
     {
         Debug.Log(this + " was removed as edge from " + connectedNetwork);
-        connectedNetwork.cables.Remove(this);
+        connectedNetwork.edges.Remove(this);
         connectedNetwork = null;
     }
 

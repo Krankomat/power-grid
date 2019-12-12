@@ -8,11 +8,9 @@ using System;
 [Serializable] 
 public class ElectricNetwork 
 {
-
     public int id;
-    public List<ElectricNetworkConnector> nodes = new List<ElectricNetworkConnector>();
-    public List<ElectricNetworkCableConnection> cables = new List<ElectricNetworkCableConnection>();
-
+    public List<ElectricNetworkNode> nodes = new List<ElectricNetworkNode>();
+    public List<ElectricNetworkEdge> edges = new List<ElectricNetworkEdge>();
 
     private static int idCounter;
 

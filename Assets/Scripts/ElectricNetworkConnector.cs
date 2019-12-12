@@ -15,6 +15,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     /* for debugging */ public string connectedNetworkString; 
     /*[HideInInspector]*/ public List<ElectricNetworkConnector> connectedNodes;
     public List<ElectricNetworkCableConnection> cableConnections;
+    public ElectricNetworkNode node; 
 
 
     public UnityEvent OnConnectorDemolished;
@@ -31,7 +32,8 @@ public class ElectricNetworkConnector : MonoBehaviour
     private void  Awake()
     {
         connectedNodes = new List<ElectricNetworkConnector>();
-        connectedNetwork = null; 
+        connectedNetwork = null;
+        node = new ElectricNetworkNode(this); 
     }
 
 
