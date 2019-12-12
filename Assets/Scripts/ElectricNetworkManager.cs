@@ -37,6 +37,55 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
+    // Method is called "Link" and not "Connect" to distinguish between creating a connection between two nodes 
+    // and linking a given node or edge to a eletric network. 
+    public static void Link(ElectricNetwork network, ElectricNetworkNode node)
+    {
+        // Normally, these two error messages should always come at the same time. 
+        // But of course, it is possible that the connection is only one sided because of some error. 
+        if (network.nodes.Contains(node))
+            Debug.LogError($"ERROR LINKING: Network \"{network}\" already contains Node \"{node}\". "); 
+        network.nodes.Add(node);
+
+        if (node.connectedNetwork == network)
+            Debug.LogError($"ERROR LINKING: Node \"{node}\" is already linked to Network \"{network}\". ");
+        node.connectedNetwork = network; 
+    }
+
+    public static void Link(ElectricNetwork network, ElectricNetworkEdge edge)
+    {
+        if (network.edges.Contains(edge))
+            Debug.LogError($"ERROR LINKING: Network \"{network}\" already contains Edge \"{edge}\". ");
+        network.edges.Add(edge);
+
+        if (edge.connectedNetwork == network)
+            Debug.LogError($"ERROR LINKING: Edge \"{edge}\" is already linked to Network \"{network}\". ");
+        edge.connectedNetwork = network; 
+    }
+
+    public static void Unlink(ElectricNetwork network, ElectricNetworkNode node)
+    {
+        if (!network.nodes.Contains(node))
+            Debug.LogError($"ERROR UNLINKING: Network \"{network}\" does not contain Node \"{node}\". ");
+        network.nodes.Remove(node);
+
+        if (node.connectedNetwork != network)
+            Debug.LogError($"ERROR UNLINKING: Node \"{node}\" was not connected to Network \"{network}\" in the first place. ");
+        node.connectedNetwork = null; 
+    }
+
+    public static void Unlink(ElectricNetwork network, ElectricNetworkEdge edge)
+    {
+        if (!network.edges.Contains(edge))
+            Debug.LogError($"ERROR UNLINKING: Network \"{network}\" does not contain Edge \"{edge}\". ");
+        network.edges.Remove(edge);
+
+        if (edge.connectedNetwork != network)
+            Debug.LogError($"ERROR UNLINKING: Edge \"{edge}\" was not connected to Network \"{network}\" in the first place. ");
+        edge.connectedNetwork = null;
+    }
+
+
     public void HandleElectricNetworkNodeAddOn(ElectricNetworkConnector placedConnector, CollisionHandler electricCollisionHandler)
     {
         newlyAddedConnector = placedConnector; 
