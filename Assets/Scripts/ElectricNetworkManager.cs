@@ -409,29 +409,29 @@ public class ElectricNetworkManager : MonoBehaviour
     private class NetworkResolver
     {
 
-        List<ElectricNetworkConnector> resolvedNodes = new List<ElectricNetworkConnector>();
+        List<ElectricNetworkNode> resolvedNodes = new List<ElectricNetworkNode>();
 
         
-        public List<ElectricNetworkConnector> GetResolvedNodesAt(ElectricNetworkConnector node)
+        public List<ElectricNetworkNode> GetResolvedNodesAt(ElectricNetworkNode node)
         {
             TraverseNode(node);
             return resolvedNodes; 
         }
 
 
-        public List<List<ElectricNetworkConnector>> GetListsOfResolvedNodesAt(List<ElectricNetworkConnector> nodes)
+        public List<List<ElectricNetworkNode>> GetListsOfResolvedNodesAt(List<ElectricNetworkNode> nodes)
         {
             List<NetworkResolver> networkResolver = new List<NetworkResolver>();
-            List<List<ElectricNetworkConnector>> listOfResolvedNodes = new List<List<ElectricNetworkConnector>>();
-            List<ElectricNetworkConnector> nodesToBeTraversed = new List<ElectricNetworkConnector>();
+            List<List<ElectricNetworkNode>> listOfResolvedNodes = new List<List<ElectricNetworkNode>>();
+            List<ElectricNetworkNode> nodesToBeTraversed = new List<ElectricNetworkNode>();
 
             nodesToBeTraversed.AddRange(nodes); 
 
-            ElectricNetworkConnector currentConnector = nodesToBeTraversed[0]; 
+            ElectricNetworkNode currentConnector = nodesToBeTraversed[0]; 
             
             while (nodesToBeTraversed.Count > 0)
             {
-                ElectricNetworkConnector currentlyTraversedNode = nodesToBeTraversed[0];
+                ElectricNetworkNode currentlyTraversedNode = nodesToBeTraversed[0];
                 NetworkResolver currentlyResolvedNetwork = new NetworkResolver();
                 
                 nodesToBeTraversed.Remove(currentlyTraversedNode);
@@ -445,9 +445,9 @@ public class ElectricNetworkManager : MonoBehaviour
         }
 
 
-        private void TraverseNode(ElectricNetworkConnector node)
+        private void TraverseNode(ElectricNetworkNode node)
         {
-            foreach (ElectricNetworkConnector childNode in node.connectedNodes)
+            foreach (ElectricNetworkNode childNode in node.connectedNodes)
             {
                 if (resolvedNodes.Contains(childNode))
                     continue;
@@ -458,10 +458,10 @@ public class ElectricNetworkManager : MonoBehaviour
         }
 
         
-        private void TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(ElectricNetworkConnector node, 
-                                                                          List<ElectricNetworkConnector> subsequentlyTraversedNodes)
+        private void TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(ElectricNetworkNode node, 
+                                                                          List<ElectricNetworkNode> subsequentlyTraversedNodes)
         {
-            foreach (ElectricNetworkConnector childNode in node.connectedNodes)
+            foreach (ElectricNetworkNode childNode in node.connectedNodes)
             {
                 if (subsequentlyTraversedNodes.Contains(childNode))
                     subsequentlyTraversedNodes.Remove(childNode); 
@@ -482,7 +482,7 @@ public class ElectricNetworkManager : MonoBehaviour
         List<ElectricNetwork> electricNetworks;
         GameObject debugConnectionLinePrefab;
 
-        private Dictionary<ElectricNetworkCableConnection, GameObject> debugLinesByConnection; 
+        private Dictionary<ElectricNetworkEdge, GameObject> debugLinesByConnection; 
 
 
         public DebugDrawer(List<ElectricNetwork> electricNetworks, GameObject debugConnectionLinePrefab)
@@ -494,13 +494,13 @@ public class ElectricNetworkManager : MonoBehaviour
 
         public void CreateDebugLinesForNetworks()
         {
-            debugLinesByConnection = new Dictionary<ElectricNetworkCableConnection, GameObject>(); 
+            debugLinesByConnection = new Dictionary<ElectricNetworkEdge, GameObject>(); 
 
             foreach (ElectricNetwork network in electricNetworks)
-                foreach (ElectricNetworkCableConnection cable in network.edges)
+                foreach (ElectricNetworkEdge edge in network.edges)
                 {
                     GameObject debugLine = Instantiate(debugConnectionLinePrefab);
-                    debugLinesByConnection.Add(cable, debugLine);
+                    debugLinesByConnection.Add(edge, debugLine);
                     Debug.Log("Debug Line created! ");
                 }
         }
