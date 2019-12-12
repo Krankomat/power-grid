@@ -37,44 +37,44 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    // Method is called "Link" and not "Connect" to distinguish between creating a connection between two nodes 
-    // and linking a given node or edge to a eletric network. 
-    public static void Link(ElectricNetwork network, ElectricNetworkNode node)
+    // Method is called "Register" and not "Connect" to distinguish between creating a connection between two nodes 
+    // and registering a given node or edge in a eletric network. 
+    public static void Register(ElectricNetwork network, ElectricNetworkNode node)
     {
         // Normally, these two error messages should always come at the same time. 
         // But of course, it is possible that the connection is only one sided because of some error. 
         if (network.nodes.Contains(node))
-            Debug.LogError($"ERROR LINKING: Network \"{network}\" already contains Node \"{node}\". "); 
+            Debug.LogError($"ERROR REGISTERING: Network \"{network}\" already contains Node \"{node}\". "); 
         network.nodes.Add(node);
 
         if (node.connectedNetwork == network)
-            Debug.LogError($"ERROR LINKING: Node \"{node}\" is already linked to Network \"{network}\". ");
+            Debug.LogError($"ERROR REGISTERING: Node \"{node}\" is already linked to Network \"{network}\". ");
         node.connectedNetwork = network; 
     }
 
-    public static void Link(ElectricNetwork network, ElectricNetworkEdge edge)
+    public static void Register(ElectricNetwork network, ElectricNetworkEdge edge)
     {
         if (network.edges.Contains(edge))
-            Debug.LogError($"ERROR LINKING: Network \"{network}\" already contains Edge \"{edge}\". ");
+            Debug.LogError($"ERROR REGISTERING: Network \"{network}\" already contains Edge \"{edge}\". ");
         network.edges.Add(edge);
 
         if (edge.connectedNetwork == network)
-            Debug.LogError($"ERROR LINKING: Edge \"{edge}\" is already linked to Network \"{network}\". ");
+            Debug.LogError($"ERROR REGISTERING: Edge \"{edge}\" is already linked to Network \"{network}\". ");
         edge.connectedNetwork = network; 
     }
 
-    public static void Unlink(ElectricNetwork network, ElectricNetworkNode node)
+    public static void Unregister(ElectricNetwork network, ElectricNetworkNode node)
     {
         if (!network.nodes.Contains(node))
-            Debug.LogError($"ERROR UNLINKING: Network \"{network}\" does not contain Node \"{node}\". ");
+            Debug.LogError($"ERROR UNREGISTERING: Network \"{network}\" does not contain Node \"{node}\". ");
         network.nodes.Remove(node);
 
         if (node.connectedNetwork != network)
-            Debug.LogError($"ERROR UNLINKING: Node \"{node}\" was not connected to Network \"{network}\" in the first place. ");
+            Debug.LogError($"ERROR UNREGISTERING: Node \"{node}\" was not connected to Network \"{network}\" in the first place. ");
         node.connectedNetwork = null; 
     }
 
-    public static void Unlink(ElectricNetwork network, ElectricNetworkEdge edge)
+    public static void Unregister(ElectricNetwork network, ElectricNetworkEdge edge)
     {
         if (!network.edges.Contains(edge))
             Debug.LogError($"ERROR UNLINKING: Network \"{network}\" does not contain Edge \"{edge}\". ");
