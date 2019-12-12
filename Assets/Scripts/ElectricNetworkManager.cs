@@ -86,11 +86,31 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    public void HandleElectricNetworkNodeAddOn(ElectricNetworkConnector placedConnector, CollisionHandler electricCollisionHandler)
+    public static void Connect(ElectricNetworkNode node1, ElectricNetworkNode node2)
     {
-        newlyAddedConnector = placedConnector; 
-        interactedConnectors = GetInteractedNetworkNodes(placedConnector, electricCollisionHandler.intersectingColliders);
-        int numberOfInvolvedNetworksInConnectionAttempt = GetDifferentNetworksOf(interactedConnectors).Length;
+        // Connect nodes with each other 
+        node1.connectedNodes.Add(node2);
+        node2.connectedNodes.Add(node1);
+
+        // Create edge between node1 and node2 
+        ElectricNetworkEdge edge = new ElectricNetworkEdge(node1, node2);
+
+        // Add edge to nodes 
+        node1.connectedEdges.Add(edge); 
+        node2.connectedEdges.Add(edge);
+
+        // Check if both nodes have the same network 
+        if (node1.connectedNetwork != node2.connectedNetwork)
+            Debug.LogError($"ERROR CONNECTING: Node 1 and Node 2 have a different network. " +
+                $"Node 1: {node1} - {node1.connectedNetwork}; Node 2: {node2} - {node2.connectedNetwork}. ");
+
+        // Check if a node is a preview 
+        if (node1.type == ElectricNetworkNode.Type.Preview || node2.type == ElectricNetworkNode.Type.Preview)
+            edge.type = ElectricNetworkEdge.Type.Preview; 
+
+        // Register edge in network and vice versa
+        Register(node1.connectedNetwork, edge); 
+    }
 
         Debug.Log("Number of involved Networks: " + numberOfInvolvedNetworksInConnectionAttempt);
         Debug.Log("Involved Networks: " + GetDifferentNetworksOf(interactedConnectors));
