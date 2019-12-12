@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CableDrawer">
+    <Position X="9" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQgCAQAAAAAMAAAAEAAAAAAAAAAggAAAAAAAAAAAQA=</HashCode>
+      <FileName>Assets\Scripts\CableDrawer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CameraMover">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAgAAAAAAAAAAAAAAAAAAgQAAgAAAAAIAAAA=</HashCode>
+      <FileName>Assets\Scripts\CameraMover.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollisionHandler">
+    <Position X="9" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ApQAEAAAQiACgBAAAAAAAAQAAAAAAACAAAAAAAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\CollisionHandler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Descriptor">
+    <Position X="16.5" Y="13.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAIAAAAAAAAAAAAAAAAAAAIAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\Descriptor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricNetwork">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAEAAAAAAAQAAAAAAAAAAAAAIAAIgA=</HashCode>
+      <FileName>Assets\Scripts\ElectricNetwork.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricNetworkCableConnection">
+    <Position X="10.75" Y="5.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AgACAAACAAAAAAAAAEABAIAAAAAAAgQAAAAAAAIABGA=</HashCode>
+      <FileName>Assets\Scripts\ElectricNetworkCableConnection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricNetworkConnector">
+    <Position X="10.75" Y="0.5" Width="2.75" />
+    <NestedTypes>
+      <Enum Name="ElectricNetworkConnector.RoleInElectricityNetwork" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\ElectricNetworkConnector.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>QAQAAAACAAAAAIAAAEAAAACAAAgAAAQgAMCCAAAABkA=</HashCode>
+      <FileName>Assets\Scripts\ElectricNetworkConnector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricNetworkManager">
+    <Position X="13.75" Y="0.5" Width="4.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ElectricNetworkManager.NetworkResolver">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\ElectricNetworkManager.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ElectricNetworkManager.DebugDrawer">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\ElectricNetworkManager.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ECQABgAgAEAAIBAAiAGAAEAAgAAAAgAICAAAAIEIMEA=</HashCode>
+      <FileName>Assets\Scripts\ElectricNetworkManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CollisionTester">
+    <Position X="10.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\FeatureTesting\CollisionTester.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameHUDDisplayer">
+    <Position X="2.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EABAAAAgAAAAAAAAAAAAAgAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\GameHUDDisplayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameManager">
+    <Position X="0.75" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAEAAAAAAAAAAAAAAAABAAAAAAQAAAAAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\GameManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MenuManager">
+    <Position X="2.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAACABAAA=</HashCode>
+      <FileName>Assets\Scripts\MenuManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ModelDyer">
+    <Position X="4.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAUACQgAAAAAACAIABAAAAEAAAAgAAAAAARAgQAFA=</HashCode>
+      <FileName>Assets\Scripts\ModelDyer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerManager">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QE3TKhEABGDWkwApUhoEQBABEAAJxAAAFoSAQAQAckQ=</HashCode>
+      <FileName>Assets\Scripts\PlayerManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SceneManager">
+    <Position X="4.25" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\SceneManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SelectionMarkDisplayer">
+    <Position X="2.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAAQAIAEAAAAAAAAAAAAQAAAAAAAAQFAQAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\SelectionMarkDisplayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Selector">
+    <Position X="0.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQIAAAAKAEMQQAAABAAAAAEEAAAAAAQQAAQAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Selector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UIStateIndicator">
+    <Position X="0.75" Y="4.75" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="UIStateIndicator.IndicatorState" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\UIStateIndicator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="UIStateIndicator.IndicatorStyle" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\UIStateIndicator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="UIStateIndicator.IndicatorStyleAttribute" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\Scripts\UIStateIndicator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAACAAAFAAMAAAAABgAAAEAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>Assets\Scripts\UIStateIndicator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EnumAttribute">
+    <Position X="14.75" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Util\EnumAttribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="EnumExtension">
+    <Position X="14.75" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Util\EnumExtension.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MathUtil">
+    <Position X="16.5" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIBAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Util\MathUtil.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CustomEvents.GameObjectEvent">
+    <Position X="13" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Util\CustomEvents.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CustomEvents.InteractionStateEvent">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Util\CustomEvents.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CustomEvents.ElectricNetworkEvent">
+    <Position X="10.75" Y="9.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Util\CustomEvents.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="InteractionState">
+    <Position X="1" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAEAAIAAAAAAAAAAAAAAAAAAAAAAAQAAAA=</HashCode>
+      <FileName>Assets\Scripts\InteractionState.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
