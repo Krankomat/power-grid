@@ -112,46 +112,54 @@ public class ElectricNetworkManager : MonoBehaviour
         Register(node1.connectedNetwork, edge); 
     }
 
-        Debug.Log("Number of involved Networks: " + numberOfInvolvedNetworksInConnectionAttempt);
-        Debug.Log("Involved Networks: " + GetDifferentNetworksOf(interactedConnectors));
 
-        if (GameManager.Instance.isDebugging) 
-            for (int i = 0; i < interactedConnectors.Length; i++) 
-                Debug.Log(i + ": " + interactedConnectors[i]);
+    public void HandleElectricNetworkNodeAddOn(ElectricNetworkNode addedNode, List<ElectricNetworkNode> interactedNodes)
+    {
+        int numberOfInvolvedNetworksInConnectionAttempt = GetDifferentNetworksOf(interactedNodes.ToArray()).Length;
 
-        // If there is no interaction with any other connector, return without creating a network 
-        if (interactedConnectors.Length == 0)
-            return;
+        if (GameManager.Instance.isDebugging)
+            for (int i = 0; i < interactedNodes.Count(); i++)
+                Debug.Log($"INFO NETWORK ADDON: Interacted Node {i}: {interactedNodes[i]}. ");
+
+        // If there is no interaction with any other node, return 
+        if (interactedNodes == null || interactedNodes.Count() == 0)
+            return; 
 
         // Handle addon to network 
         if (numberOfInvolvedNetworksInConnectionAttempt == 0)
-        {
-            HandleCreationOfANewNetwork(); 
-        }
+            HandleCreationOfANewNetwork();
         else if (numberOfInvolvedNetworksInConnectionAttempt == 1)
-        {
-            HandleAddonToAnExistingNetwork(); 
-        }
+            HandleAddonToAnExistingNetwork();
         else if (numberOfInvolvedNetworksInConnectionAttempt > 1)
-        {
-            HandleAddonToMultipleExistingNetworks(); 
-        }
+            HandleAddonToMultipleExistingNetworks();
         else
-        {
-            Debug.LogError("There is an illegal number of involved networks (" 
-                    + numberOfInvolvedNetworksInConnectionAttempt + ") when trying to add a new node. "); 
-        }
+            Debug.LogError($"ERROR NETWORK ADDON: There is an illegal number of involved networks " + 
+                $"({numberOfInvolvedNetworksInConnectionAttempt}) when trying to add a new node. "); 
 
         //Handle nodes connecting with each other 
-        foreach (ElectricNetworkConnector connector in interactedConnectors)
-            connector.ConnectBothSidedTo(newlyAddedConnector); 
+        foreach (ElectricNetworkNode interactedNode in interactedNodes)
+            Connect(addedNode, interactedNode);
+    }
 
+
+    public void HandleElectricNetworkNodeAddOn(ElectricNetworkConnector placedConnector, CollisionHandler electricCollisionHandler)
+    {
+        ElectricNetworkConnector[] interactedConnectors =GetInteractedNetworkConnectors(placedConnector, electricCollisionHandler.intersectingColliders);
+        List<ElectricNetworkNode> interactedNodes = new List<ElectricNetworkNode>();
+        foreach (ElectricNetworkConnector interactedConnector in interactedConnectors)
+        {
+            if (interactedConnector == placedConnector)
+                continue; 
+            interactedNodes.Add(interactedConnector.node); 
+        }
+
+        HandleElectricNetworkNodeAddOn(placedConnector.node, interactedNodes); 
     }
 
 
     public void ShowPreviewOfElectricNetworkNodeAddOn(ElectricNetworkConnector previewConnector, CollisionHandler electricCollisionHandler)
     {
-        interactedConnectors = GetInteractedNetworkNodes(previewConnector, electricCollisionHandler.intersectingColliders);
+        interactedConnectors = GetInteractedNetworkConnectors(previewConnector, electricCollisionHandler.intersectingColliders);
 
         foreach (ElectricNetworkConnector connector in interactedConnectors)
             previewConnector.CreateCableConnectionTo(connector, true);
@@ -188,7 +196,7 @@ public class ElectricNetworkManager : MonoBehaviour
 
     // Returns the Connector/Nodes, which are already there and get interacted with by the justAddedConnector. 
     // The justAddedConnector is not included in the returned value. 
-    private ElectricNetworkConnector[] GetInteractedNetworkNodes(ElectricNetworkConnector justAddedConnector, Collider[] colliders)
+    public static ElectricNetworkConnector[] GetInteractedNetworkConnectors(ElectricNetworkConnector justAddedConnector, Collider[] colliders)
     {
         List<ElectricNetworkConnector> connectorsList = new List<ElectricNetworkConnector>();
 
@@ -210,17 +218,17 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    private ElectricNetwork[] GetDifferentNetworksOf(ElectricNetworkConnector[] connectors)
+    private ElectricNetwork[] GetDifferentNetworksOf(ElectricNetworkNode[] nodes)
     {
         List<ElectricNetwork> networks = new List<ElectricNetwork>();
 
-        foreach (ElectricNetworkConnector connector in connectors)
+        foreach (ElectricNetworkNode node in nodes)
         {
-            if (connector.connectedNetwork == null)
+            if (node.connectedNetwork == null)
                 continue; 
 
-            if (!networks.Contains(connector.connectedNetwork))
-                networks.Add(connector.connectedNetwork);
+            if (!networks.Contains(node.connectedNetwork))
+                networks.Add(node.connectedNetwork);
         }
 
         return networks.ToArray(); 
