@@ -606,6 +606,7 @@ public class PlayerManager : MonoBehaviour
         electricNetworkManager.ClearPreviewCablesOf(electricNetworkConnector); 
 
         // Then add them for each electric node collider 
-        electricNetworkManager.ShowPreviewOfElectricNetworkNodeAddOn(electricNetworkConnector, electricCollisionHandler); 
+        //TODO: Due to refactoring this should probably only be called, when the Preview Updates (and not each tick) 
+        electricNetworkConnector.ShowPlacementPreviewOfElectricNetworkNodeAddOn(electricNetworkManager, electricCollisionHandler); 
     }
 }

@@ -24,10 +24,17 @@ public class ElectricNetworkConnector : MonoBehaviour
     public void HandlePlacement(ElectricNetworkManager electricNetworkManager, CollisionHandler electricCollisionHandler)
     {
         List<ElectricNetworkNode> interactedNodes = GetInteractedNetworkNodes(this, electricCollisionHandler); 
-        electricNetworkManager.HandleElectricNetworkNodeAddOn(this.node, interactedNodes);
+        electricNetworkManager.HandleElectricNetworkNodeAddOn(node, interactedNodes);
     }
 
-    
+
+    public void ShowPlacementPreviewOfElectricNetworkNodeAddOn(ElectricNetworkManager electricNetworkManager, CollisionHandler electricCollisionHandler)
+    {
+        List<ElectricNetworkNode> interactedNodes = GetInteractedNetworkNodes(this, electricCollisionHandler);
+        electricNetworkManager.HandlePreviewOfElectricNetworkNodeAddOn(node, interactedNodes);
+    }
+
+
     private static List<ElectricNetworkNode> GetInteractedNetworkNodes(ElectricNetworkConnector triggeringConnector, CollisionHandler electricCollisionHandler)
     {
         ElectricNetworkConnector[] interactedConnectors = GetInteractedNetworkConnectors(triggeringConnector, electricCollisionHandler.intersectingColliders);

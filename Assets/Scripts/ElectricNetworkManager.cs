@@ -8,7 +8,8 @@ public class ElectricNetworkManager : MonoBehaviour
 
     public GameObject cablePrefab;
     public GameObject debugConnectionLinePrefab; 
-    public List<ElectricNetwork> electricNetworks; 
+    public List<ElectricNetwork> electricNetworks;
+    public ElectricNetwork previewNetwork = new ElectricNetwork(); 
 
     private ElectricNetworkConnector newlyAddedConnector;
     private ElectricNetworkConnector[] interactedConnectors;
@@ -106,12 +107,21 @@ public class ElectricNetworkManager : MonoBehaviour
             Debug.LogError($"ERROR CONNECTING: Node 1 and Node 2 have a different network. " +
                 $"Node 1: {node1} - {node1.connectedNetwork}; Node 2: {node2} - {node2.connectedNetwork}. ");
 
-        // Check if a node is a preview 
-        if (node1.type == ElectricNetworkNode.Type.Preview || node2.type == ElectricNetworkNode.Type.Preview)
-            edge.type = ElectricNetworkEdge.Type.Preview; 
-
         // Register edge in network and vice versa
         Register(node1.connectedNetwork, edge); 
+    }
+
+
+    // Unlike the other Connect method, this one is used to create a preview edge. This preview edge is shown, when 
+    // hovering a building, so the according cables are displayed. The preview edge is only added to the previewNetwork. 
+    public static void ConnectPreview(ElectricNetworkNode node1, ElectricNetworkNode node2, ElectricNetwork previewNetwork)
+    {
+        // Create preview edge between node1 and node2 
+        ElectricNetworkEdge previewEdge = new ElectricNetworkEdge(node1, node2);
+        previewEdge.type = ElectricNetworkEdge.Type.Preview;
+
+        // Register edge in previewNetwork and vice versa
+        Register(previewNetwork, previewEdge); 
     }
 
 
@@ -144,14 +154,10 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    public void ShowPreviewOfElectricNetworkNodeAddOn(ElectricNetworkConnector previewConnector, CollisionHandler electricCollisionHandler)
+    public void HandlePreviewOfElectricNetworkNodeAddOn(ElectricNetworkNode previewNode, List<ElectricNetworkNode> interactedNodes)
     {
-        interactedConnectors = GetInteractedNetworkConnectors(previewConnector, electricCollisionHandler.intersectingColliders);
-
-        foreach (ElectricNetworkConnector connector in interactedConnectors)
-            previewConnector.CreateCableConnectionTo(connector, true);
-
-        previewCables.AddRange(previewConnector.cableConnections); 
+        foreach (ElectricNetworkNode interactedNode in interactedNodes)
+            ConnectPreview(previewNode, interactedNode, previewNetwork);
     }
 
 
@@ -377,7 +383,7 @@ public class ElectricNetworkManager : MonoBehaviour
 
         // Else if there is only one or no node left, destroy the network 
         if (network.nodes.Count == 1)
-            network.nodes[0].RemoveBothSidedFromNetwork();
+            Unregister(network, network.nodes[0]);
         
         electricNetworks.Remove(network); 
     }
