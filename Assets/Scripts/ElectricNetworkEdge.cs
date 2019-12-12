@@ -8,6 +8,7 @@ public class ElectricNetworkEdge
     public ElectricNetwork connectedNetwork;
     public Tuple<ElectricNetworkNode, ElectricNetworkNode> nodes;
     public ElectricNetworkCableConnection cable;
+    public Type type = Type.Normal; 
 
     public ElectricNetworkEdge(ElectricNetworkNode node1, ElectricNetworkNode node2)
     {
@@ -15,7 +16,7 @@ public class ElectricNetworkEdge
     }
 
     //TODO: Implement usage for type 
-    private enum Type
+    public enum Type
     {
         Normal, 
         Preview

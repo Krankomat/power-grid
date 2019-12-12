@@ -9,18 +9,25 @@ public class ElectricNetworkNode
     public ElectricNetwork connectedNetwork;
     public List<ElectricNetworkNode> connectedNodes = new List<ElectricNetworkNode>();
     public List<ElectricNetworkEdge> connectedEdges = new List<ElectricNetworkEdge>();
-    public ElectricNetworkConnector connector; 
+    public ElectricNetworkConnector connector;
+    public Type type = Type.Normal; 
 
     public ElectricNetworkNode(ElectricNetworkConnector connector)
     {
         this.connector = connector; 
     }
 
+    public enum Type
+    {
+        Normal, 
+        Preview 
+    }
+
     //TODO: Implement 
-    private enum Type
+    public enum Role
     {
         Producer,
         Consumer,
-        Transporter
+        Transporter 
     }
 }
