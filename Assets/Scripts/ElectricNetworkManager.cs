@@ -164,6 +164,19 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
+    public static bool IsInSameNetwork(List<ElectricNetworkNode> nodes)
+    {
+        ElectricNetwork previousNetwork = nodes[0].connectedNetwork; 
+        foreach (ElectricNetworkNode node in nodes)
+        {
+            if (node.connectedNetwork != previousNetwork)
+                return false;
+            previousNetwork = node.connectedNetwork; 
+        }
+        return true; 
+    }
+
+
     public void HandleElectricNetworkNodeAddOn(ElectricNetworkNode addedNode, List<ElectricNetworkNode> interactedNodes)
     {
         int numberOfInvolvedNetworksInConnectionAttempt = GetDifferentNetworksOf(interactedNodes.ToArray()).Length;
