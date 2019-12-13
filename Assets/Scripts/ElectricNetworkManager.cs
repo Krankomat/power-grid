@@ -265,103 +265,118 @@ public class ElectricNetworkManager : MonoBehaviour
 
     private void HandleAdjacentNodesAfterNodeRemoval(List<ElectricNetworkNode> adjacentNodes)
     {
+        // Case 1: There are no adjacent nodes on removal 
         if (adjacentNodes == null || adjacentNodes.Count == 0)
             return; 
 
-        // Case 1: There is only one adjacent node on removal 
+        // Case 2: There is only one adjacent node on removal; no changes to network  
         if (adjacentNodes.Count == 1)
             return;
 
-        // Case 2: There are at least two adjacent nodes and AT LEAST ONE is NOT connected with each other 
+        // Case 3: There are at least two adjacent nodes; what happens with the network is ambiguous --> NetworkResolver 
         NetworkResolver networkResolver = new NetworkResolver();
-        List<List<ElectricNetworkNode>> listsOfResolvedNodes = 
-                networkResolver.GetListsOfResolvedNodesAt(adjacentNodes);
+        networkResolver.ResolveNetworks(adjacentNodes);
+        // If only one ElectricNetworkSeed gets returned, it means that the network doesn't break up 
+        List<ElectricNetworkSeed> listsOfResolvedNetworkSeeds = networkResolver.resolvedNetworkSeeds; 
 
-        foreach(List<ElectricNetworkNode> resolvedNodes in listsOfResolvedNodes)
+        foreach (ElectricNetworkSeed networkSeed in listsOfResolvedNetworkSeeds)
         {
-            ElectricNetwork electricNetwork = CreateNewElectricNetwork(); 
-            foreach (ElectricNetworkNode resolvedNode in resolvedNodes)
-                ElectricNetworkUtil.Register(electricNetwork, resolvedNode); 
+            ElectricNetwork electricNetwork = CreateNewElectricNetwork();
+            networkSeed.nodes.ForEach(node => ElectricNetworkUtil.Unregister(node.connectedNetwork, node));
+            networkSeed.nodes.ForEach(node => ElectricNetworkUtil.Register(electricNetwork, node)); 
+            networkSeed.edges.ForEach(edge => ElectricNetworkUtil.Unregister(edge.connectedNetwork, edge));
+            networkSeed.edges.ForEach(edge => ElectricNetworkUtil.Register(electricNetwork, edge));
+            //TODO: Populate former electric network with biggest ElectricNetworkSeed instead of creating a new one. 
         }
 
-        // Case 3: (Special case) There are at least two adjacent nodes and all are connected with each other on removal. 
+        // Case 4: (Special case) There are at least two adjacent nodes and all are connected with each other on removal. 
         // This case is not handled here, because it also gets resolved by the NetworkResolver. 
     }
 
 
-    // Class to recursively resolve networks, when a connector is being removed 
-    //TODO: Handle edges and their connectedNetwork when traversing nodes 
+    /*
+     * Not a fully fledged electric network yet, rather the ingridents for it. 
+     */
+    private struct ElectricNetworkSeed
+    {
+        public List<ElectricNetworkEdge> edges;
+        public List<ElectricNetworkNode> nodes; 
+    }
+
+
+    /*
+     * Class to recursively resolve networks, when a connector is being removed 
+     */ 
     private class NetworkResolver
     {
+        public List<ElectricNetworkSeed> resolvedNetworkSeeds = new List<ElectricNetworkSeed>();
+        private List<ElectricNetworkNode> traversedNodes = new List<ElectricNetworkNode>();
+        private Queue<ElectricNetworkNode> nodeQueue = new Queue<ElectricNetworkNode>();
 
-        List<ElectricNetworkNode> resolvedNodes = new List<ElectricNetworkNode>();
-
-        
-        public List<ElectricNetworkNode> GetResolvedNodesAt(ElectricNetworkNode node)
+        public void ResolveNetworks(List<ElectricNetworkNode> nodesToBeResolved)
         {
-            TraverseNode(node);
-            return resolvedNodes; 
-        }
-
-
-        public List<List<ElectricNetworkNode>> GetListsOfResolvedNodesAt(List<ElectricNetworkNode> nodes)
-        {
-            List<NetworkResolver> networkResolver = new List<NetworkResolver>();
-            List<List<ElectricNetworkNode>> listOfResolvedNodes = new List<List<ElectricNetworkNode>>();
-            List<ElectricNetworkNode> nodesToBeTraversed = new List<ElectricNetworkNode>();
-
-            nodesToBeTraversed.AddRange(nodes); 
-
-            ElectricNetworkNode currentConnector = nodesToBeTraversed[0]; 
+            if (nodesToBeResolved == null || nodesToBeResolved.Count == 0)
+                return;
             
-            while (nodesToBeTraversed.Count > 0)
+            foreach(ElectricNetworkNode node in nodesToBeResolved)
             {
-                ElectricNetworkNode currentlyTraversedNode = nodesToBeTraversed[0];
-                NetworkResolver currentlyResolvedNetwork = new NetworkResolver();
-                
-                nodesToBeTraversed.Remove(currentlyTraversedNode);
-                currentlyResolvedNetwork.TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(
-                        currentlyTraversedNode, nodesToBeTraversed);
-
-                listOfResolvedNodes.Add(currentlyResolvedNetwork.resolvedNodes); 
+                if (traversedNodes.Contains(node))
+                    continue; 
+                Queue<ElectricNetworkNode> nodeQueue = new Queue<ElectricNetworkNode>();
+                nodeQueue.Enqueue(node);
+                resolvedNetworkSeeds.Add(TraverseNodesInQueueAndResolveAsNetwork(nodeQueue)); 
             }
-            
-            return listOfResolvedNodes; 
+
         }
 
-
-        private void TraverseNode(ElectricNetworkNode node)
+        /*
+         * There are actually two lists with traveresed nodes in this NetworkResolver: 
+         * 1) traversedNodes represents all nodes that have been passed through the traversal 
+         * 2) nodesInThisNetwork represents a subset of all traversed nodes, namely only those that are connected with each other (--> network) 
+         */
+        private ElectricNetworkSeed TraverseNodesInQueueAndResolveAsNetwork(Queue<ElectricNetworkNode> nodeQueue)
         {
-            foreach (ElectricNetworkNode childNode in node.connectedNodes)
+            List<ElectricNetworkNode> nodesInThisNetwork = new List<ElectricNetworkNode>();
+            List<ElectricNetworkEdge> edgesInThisNetwork = new List<ElectricNetworkEdge>();
+            ElectricNetworkSeed resolvedNetworkSeed = new ElectricNetworkSeed(); 
+
+            while (nodeQueue.Count > 0)
             {
-                if (resolvedNodes.Contains(childNode))
-                    continue;
+                ElectricNetworkNode nodeOnTop = nodeQueue.Peek(); 
 
-                resolvedNodes.Add(childNode);
-                TraverseNode(childNode); 
+                // Add each connected node to the network (plus the corresponding edge) 
+                foreach (ElectricNetworkNode connectedNode in nodeOnTop.connectedNodes)
+                {
+                    // If the resolver already visited this node, continue 
+                    if (traversedNodes.Contains(connectedNode))
+                        continue;
+
+                    // Add connected Node to queue 
+                    nodeQueue.Enqueue(connectedNode);
+
+                    // Get edge between two nodes 
+                    ElectricNetworkEdge commonEdge = ElectricNetworkUtil.GetCommonEdge(nodeOnTop, connectedNode);
+                    if (commonEdge == null)
+                        Debug.LogError($"ERROR RESOLVING NETWORKS: " +
+                            $"There is no common edge between Node 1 {nodeOnTop} and Node 2 {connectedNode}. ");
+                    edgesInThisNetwork.Add(commonEdge); 
+                }
+
+                // Add traversed node to all 1) visited nodes and 2) nodes for network
+                traversedNodes.Add(nodeOnTop);
+                nodesInThisNetwork.Add(nodeOnTop); 
+
+                // Remove top node from queue 
+                nodeQueue.Dequeue();
             }
+
+            // Return resolved network 
+            resolvedNetworkSeed.nodes.AddRange(nodesInThisNetwork); 
+            resolvedNetworkSeed.edges.AddRange(edgesInThisNetwork);
+            return resolvedNetworkSeed; 
         }
-
-        
-        private void TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(ElectricNetworkNode node, 
-                                                                          List<ElectricNetworkNode> subsequentlyTraversedNodes)
-        {
-            foreach (ElectricNetworkNode childNode in node.connectedNodes)
-            {
-                if (subsequentlyTraversedNodes.Contains(childNode))
-                    subsequentlyTraversedNodes.Remove(childNode); 
-
-                if (resolvedNodes.Contains(childNode))
-                    continue;
-
-                resolvedNodes.Add(childNode);
-                // Also transfer the cables referenced in the script? 
-                TraverseNodeAndWatchOutForSubsequentlyTraversedNodes(childNode, subsequentlyTraversedNodes);
-            }
-        }
-
-
     }
+
     private class DebugDrawer
     {
         List<ElectricNetwork> electricNetworks;
