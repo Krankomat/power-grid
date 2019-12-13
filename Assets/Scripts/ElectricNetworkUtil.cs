@@ -160,4 +160,57 @@ public static class ElectricNetworkUtil
         return networks.ToArray();
     }
 
+
+    public static bool CheckEdgeAndNodesCongruence(ElectricNetworkEdge edge, ElectricNetworkNode node1, ElectricNetworkNode node2)
+    {
+        bool nodesAreConnectedProperly = CheckNodesConnection(node1, node2);
+        bool nodesHaveOneCommonEdge = CheckCommonEdge(node1, node2);
+        return nodesAreConnectedProperly && nodesHaveOneCommonEdge; 
+    }
+
+
+    public static bool CheckNodesConnection(ElectricNetworkNode node1, ElectricNetworkNode node2)
+    {
+        bool node1AndNode2AreNotConnectedWithEachOther = !node1.connectedNodes.Contains(node2) && !node2.connectedNodes.Contains(node1);
+        bool node1IsConnectedOneSidedWithNode2 = node1.connectedNodes.Contains(node2) && !node2.connectedNodes.Contains(node1);
+        bool node2IsConnectedOneSidedWithNode1 = node2.connectedNodes.Contains(node1) && !node1.connectedNodes.Contains(node2);
+
+        if (node1AndNode2AreNotConnectedWithEachOther)
+        {
+            Debug.LogError($"ERROR: Node 1 {node1} and Node 2 {node2} are not connected with each other. ");
+            return false;
+        }
+
+        if (node1IsConnectedOneSidedWithNode2)
+        {
+            Debug.LogError($"ERROR: Node 1 {node1} is connected to Node 2 {node2}, but Node 2 is not connected to Node 1. ");
+            return false;
+        }
+
+        if (node2IsConnectedOneSidedWithNode1)
+        {
+            Debug.LogError($"ERROR: Node 2 {node2} is connected to Node 1 {node1}, but Node 1 is not connected to Node 2. ");
+            return false;
+        }
+
+        return true; 
+    }
+
+
+    public static bool CheckCommonEdge(ElectricNetworkNode node1, ElectricNetworkNode node2)
+    {
+        List<ElectricNetworkEdge> commonEdges = node1.connectedEdges.Intersect(node2.connectedEdges).ToList();
+        if (commonEdges.Count == 0)
+        {
+            Debug.LogError($"ERROR: There is no common edge between Node 1 {node1} and Node 2 {node2}. ");
+            return false; 
+        }
+        if (commonEdges.Count > 1)
+        {
+            Debug.LogError($"ERROR: There are more than 1 edge ({commonEdges.Count}) between Node 1 {node1} and Node 2 {node2}. ");
+            return false; 
+        }
+        return true; 
+    }
+
 }
