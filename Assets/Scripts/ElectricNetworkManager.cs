@@ -18,6 +18,7 @@ public class ElectricNetworkManager : MonoBehaviour
     {
         Debug.Log($"INFO: There are currently {electricNetworks.Count} electric networks. ");
 
+
         if (Input.GetKeyUp(KeyCode.U))
         {
             if (debugDrawer == null)
@@ -58,10 +59,15 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
+    /*
+     * This method should not be called each Update, rather only on changes. 
+     */ 
     public void HandlePreviewOfElectricNetworkNodeAddOn(ElectricNetworkNode previewNode, List<ElectricNetworkNode> interactedNodes)
     {
         foreach (ElectricNetworkNode interactedNode in interactedNodes)
             ElectricNetworkUtil.ConnectPreview(previewNode, interactedNode, previewNetwork);
+
+        CreateCablesForPreviewEdges(); 
     }
 
 
@@ -185,8 +191,35 @@ public class ElectricNetworkManager : MonoBehaviour
         if (previewNetwork.edges.Count == 0)
             return;
 
+        DestroyCablesFromPreviewEdges(); 
         previewNetwork.edges.Clear(); 
     } 
+
+
+    private void CreateCablesForPreviewEdges()
+    {
+        foreach (ElectricNetworkEdge previewEdge in previewNetwork.edges)
+        {
+            if (previewEdge.cable != null)
+                continue; 
+
+            GameObject cable = Instantiate(cablePrefab);
+            ElectricNetworkCableConnection cableConnection = cable.GetComponent<ElectricNetworkCableConnection>();
+            cableConnection.edge = previewEdge;
+            previewEdge.cable = cableConnection; 
+            cableConnection.Connect();
+        }
+    }
+
+
+    private void DestroyCablesFromPreviewEdges()
+    {
+        if (previewNetwork.edges.Count == 0)
+            return; 
+
+        foreach (ElectricNetworkEdge previewEdge in previewNetwork.edges)
+            Destroy(previewEdge.cable.gameObject); 
+    }
 
 
     private void HandleAdjacentNodesAfterNodeRemoval(List<ElectricNetworkNode> adjacentNodes)

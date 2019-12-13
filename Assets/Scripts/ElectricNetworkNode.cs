@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public class ElectricNetworkNode 
 {
+    //TODO: Fix serialization depth limit exceeding because of object composition cycle 
     public ElectricNetwork connectedNetwork;
     public List<ElectricNetworkNode> connectedNodes = new List<ElectricNetworkNode>();
     public List<ElectricNetworkEdge> connectedEdges = new List<ElectricNetworkEdge>();

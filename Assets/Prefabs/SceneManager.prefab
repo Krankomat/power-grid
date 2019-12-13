@@ -57,7 +57,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2104e4e86bbdb9f42a75ded402c6f863, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cablePrefab: {fileID: 0}
+  cablePrefab: {fileID: 1815557656542328517, guid: bbde3bb7505b7cf4f8294c1d4cd55536,
+    type: 3}
   debugConnectionLinePrefab: {fileID: 3485483380144484864, guid: 1efaeff12a7d0074cac4c4727eae944e,
     type: 3}
   electricNetworks: []
+  previewNetwork:
+    id: 21
+    nodes: []
