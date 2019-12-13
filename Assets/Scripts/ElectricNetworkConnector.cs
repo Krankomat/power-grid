@@ -37,7 +37,7 @@ public class ElectricNetworkConnector : MonoBehaviour
 
     private static List<ElectricNetworkNode> GetInteractedNetworkNodes(ElectricNetworkConnector triggeringConnector, CollisionHandler electricCollisionHandler)
     {
-        ElectricNetworkConnector[] interactedConnectors = GetInteractedNetworkConnectors(triggeringConnector, electricCollisionHandler.intersectingColliders);
+        ElectricNetworkConnector[] interactedConnectors = GetInteractedNetworkConnectors(triggeringConnector, electricCollisionHandler.enteredColliders.ToArray());
         List<ElectricNetworkNode> interactedNodes = new List<ElectricNetworkNode>();
         foreach (ElectricNetworkConnector interactedConnector in interactedConnectors)
         {

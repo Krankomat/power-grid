@@ -146,7 +146,7 @@ public class PlayerManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (footprintCollisionHandler.isColliding)
+                if (footprintCollisionHandler.IsColliding())
                     HandleIntentToPlaceDownOnBlockedSpace();
                 else
                     CompletePlacingGameObject();
@@ -247,7 +247,7 @@ public class PlayerManager : MonoBehaviour
         if (electricCollisionHandler == null)
             return;
 
-        if (electricCollisionHandler.isColliding)
+        if (electricCollisionHandler.IsColliding())
             Debug.Log("The gameObject, which gets placed, is currently colliding! ");
     }
 
@@ -431,7 +431,6 @@ public class PlayerManager : MonoBehaviour
             return;
 
         electricCollisionHandler = electricNetworkNodeCollider.GetComponent<CollisionHandler>();
-        electricCollisionHandler.colliderIntersectingIsCurrentlyActive = true;
         // When placing a gameObject with an electricNetworkNodeCollider, the trigger setting is OFF. 
         // This way, the game-object-to-be-placed is a "Kinematic Rigidbody Collider" and the game-objects-already-placed 
         // are a "Kinematic Rigidbody Trigger Collider". Because for some reason, there is no collision detection between 
@@ -448,7 +447,6 @@ public class PlayerManager : MonoBehaviour
     {
         if (electricCollisionHandler != null)
         {
-            electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
             electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
             electricNetworkManager.ClearPreviewNetworkEdges();
         }
@@ -469,7 +467,6 @@ public class PlayerManager : MonoBehaviour
             UnlinkElectricColliderFromCablePreview(); 
             electricNetworkManager.ClearPreviewNetworkEdges();
             electricNetworkConnector.HandlePlacement(electricNetworkManager, electricCollisionHandler); 
-            electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
             electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
         }
 
