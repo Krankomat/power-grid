@@ -450,7 +450,7 @@ public class PlayerManager : MonoBehaviour
         {
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
             electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
-
+            electricNetworkManager.ClearPreviewNetworkEdges();
         }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
