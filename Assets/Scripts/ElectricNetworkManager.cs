@@ -8,7 +8,7 @@ public class ElectricNetworkManager : MonoBehaviour
 
     public GameObject cablePrefab;
     public GameObject debugConnectionLinePrefab; 
-    public List<ElectricNetwork> electricNetworks = new List<ElectricNetwork>();;
+    public List<ElectricNetwork> electricNetworks = new List<ElectricNetwork>();
     public ElectricNetwork previewNetwork = new ElectricNetwork(); 
     
     private DebugDrawer debugDrawer; 
