@@ -181,6 +181,7 @@ public class ElectricNetworkManager : MonoBehaviour
     {
         int numberOfInvolvedNetworksInConnectionAttempt = GetDifferentNetworksOf(interactedNodes.ToArray()).Length;
 
+        // Debug info 
         if (GameManager.Instance.isDebugging)
             for (int i = 0; i < interactedNodes.Count(); i++)
                 Debug.Log($"INFO NETWORK ADDON: Interacted Node {i}: {interactedNodes[i]}. ");
@@ -191,11 +192,11 @@ public class ElectricNetworkManager : MonoBehaviour
 
         // Handle addon to network 
         if (numberOfInvolvedNetworksInConnectionAttempt == 0)
-            HandleCreationOfANewNetwork();
+            HandleCreationOfASingleNewNetwork(addedNode, interactedNodes);
         else if (numberOfInvolvedNetworksInConnectionAttempt == 1)
-            HandleAddonToAnExistingNetwork();
+            HandleAddonToAnExistingNetwork(addedNode, interactedNodes);
         else if (numberOfInvolvedNetworksInConnectionAttempt > 1)
-            HandleAddonToMultipleExistingNetworks();
+            HandleAddonToMultipleExistingNetworks(addedNode, interactedNodes);
         else
             Debug.LogError($"ERROR NETWORK ADDON: There is an illegal number of involved networks " + 
                 $"({numberOfInvolvedNetworksInConnectionAttempt}) when trying to add a new node. "); 
@@ -251,44 +252,43 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    private void HandleCreationOfANewNetwork()
+    private void HandleCreationOfASingleNewNetwork(ElectricNetworkNode addedNode, List<ElectricNetworkNode> adjacentNodes)
     {
-        ElectricNetwork network = CreateNewElectricNetwork(); 
+        //TODO: Check if adjacentNodes are needed in this method 
+        ElectricNetwork network = CreateNewElectricNetwork();
 
         // Connect nodes to network 
-        newlyAddedConnector.ConnectBothSidedTo(network); 
-
-        // Connect each node with the network 
-        foreach (ElectricNetworkConnector connector in interactedConnectors)
-            connector.ConnectBothSidedTo(network);
+        Register(network, addedNode); 
 
         SortElectricNetworks();
 
-        Debug.Log("New Network was created and added! ");
+        Debug.Log($"INFO: New Network {network} was created and added! ");
     }
 
 
     // Idealy, a new connector without a network gets added 
     // But it can happen, that the newly placed connector also connects with an orphan node. Then, 
     // this orphan node also has to be added to the single existing network, that gets an addon. 
-    private void HandleAddonToAnExistingNetwork()
+    private void HandleAddonToAnExistingNetwork(ElectricNetworkNode addedNode, List<ElectricNetworkNode> adjacentNodes)
     {
-        ElectricNetwork network = interactedConnectors[0].connectedNetwork;
-
-        newlyAddedConnector.ConnectBothSidedTo(network);
+        //TODO: This follows the old system, that a graph needs at least two members. But now, every node should have a network. 
+        ElectricNetwork network = adjacentNodes[0].connectedNetwork;
+        Register(network, addedNode);
 
         // Handle orphan connectors 
-        foreach (ElectricNetworkConnector connector in interactedConnectors)
-            if (connector.connectedNetwork == null)
-                connector.ConnectBothSidedTo(network);
+        foreach (ElectricNetworkNode adjacentNode in adjacentNodes)
+            if (adjacentNode.connectedNetwork == null)
+                Register(network, adjacentNode);
 
         SortElectricNetworks();
+
+        Debug.Log($"INFO: Node {addedNode} was added to network {network}. ");
     }
 
 
-    private void HandleAddonToMultipleExistingNetworks()
+    private void HandleAddonToMultipleExistingNetworks(ElectricNetworkNode addedNode, List<ElectricNetworkNode> adjacentNodes)
     {
-        ElectricNetwork[] existingNetworks = GetDifferentNetworksOf(interactedConnectors);
+        ElectricNetwork[] existingNetworks = GetDifferentNetworksOf(adjacentNodes.ToArray());
         existingNetworks = ElectricNetwork.SortBySize(existingNetworks);
         ElectricNetwork biggestNetwork = existingNetworks[0]; 
 
@@ -302,8 +302,8 @@ public class ElectricNetworkManager : MonoBehaviour
             IntegrateElectricNetworkIntoAnother(biggestNetwork, disintegratedNetwork); 
         }
 
-        // Add placed down connetor to the network, all other networks get integrated into 
-        newlyAddedConnector.ConnectBothSidedTo(biggestNetwork);
+        // Register added node into biggest network all other networks get integrated into 
+        Register(biggestNetwork, addedNode);
 
         SortElectricNetworks();
     }
@@ -329,9 +329,9 @@ public class ElectricNetworkManager : MonoBehaviour
 
     private void IntegrateElectricNetworkIntoAnother(ElectricNetwork targetNetwork, ElectricNetwork disintegratingNetwork)
     {
-        List<ElectricNetworkConnector> integratedNodes = disintegratingNetwork.nodes;
+        List<ElectricNetworkNode> integratedNodes = disintegratingNetwork.nodes;
         
-        foreach (ElectricNetworkConnector node in integratedNodes)
+        foreach (ElectricNetworkNode node in integratedNodes)
             node.connectedNetwork = targetNetwork; 
         
         targetNetwork.nodes.AddRange(integratedNodes);
