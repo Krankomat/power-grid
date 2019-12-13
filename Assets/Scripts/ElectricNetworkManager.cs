@@ -29,6 +29,7 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
     
+    // TODO: Rename to "AddNode()" 
     public void HandleElectricNetworkNodeAddOn(ElectricNetworkNode addedNode, List<ElectricNetworkNode> interactedNodes)
     {
         int numberOfInvolvedNetworksInConnectionAttempt = ElectricNetworkUtil.GetDifferentNetworksOf(interactedNodes.ToArray()).Length;
@@ -53,9 +54,12 @@ public class ElectricNetworkManager : MonoBehaviour
             Debug.LogError($"ERROR NETWORK ADDON: There is an illegal number of involved networks " + 
                 $"({numberOfInvolvedNetworksInConnectionAttempt}) when trying to add a new node. "); 
 
-        //Handle nodes connecting with each other 
+        // Handle nodes connecting with each other 
         foreach (ElectricNetworkNode interactedNode in interactedNodes)
             ElectricNetworkUtil.Connect(addedNode, interactedNode);
+
+        // Create cables between power poles, if they are missing 
+        CreateAllCables(); 
     }
 
 
@@ -67,7 +71,7 @@ public class ElectricNetworkManager : MonoBehaviour
         foreach (ElectricNetworkNode interactedNode in interactedNodes)
             ElectricNetworkUtil.ConnectPreview(previewNode, interactedNode, previewNetwork);
 
-        CreateCablesForPreviewEdges(); 
+        CreateCablesForNetwork(previewNetwork); 
     }
 
 
@@ -81,11 +85,14 @@ public class ElectricNetworkManager : MonoBehaviour
 
         // If no nodes are connected, return 
         if (node.connectedNodes.Count() == 0 && node.connectedEdges.Count() == 0)
-            return; 
+            return;
 
-        // "Destroy" Edges 
+        // Destroy cables and disconnect edges  
         foreach (ElectricNetworkEdge edge in node.connectedEdges)
+        {
+            Destroy(edge.cable);
             ElectricNetworkUtil.Disconnect(edge);
+        }
 
         // Handle adjacent nodes 
         HandleAdjacentNodesAfterNodeRemoval(adjacentNodes); 
@@ -191,34 +198,57 @@ public class ElectricNetworkManager : MonoBehaviour
         if (previewNetwork.edges.Count == 0)
             return;
 
-        DestroyCablesFromPreviewEdges(); 
-        previewNetwork.edges.Clear(); 
-    } 
+        DestroyCablesFromNetwork(previewNetwork);
+        previewNetwork.edges.Clear();
+    }
 
 
-    private void CreateCablesForPreviewEdges()
+    /*
+     * Creates the cables between two power poles for all networks. 
+     * This is probably an expensive operation, because many objects can get created at the same time. 
+     */
+    private void CreateAllCables()
     {
-        foreach (ElectricNetworkEdge previewEdge in previewNetwork.edges)
+        foreach (ElectricNetwork network in electricNetworks)
+            CreateCablesForNetwork(network);
+    }
+
+    /*
+     * Use with care. Destroys all CableConnection gameObjects for all networks. 
+     */ 
+    private void DestroyAllCables()
+    {
+        foreach (ElectricNetwork network in electricNetworks)
+            DestroyCablesFromNetwork(network);
+    }
+
+
+    private void CreateCablesForNetwork(ElectricNetwork network)
+    {
+        if (network.edges.Count == 0)
+            return; 
+
+        foreach (ElectricNetworkEdge edge in network.edges)
         {
-            if (previewEdge.cable != null)
-                continue; 
+            if (edge.cable != null)
+                continue;
 
             GameObject cable = Instantiate(cablePrefab);
             ElectricNetworkCableConnection cableConnection = cable.GetComponent<ElectricNetworkCableConnection>();
-            cableConnection.edge = previewEdge;
-            previewEdge.cable = cableConnection; 
+            cableConnection.edge = edge;
+            edge.cable = cableConnection;
             cableConnection.Connect();
         }
     }
 
 
-    private void DestroyCablesFromPreviewEdges()
+    private void DestroyCablesFromNetwork(ElectricNetwork network)
     {
-        if (previewNetwork.edges.Count == 0)
-            return; 
+        if (network.edges.Count == 0)
+            return;
 
-        foreach (ElectricNetworkEdge previewEdge in previewNetwork.edges)
-            Destroy(previewEdge.cable.gameObject); 
+        foreach (ElectricNetworkEdge edge in network.edges)
+            Destroy(edge.cable.gameObject);
     }
 
 
