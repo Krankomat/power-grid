@@ -38,12 +38,10 @@ public class ElectricNetworkManager : MonoBehaviour
             for (int i = 0; i < interactedNodes.Count(); i++)
                 Debug.Log($"INFO NETWORK ADDON: Interacted Node {i}: {interactedNodes[i]}. ");
 
-        // If there is no interaction with any other node, return 
-        if (interactedNodes == null || interactedNodes.Count() == 0)
-            return; 
-
         // Handle addon to network 
         if (numberOfInvolvedNetworksInConnectionAttempt == 0)
+            // Interacted Nodes are passed as parameter, because there can be a connection attempt with 
+            // interacted/adjacent nodes, that have connectedNetwork = null. 
             HandleCreationOfASingleNewNetwork(addedNode, interactedNodes);
         else if (numberOfInvolvedNetworksInConnectionAttempt == 1)
             HandleAddonToAnExistingNetwork(addedNode, interactedNodes);
@@ -100,15 +98,29 @@ public class ElectricNetworkManager : MonoBehaviour
 
     private void HandleCreationOfASingleNewNetwork(ElectricNetworkNode addedNode, List<ElectricNetworkNode> adjacentNodes)
     {
-        //TODO: Check if adjacentNodes are needed in this method 
+        // Check if adjacentNodes all have no network; 
+        // If they do, another method about handling addon to network(s) should be called. 
+        foreach (ElectricNetworkNode adjacentNode in adjacentNodes)
+        {
+            if (adjacentNode.connectedNetwork != null)
+            {
+                Debug.LogError($"ERROR CREATING NODE: Node {addedNode} should be only one with network, " +
+                    $"but Node {adjacentNode} already has network {adjacentNode.connectedNetwork}. ");
+                return; 
+            }
+        }
         ElectricNetwork network = CreateNewElectricNetwork();
+        ElectricNetworkUtil.Register(network, addedNode);
+        Debug.Log($"INFO CREATING NODE: Node {addedNode} was created with network {network}. ");
 
-        // Connect nodes to network 
-        ElectricNetworkUtil.Register(network, addedNode); 
+        if (adjacentNodes != null && adjacentNodes.Count > 0)
+            foreach (ElectricNetworkNode adjacentNode in adjacentNodes)
+            {
+                ElectricNetworkUtil.Register(network, adjacentNode);
+                Debug.Log($"INFO REGISTERING: Node {adjacentNode} was added to network {network}. ");
+            }
 
         SortElectricNetworks();
-
-        Debug.Log($"INFO: New Network {network} was created and added! ");
     }
 
 
