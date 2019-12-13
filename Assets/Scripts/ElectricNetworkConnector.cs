@@ -77,7 +77,8 @@ public class ElectricNetworkConnector : MonoBehaviour
     {
         electricNetworkManager.DestroyNode(node); 
         OnConnectorDemolished.Invoke();
-        Destroy(this); 
+        Debug.Log($"INFO DEMOLISHING: Demolished {gameObject}. ");
+        Destroy(gameObject);
     }
 
 }

@@ -85,9 +85,10 @@ public class ElectricNetworkManager : MonoBehaviour
             return;
 
         // Destroy cables and disconnect edges  
-        foreach (ElectricNetworkEdge edge in node.connectedEdges)
+        List<ElectricNetworkEdge> connectedEdges = new List<ElectricNetworkEdge>(node.connectedEdges); 
+        foreach (ElectricNetworkEdge edge in connectedEdges)
         {
-            Destroy(edge.cable);
+            Destroy(edge.cable.gameObject);
             ElectricNetworkUtil.Disconnect(edge);
         }
 
