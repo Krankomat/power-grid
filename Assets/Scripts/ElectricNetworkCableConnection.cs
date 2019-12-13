@@ -9,6 +9,8 @@ public class ElectricNetworkCableConnection : MonoBehaviour
     private GameObject cableA;
     private GameObject cableB;
 
+    //TODO: Optimize by only updating position of cables in CableDrawer, when edge.type == ElectricNetworkEdge.Type.Preview is. 
+    // But not necessary at this point (and it could lead to some inconsistencies when moving things around in the editor). 
 
     private void Awake()
     {
