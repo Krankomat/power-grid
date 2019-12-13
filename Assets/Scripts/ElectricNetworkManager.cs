@@ -51,7 +51,7 @@ public class ElectricNetworkManager : MonoBehaviour
             Debug.LogError($"ERROR NETWORK ADDON: There is an illegal number of involved networks " + 
                 $"({numberOfInvolvedNetworksInConnectionAttempt}) when trying to add a new node. "); 
 
-        // Handle nodes connecting with each other 
+        // Connect nodes with each other and create edges 
         foreach (ElectricNetworkNode interactedNode in interactedNodes)
             ElectricNetworkUtil.Connect(addedNode, interactedNode);
 
@@ -124,22 +124,11 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    // Idealy, a new connector without a network gets added 
-    // But it can happen, that the newly placed connector also connects with an orphan node. Then, 
-    // this orphan node also has to be added to the single existing network, that gets an addon. 
     private void HandleAddonToAnExistingNetwork(ElectricNetworkNode addedNode, List<ElectricNetworkNode> adjacentNodes)
     {
-        //TODO: This follows the old system, that a graph needs at least two members. But now, every node should have a network. 
         ElectricNetwork network = adjacentNodes[0].connectedNetwork;
         ElectricNetworkUtil.Register(network, addedNode);
-
-        // Handle orphan connectors 
-        foreach (ElectricNetworkNode adjacentNode in adjacentNodes)
-            if (adjacentNode.connectedNetwork == null)
-                ElectricNetworkUtil.Register(network, adjacentNode);
-
         SortElectricNetworks();
-
         Debug.Log($"INFO: Node {addedNode} was added to network {network}. ");
     }
 
@@ -155,8 +144,6 @@ public class ElectricNetworkManager : MonoBehaviour
         {
             if (disintegratedNetwork == biggestNetwork)
                 continue;
-
-            // Could be problematic, because it's iterating over a list that destroys its members 
             IntegrateElectricNetworkIntoAnother(biggestNetwork, disintegratedNetwork); 
         }
 
@@ -187,13 +174,25 @@ public class ElectricNetworkManager : MonoBehaviour
 
     private void IntegrateElectricNetworkIntoAnother(ElectricNetwork targetNetwork, ElectricNetwork disintegratingNetwork)
     {
-        List<ElectricNetworkNode> integratedNodes = disintegratingNetwork.nodes;
-        
-        foreach (ElectricNetworkNode node in integratedNodes)
-            node.connectedNetwork = targetNetwork; 
-        
-        targetNetwork.nodes.AddRange(integratedNodes);
+        // Create new lists. Otherwise, elements would be removed while iterating over the list. 
+        List<ElectricNetworkNode> movedNodes = new List<ElectricNetworkNode>(disintegratingNetwork.nodes); 
+        List<ElectricNetworkEdge> movedEdges = new List<ElectricNetworkEdge>(disintegratingNetwork.edges);
 
+        // Transfer nodes 
+        foreach (ElectricNetworkNode node in movedNodes)
+        {
+            ElectricNetworkUtil.Unregister(disintegratingNetwork, node); 
+            ElectricNetworkUtil.Register(targetNetwork, node);
+        }
+
+        // Transfer edges 
+        foreach (ElectricNetworkEdge edge in movedEdges)
+        {
+            ElectricNetworkUtil.Unregister(disintegratingNetwork, edge);
+            ElectricNetworkUtil.Register(targetNetwork, edge);
+        }
+
+        // "Destroy" (aka unlink) network 
         DestroyElectricNetwork(disintegratingNetwork); 
     }
     
