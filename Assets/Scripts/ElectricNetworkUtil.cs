@@ -207,10 +207,30 @@ public static class ElectricNetworkUtil
         }
         if (commonEdges.Count > 1)
         {
-            Debug.LogError($"ERROR: There are more than 1 edge ({commonEdges.Count}) between Node 1 {node1} and Node 2 {node2}. ");
+            Debug.LogError($"ERROR: There is more than 1 edge ({commonEdges.Count}) between Node 1 {node1} and Node 2 {node2}. ");
             return false; 
         }
         return true; 
+    }
+
+
+    public static ElectricNetworkEdge GetCommonEdge(ElectricNetworkNode node1, ElectricNetworkNode node2)
+    {
+        List<ElectricNetworkEdge> commonEdges = node1.connectedEdges.Intersect(node2.connectedEdges).ToList();
+
+        if (commonEdges.Count == 0)
+        {
+            Debug.LogError($"ERROR: There is no common edge between Node 1 {node1} and Node 2 {node2}. ");
+            return null;
+        }
+
+        if (commonEdges.Count > 1)
+        {
+            Debug.LogError($"ERROR: There is more than 1 edge ({commonEdges.Count}) between Node 1 {node1} and Node 2 {node2}. ");
+            return null;
+        }
+
+        return commonEdges[0]; 
     }
 
 }
