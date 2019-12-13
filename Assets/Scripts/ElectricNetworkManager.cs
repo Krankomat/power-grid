@@ -336,24 +336,13 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
 
-    public void ClearPreviewCablesOf(ElectricNetworkConnector previewConnector)
+    public void ClearPreviewNetworkEdges()
     {
-        if (previewCables.Count == 0)
-            return; 
+        if (previewNetwork.edges.Count == 0)
+            return;
 
-        //foreach (ElectricNetworkCableConnection cableConnection in previewCables)
-        //    Destroy(cableConnection.gameObject);
-        //
-        //previewCables.Clear(); 
-        
-        for (int i = previewCables.Count -1; i >= 0; i--)
-        {
-            previewConnector.cableConnections.Clear(); 
-            Destroy(previewCables[i].gameObject); 
-            previewCables.RemoveAt(i); 
-        }
-
-    }
+        previewNetwork.edges.Clear(); 
+    } 
 
 
     private void HandleAdjacentNodesAfterNodeRemoval(List<ElectricNetworkNode> adjacentNodes)

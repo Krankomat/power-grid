@@ -467,7 +467,7 @@ public class PlayerManager : MonoBehaviour
             ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
 
             UnlinkElectricColliderFromCablePreview(); 
-            electricNetworkManager.ClearPreviewCablesOf(electricNetworkConnector);
+            electricNetworkManager.ClearPreviewNetworkEdges();
             electricNetworkConnector.HandlePlacement(electricNetworkManager, electricCollisionHandler); 
             electricCollisionHandler.colliderIntersectingIsCurrentlyActive = false;
             electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
@@ -601,7 +601,7 @@ public class PlayerManager : MonoBehaviour
         ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
 
         // First, clear all preview cables 
-        electricNetworkManager.ClearPreviewCablesOf(electricNetworkConnector); 
+        electricNetworkManager.ClearPreviewNetworkEdges(); 
 
         // Then add them for each electric node collider 
         //TODO: Due to refactoring this should probably only be called, when the Preview Updates (and not each tick) 
