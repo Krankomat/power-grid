@@ -8,25 +8,15 @@ public class ElectricNetworkManager : MonoBehaviour
 
     public GameObject cablePrefab;
     public GameObject debugConnectionLinePrefab; 
-    public List<ElectricNetwork> electricNetworks;
+    public List<ElectricNetwork> electricNetworks = new List<ElectricNetwork>();;
     public ElectricNetwork previewNetwork = new ElectricNetwork(); 
-
-    private ElectricNetworkConnector newlyAddedConnector;
-    private ElectricNetworkConnector[] interactedConnectors;
-    private List<ElectricNetworkCableConnection> previewCables;
+    
     private DebugDrawer debugDrawer; 
-
-
-    private void Awake()
-    {
-        electricNetworks = new List<ElectricNetwork>();
-        previewCables = new List<ElectricNetworkCableConnection>(); 
-    }
-
+    
 
     private void Update()
     {
-        Debug.Log("There are currently " + electricNetworks.Count + " electronic networks. ");
+        Debug.Log($"INFO: There are currently {electricNetworks.Count} electric networks. ");
 
         if (Input.GetKeyUp(KeyCode.U))
         {
