@@ -29,8 +29,7 @@ public class ElectricNetworkManager : MonoBehaviour
     }
 
     
-    // TODO: Rename to "AddNode()" 
-    public void HandleElectricNetworkNodeAddOn(ElectricNetworkNode addedNode, List<ElectricNetworkNode> interactedNodes)
+    public void AddNode(ElectricNetworkNode addedNode, List<ElectricNetworkNode> interactedNodes)
     {
         int numberOfInvolvedNetworksInConnectionAttempt = ElectricNetworkUtil.GetDifferentNetworksOf(interactedNodes.ToArray()).Length;
 
@@ -66,7 +65,7 @@ public class ElectricNetworkManager : MonoBehaviour
     /*
      * This method should not be called each Update, rather only on changes. 
      */ 
-    public void HandlePreviewOfElectricNetworkNodeAddOn(ElectricNetworkNode previewNode, List<ElectricNetworkNode> interactedNodes)
+    public void AddPreviewNode(ElectricNetworkNode previewNode, List<ElectricNetworkNode> interactedNodes)
     {
         foreach (ElectricNetworkNode interactedNode in interactedNodes)
             ElectricNetworkUtil.ConnectPreview(previewNode, interactedNode, previewNetwork);
