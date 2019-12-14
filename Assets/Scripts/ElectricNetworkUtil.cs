@@ -233,4 +233,37 @@ public static class ElectricNetworkUtil
         return commonEdges[0]; 
     }
 
+
+    public static void SortBySize(List<ElectricNetworkSeed> electricNetworkSeeds)
+    {
+        electricNetworkSeeds.OrderByDescending(networkSeed => networkSeed.nodes.Count);
+    }
+
+
+    /* 
+     * Wipes all nodes and edges from the network 
+     */ 
+    public static void RemoveNetworkContent(ElectricNetwork network)
+    {
+        // New lists have to be created, otherwise there is a enumeration modified exception 
+        List<ElectricNetworkNode> nodesToBeRemoved = new List<ElectricNetworkNode>(network.nodes); 
+        List<ElectricNetworkEdge> edgesToBeRemoved = new List<ElectricNetworkEdge>(network.edges);
+
+        // Remove nodes and edges from network 
+        nodesToBeRemoved.ForEach(node => Unregister(network, node));
+        edgesToBeRemoved.ForEach(edge => Unregister(network, edge));
+    }
+
+
+    public static void AddNetworkContent(ElectricNetwork network, List<ElectricNetworkNode> addedNodes, List<ElectricNetworkEdge> addedEdges)
+    {
+        addedNodes.ForEach(node => Register(network, node)); 
+        addedEdges.ForEach(edge => Register(network, edge));
+    }
+
+    
+    public static void AddNetworkContent(ElectricNetwork network, ElectricNetworkSeed networkSeed)
+    {
+        AddNetworkContent(network, networkSeed.nodes, networkSeed.edges); 
+    }
 }
