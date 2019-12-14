@@ -295,16 +295,6 @@ public class ElectricNetworkManager : MonoBehaviour
 
 
     /*
-     * Not a fully fledged electric network yet, rather the ingridents for it. 
-     */
-    private struct ElectricNetworkSeed
-    {
-        public List<ElectricNetworkNode> nodes; 
-        public List<ElectricNetworkEdge> edges;
-    }
-
-
-    /*
      * Class to recursively resolve networks, when a connector is being removed 
      */ 
     private class NetworkResolver
