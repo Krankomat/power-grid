@@ -13,11 +13,17 @@ public class ElectricNetworkConnector : MonoBehaviour
     public ElectricNetworkNode node; 
     
     public UnityEvent OnConnectorDemolished;
-    
 
-    private void  Awake()
+    private void Awake()
     {
         node = new ElectricNetworkNode(this);
+    }
+
+
+    private void Start()
+    {
+        // Add instance ID to distinguish the objects
+        gameObject.name += $"#{gameObject.GetInstanceID()}"; 
     }
 
 
