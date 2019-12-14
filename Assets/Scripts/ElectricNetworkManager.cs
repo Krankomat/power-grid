@@ -280,33 +280,45 @@ public class ElectricNetworkManager : MonoBehaviour
             return;
 
         // Case 3: There are at least two adjacent nodes; what happens with the network is ambiguous --> NetworkResolver 
+        HandleNetworkResolving(adjacentNodes); 
+
+        // Case 4: (Special case) There are at least two adjacent nodes and all are connected with each other on removal. 
+        // This case is not handled here, because it also gets resolved by the NetworkResolver. 
+    }
+
+
+    /*
+     * You should not call this method directly. Instead, call HandleAdjacentNodesAfterNodeRemoval()
+     */
+    private void HandleNetworkResolving(List<ElectricNetworkNode> nodesToBeResolved)
+    {
         NetworkResolver networkResolver = new NetworkResolver();
-        networkResolver.ResolveNetworks(adjacentNodes);
-        // If only one ElectricNetworkSeed gets returned, it means that the network doesn't break up 
+        networkResolver.ResolveNetworks(nodesToBeResolved);
         List<ElectricNetworkSeed> resolvedNetworkSeeds = networkResolver.resolvedNetworkSeeds;
+
+        // If only one ElectricNetworkSeed gets returned, it means that the network doesn't break up. Just one node gets removed. 
+        if (resolvedNetworkSeeds.Count == 1)
+            return; 
 
         // Because all former nodes and edges now are reassigned in resolved network seeds, it is save to wipe all 
         // content from the network before removal (unregister all nodes and edges). 
-        ElectricNetwork networkBeforeRemoval = adjacentNodes[0].connectedNetwork;
+        ElectricNetwork networkBeforeRemoval = nodesToBeResolved[0].connectedNetwork;
         ElectricNetworkUtil.RemoveNetworkContent(networkBeforeRemoval);
 
         // Reassign the biggest networkSeed to the network before the removal 
         ElectricNetworkUtil.SortBySize(resolvedNetworkSeeds);
-        ElectricNetworkSeed biggestNetworkSeed = resolvedNetworkSeeds[0]; 
+        ElectricNetworkSeed biggestNetworkSeed = resolvedNetworkSeeds[0];
         ElectricNetworkUtil.AddNetworkContent(networkBeforeRemoval, biggestNetworkSeed);
-        Debug.Log($"INFO: There are {biggestNetworkSeed.nodes.Count} nodes in the biggest network after removing a node. "); 
-        resolvedNetworkSeeds.Remove(biggestNetworkSeed); 
+        Debug.Log($"INFO: There are {biggestNetworkSeed.nodes.Count} nodes in the biggest network after removing a node. ");
+        resolvedNetworkSeeds.Remove(biggestNetworkSeed);
 
         // For every other networkSeed: Create a new network and populate it with the contents of the networkSeed  
         foreach (ElectricNetworkSeed networkSeed in resolvedNetworkSeeds)
         {
             ElectricNetwork electricNetwork = CreateNewElectricNetwork();
-            networkSeed.nodes.ForEach(node => ElectricNetworkUtil.Register(electricNetwork, node)); 
+            networkSeed.nodes.ForEach(node => ElectricNetworkUtil.Register(electricNetwork, node));
             networkSeed.edges.ForEach(edge => ElectricNetworkUtil.Register(electricNetwork, edge));
         }
-
-        // Case 4: (Special case) There are at least two adjacent nodes and all are connected with each other on removal. 
-        // This case is not handled here, because it also gets resolved by the NetworkResolver. 
     }
 
 
