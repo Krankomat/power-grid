@@ -344,6 +344,9 @@ public class ElectricNetworkManager : MonoBehaviour
                     // Add connected Node to queue 
                     nodeQueue.Enqueue(connectedNode);
 
+                    // Add node to traversed nodes (as soon as they are in queue, they count as traversed/visited) 
+                    traversedNodes.Add(connectedNode); 
+
                     // Get edge between two nodes 
                     ElectricNetworkEdge commonEdge = ElectricNetworkUtil.GetCommonEdge(nodeOnTop, connectedNode);
                     if (commonEdge == null)
