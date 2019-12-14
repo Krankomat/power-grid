@@ -299,8 +299,8 @@ public class ElectricNetworkManager : MonoBehaviour
      */
     private struct ElectricNetworkSeed
     {
-        public List<ElectricNetworkEdge> edges;
         public List<ElectricNetworkNode> nodes; 
+        public List<ElectricNetworkEdge> edges;
     }
 
 
@@ -371,8 +371,8 @@ public class ElectricNetworkManager : MonoBehaviour
             }
 
             // Return resolved network 
-            resolvedNetworkSeed.nodes.AddRange(nodesInThisNetwork); 
-            resolvedNetworkSeed.edges.AddRange(edgesInThisNetwork);
+            resolvedNetworkSeed.nodes = nodesInThisNetwork; 
+            resolvedNetworkSeed.edges = edgesInThisNetwork;
             return resolvedNetworkSeed; 
         }
     }
