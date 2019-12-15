@@ -431,7 +431,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -184.99983}
+  m_AnchoredPosition: {x: 0, y: -303.5}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1187846439881770921
@@ -663,6 +663,7 @@ GameObject:
   - component: {fileID: 5754700431121581430}
   - component: {fileID: 1995152301446542040}
   - component: {fileID: 149387285656380620}
+  - component: {fileID: 204886176896217473}
   m_Layer: 5
   m_Name: ElectricNetworksInfo
   m_TagString: Untagged
@@ -726,6 +727,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &204886176896217473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041113614532015782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61c24aa1425a9a74a9730c8cafd7b4b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ElectricNetworkManager: {fileID: 0}
+  networkElementPrefab: {fileID: 9116746510504885858, guid: 4064433966579d4478132b366544dc9d,
+    type: 3}
+  networkPanelPrefab: {fileID: 4157846599300675203, guid: fea993d2112241747b45679b6e7a009a,
+    type: 3}
+  networkPanelContainer: {fileID: 5605471347621503141}
 --- !u!1 &9148919484859561440
 GameObject:
   m_ObjectHideFlags: 0
@@ -844,7 +863,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8192804234244491942}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.5
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

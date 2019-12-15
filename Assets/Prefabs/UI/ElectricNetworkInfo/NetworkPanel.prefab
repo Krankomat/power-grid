@@ -592,6 +592,7 @@ GameObject:
   - component: {fileID: 7358246431342940061}
   - component: {fileID: 5451078688524100576}
   - component: {fileID: 3170973497091647471}
+  - component: {fileID: 6795364883522340261}
   m_Layer: 5
   m_Name: NetworkPanel
   m_TagString: Untagged
@@ -681,6 +682,21 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &6795364883522340261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4157846599300675203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8af67d57beb110f44972589aa20f365e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: {fileID: 7585496343562762483}
+  networkNodesContainer: {fileID: 614902157521876409}
+  networkEdgesContainer: {fileID: 9038559818016093719}
 --- !u!1 &6243847560673102191
 GameObject:
   m_ObjectHideFlags: 0
