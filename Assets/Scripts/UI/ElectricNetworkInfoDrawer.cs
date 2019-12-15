@@ -41,6 +41,15 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
     }
 
 
+    private void UpdatePanelContent(ElectricNetwork network, ElectricNetworkPanel networkPanel)
+    {
+        CreateNodePanelsForPanelIfNecessary(network, networkPanel);
+        RemoveNodePanelsForPanelIfNecessary(network, networkPanel);
+        CreateEdgePanelsForPanelIfNecessary(network, networkPanel);
+        RemoveEdgePanelsForPanelIfNecessary(network, networkPanel);
+    }
+
+
     private void CreateNewPanelsIfNecessary()
     {
         foreach (ElectricNetwork network in electricNetworkManager.electricNetworks)
@@ -53,7 +62,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             ElectricNetworkPanel networkPanel = networkPanelGameObject.GetComponent<ElectricNetworkPanel>();
             networkPanel.SetTitle("Network " + network.id);
             panelsByNetwork.Add(network, networkPanel);
-            newlyCreatednetworkPanels.Add(networkPanel); 
+            newlyCreatednetworkPanels.Add(networkPanel);
         }
     }
 
@@ -72,14 +81,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
     }
 
 
-    private void UpdatePanelContent(ElectricNetwork network, ElectricNetworkPanel networkPanel)
-    {
-        CreatePanelElementsForPanelIfNecessary(network, networkPanel);
-        RemovePanelElementsForPanelIfNecessary(network, networkPanel); 
-    }
-
-
-    private void CreatePanelElementsForPanelIfNecessary(ElectricNetwork network, ElectricNetworkPanel networkPanel)
+    private void CreateNodePanelsForPanelIfNecessary(ElectricNetwork network, ElectricNetworkPanel networkPanel)
     {
         // Create Nodes (if necessary) 
         foreach (ElectricNetworkNode node in network.nodes)
@@ -92,12 +94,13 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             elementPanelGameObject.transform.SetParent(networkPanel.networkNodesContainer.transform);
             ElectricNetworkElementPanel elementPanel = elementPanelGameObject.GetComponent<ElectricNetworkElementPanel>();
             elementPanel.SetText("N " + node.connector.Id);
+            elementPanel.type = ElectricNetworkElementPanel.Type.Node; 
             networkPanel.elementPanelsByNode.Add(node, elementPanel);
         }
     }
 
 
-    private void RemovePanelElementsForPanelIfNecessary(ElectricNetwork network, ElectricNetworkPanel networkPanel)
+    private void RemoveNodePanelsForPanelIfNecessary(ElectricNetwork network, ElectricNetworkPanel networkPanel) 
     {
         List<ElectricNetworkNode> possiblyOutdatedNodes = new List<ElectricNetworkNode>(networkPanel.elementPanelsByNode.Keys);
         foreach (ElectricNetworkNode possiblyOutdatedNode in possiblyOutdatedNodes)
@@ -107,6 +110,39 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
 
             Destroy(networkPanel.elementPanelsByNode[possiblyOutdatedNode].gameObject);
             networkPanel.elementPanelsByNode.Remove(possiblyOutdatedNode); 
+        }
+    }
+
+
+    private void CreateEdgePanelsForPanelIfNecessary(ElectricNetwork network, ElectricNetworkPanel networkPanel)
+    {
+        // Create Edges (if necessary) 
+        foreach (ElectricNetworkEdge edge in network.edges)
+        {
+            if (networkPanel.elementPanelsByEdge.Keys.Contains(edge))
+                continue;
+
+            // Create Edge-ElementPanel entry 
+            GameObject elementPanelGameObject = Instantiate(networkElementPrefab);
+            elementPanelGameObject.transform.SetParent(networkPanel.networkEdgesContainer.transform);
+            ElectricNetworkElementPanel elementPanel = elementPanelGameObject.GetComponent<ElectricNetworkElementPanel>();
+            elementPanel.SetText("E " + edge.cable.Id);
+            elementPanel.type = ElectricNetworkElementPanel.Type.Edge;
+            networkPanel.elementPanelsByEdge.Add(edge, elementPanel);
+        }
+    }
+
+
+    private void RemoveEdgePanelsForPanelIfNecessary(ElectricNetwork network, ElectricNetworkPanel networkPanel)
+    {
+        List<ElectricNetworkEdge> possiblyOutdatedEdges = new List<ElectricNetworkEdge>(networkPanel.elementPanelsByEdge.Keys);
+        foreach (ElectricNetworkEdge possiblyOutdatedEdge in possiblyOutdatedEdges)
+        {
+            if (network.edges.Contains(possiblyOutdatedEdge))
+                continue;
+
+            Destroy(networkPanel.elementPanelsByEdge[possiblyOutdatedEdge].gameObject);
+            networkPanel.elementPanelsByEdge.Remove(possiblyOutdatedEdge);
         }
     }
 
