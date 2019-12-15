@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
 public class ElectricNetworkNode 
 {
     //TODO: Fix serialization depth limit exceeding because of object composition cycle 
