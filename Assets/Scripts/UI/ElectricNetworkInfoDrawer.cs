@@ -11,7 +11,8 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
     public GameObject networkPanelPrefab;
     public GameObject networkPanelContainer;
 
-    private Dictionary<ElectricNetwork, ElectricNetworkPanel> panelsByNetwork = new Dictionary<ElectricNetwork, ElectricNetworkPanel>(); 
+    private Dictionary<ElectricNetwork, ElectricNetworkPanel> panelsByNetwork = new Dictionary<ElectricNetwork, ElectricNetworkPanel>();
+    private List<ElectricNetworkPanel> newlyCreatednetworkPanels = new List<ElectricNetworkPanel>(); 
 
 
     void Start()
@@ -22,13 +23,21 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
 
     void Update()
     {
+        // Clear newly created network panels for this frame 
+        newlyCreatednetworkPanels.Clear();
+
         // Update network panels 
         CreateNewPanelsIfNecessary();
         RemoveOutdatedPanels();
 
         // Update content inside network panels 
         foreach (ElectricNetwork network in panelsByNetwork.Keys)
+        {
+            // You have to wait at least one frame before the child elements can be added to the electricNetworkPanel 
+            if (newlyCreatednetworkPanels.Contains(panelsByNetwork[network]))
+                continue; 
             UpdatePanelContent(network, panelsByNetwork[network]); 
+        }
     }
 
 
@@ -44,6 +53,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             ElectricNetworkPanel networkPanel = networkPanelGameObject.GetComponent<ElectricNetworkPanel>();
             networkPanel.SetTitle("Network " + network.id);
             panelsByNetwork.Add(network, networkPanel);
+            newlyCreatednetworkPanels.Add(networkPanel); 
         }
     }
 
