@@ -8,6 +8,7 @@ public class ElectricNetworkCableConnection : MonoBehaviour
     public GameObject cablePrefab;
     private GameObject cableA;
     private GameObject cableB;
+    public int Id { get { return gameObject.GetInstanceID(); } }
 
     //TODO: Optimize by only updating position of cables in CableDrawer, when edge.type == ElectricNetworkEdge.Type.Preview is. 
     // But not necessary at this point (and it could lead to some inconsistencies when moving things around in the editor). 
@@ -17,6 +18,12 @@ public class ElectricNetworkCableConnection : MonoBehaviour
         edge = new ElectricNetworkEdge(null, null); 
         cableA = Instantiate(cablePrefab, gameObject.transform);
         cableB = Instantiate(cablePrefab, gameObject.transform); 
+    }
+
+
+    private void Start()
+    {
+        gameObject.name += $"#{Id}";
     }
 
 
