@@ -19,9 +19,54 @@ public class TransportNetworkManager : MonoBehaviour
             for (int j = 0; j < tileMapHeight; j++)
                 tiles[i, j] = new TransportNetworkTile(i, j); 
     }
-    
 
-    private bool tileIsAtUpperEdge(TransportNetworkTile tile)
+    private List<TransportNetworkTile> GetNeighbors(TransportNetworkTile tile)
+    {
+        List<TransportNetworkTile> neighbors = new List<TransportNetworkTile>();
+        TransportNetworkTile neighborTop    = GetNeighborTop(tile); 
+        TransportNetworkTile neighborBottom = GetNeighborBottom(tile); 
+        TransportNetworkTile neighborLeft   = GetNeighborLeft(tile); 
+        TransportNetworkTile neighborRight  = GetNeighborRight(tile);
+        if (neighborTop != null)
+            neighbors.Add(neighborTop);
+        if (neighborBottom != null)
+            neighbors.Add(neighborBottom);
+        if (neighborLeft != null)
+            neighbors.Add(neighborLeft);
+        if (neighborRight != null)
+            neighbors.Add(neighborRight);
+        return neighbors; 
+    }
+
+    private TransportNetworkTile GetNeighborTop(TransportNetworkTile tile)
+    {
+        if (tileIsAtTopEdge(tile))
+            return null;
+        return tiles[tile.position.x, tile.position.y + 1];
+    }
+
+    private TransportNetworkTile GetNeighborBottom(TransportNetworkTile tile)
+    {
+        if (tileIsAtBottomEdge(tile))
+            return null;
+        return tiles[tile.position.x, tile.position.y - 1];
+    }
+
+    private TransportNetworkTile GetNeighborLeft(TransportNetworkTile tile)
+    {
+        if (tileIsAtLeftEdge(tile))
+            return null;
+        return tiles[tile.position.x - 1, tile.position.y];
+    }
+
+    private TransportNetworkTile GetNeighborRight(TransportNetworkTile tile)
+    {
+        if (tileIsAtRightEdge(tile))
+            return null;
+        return tiles[tile.position.x + 1, tile.position.y];
+    }
+
+    private bool tileIsAtTopEdge(TransportNetworkTile tile)
     {
         int positionY = tile.position.y; 
         if (positionY > tileMapHeight - 1)
@@ -30,7 +75,7 @@ public class TransportNetworkManager : MonoBehaviour
         return positionY >= tileMapHeight - 1;
     }
 
-    private bool tileIsAtLowerEdge(TransportNetworkTile tile)
+    private bool tileIsAtBottomEdge(TransportNetworkTile tile)
     {
         int positionY = tile.position.y;
         if (positionY < 0)
