@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7094908422790758837}
   - component: {fileID: 7094908422790758836}
   - component: {fileID: 7094908422790758838}
+  - component: {fileID: 4766119133597798479}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -64,4 +65,19 @@ MonoBehaviour:
   electricNetworks: []
   previewNetwork:
     id: 21
-    nodes: []
+--- !u!114 &4766119133597798479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7094908422790758827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05938558b8bbfa84591e995753ac3d00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileWidth: 1
+  tileHeight: 1
+  tileMapWidth: 100
+  tileMapHeight: 100
