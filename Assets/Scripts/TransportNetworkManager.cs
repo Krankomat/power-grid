@@ -71,33 +71,33 @@ public class TransportNetworkManager : MonoBehaviour
 
     private TransportNetworkTile GetNeighborTop(TransportNetworkTile tile)
     {
-        if (tileIsAtTopEdge(tile))
+        if (TileIsAtTopEdge(tile))
             return null;
         return tiles[tile.position.x, tile.position.y + 1];
     }
 
     private TransportNetworkTile GetNeighborBottom(TransportNetworkTile tile)
     {
-        if (tileIsAtBottomEdge(tile))
+        if (TileIsAtBottomEdge(tile))
             return null;
         return tiles[tile.position.x, tile.position.y - 1];
     }
 
     private TransportNetworkTile GetNeighborLeft(TransportNetworkTile tile)
     {
-        if (tileIsAtLeftEdge(tile))
+        if (TileIsAtLeftEdge(tile))
             return null;
         return tiles[tile.position.x - 1, tile.position.y];
     }
 
     private TransportNetworkTile GetNeighborRight(TransportNetworkTile tile)
     {
-        if (tileIsAtRightEdge(tile))
+        if (TileIsAtRightEdge(tile))
             return null;
         return tiles[tile.position.x + 1, tile.position.y];
     }
 
-    private bool tileIsAtTopEdge(TransportNetworkTile tile)
+    private bool TileIsAtTopEdge(TransportNetworkTile tile)
     {
         int positionY = tile.position.y; 
         if (positionY > tileMapHeight - 1)
@@ -106,7 +106,7 @@ public class TransportNetworkManager : MonoBehaviour
         return positionY >= tileMapHeight - 1;
     }
 
-    private bool tileIsAtBottomEdge(TransportNetworkTile tile)
+    private bool TileIsAtBottomEdge(TransportNetworkTile tile)
     {
         int positionY = tile.position.y;
         if (positionY < 0)
@@ -115,7 +115,7 @@ public class TransportNetworkManager : MonoBehaviour
         return positionY <= 0;
     }
 
-    private bool tileIsAtLeftEdge(TransportNetworkTile tile)
+    private bool TileIsAtLeftEdge(TransportNetworkTile tile)
     {
         int positionX = tile.position.x;
         if (positionX < 0)
@@ -124,7 +124,7 @@ public class TransportNetworkManager : MonoBehaviour
         return positionX <= 0;
     }
 
-    private bool tileIsAtRightEdge(TransportNetworkTile tile)
+    private bool TileIsAtRightEdge(TransportNetworkTile tile)
     {
         int positionX = tile.position.x;
         if (positionX > tileMapWidth - 1)
