@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 5177589253244362856}
   - component: {fileID: 8701532805737864801}
   - component: {fileID: 8250413740690239568}
+  - component: {fileID: 4219986476943277555}
   m_Layer: 5
   m_Name: NetworkElement
   m_TagString: Untagged
@@ -198,3 +199,16 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
+--- !u!114 &4219986476943277555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9116746510504885858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbadc60a0bbab6549a5ddc0d3082fbfa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elementLabel: {fileID: 3141649561996395162}
