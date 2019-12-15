@@ -20,6 +20,37 @@ public class TransportNetworkManager : MonoBehaviour
                 tiles[i, j] = new TransportNetworkTile(i, j); 
     }
 
+
+    public void AddRoadAt(Vector2Int position)
+    {
+        TransportNetworkTile tile = tiles[position.x, position.y];
+        if (tile.type == TransportNetworkTile.Type.Road)
+            Debug.LogError($"ERROR ADDING ROAD TILE: There already is a road at X: {position.x}, Y: {position.y}. ");
+        tile.type = TransportNetworkTile.Type.Road;
+    }
+
+
+    public void AddRoadAt(int positionX, int positionY)
+    {
+        AddRoadAt(new Vector2Int(positionX, positionY)); 
+    }
+
+
+    public void ClearTileAt(Vector2Int position)
+    {
+        TransportNetworkTile tile = tiles[position.x, position.y];
+        if (tile.type == TransportNetworkTile.Type.Empty)
+            Debug.LogError($"ERROR CLEARING TILE: There is nothing to clear at X: {position.x}, Y: {position.y}. ");
+        tile.type = TransportNetworkTile.Type.Empty;
+    }
+
+
+    public void ClearTileAt(int positionX, int positionY)
+    {
+        ClearTileAt(new Vector2Int(positionX, positionY));
+    }
+
+
     private List<TransportNetworkTile> GetNeighbors(TransportNetworkTile tile)
     {
         List<TransportNetworkTile> neighbors = new List<TransportNetworkTile>();
