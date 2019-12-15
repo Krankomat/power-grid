@@ -266,4 +266,24 @@ public static class ElectricNetworkUtil
     {
         AddNetworkContent(network, networkSeed.nodes, networkSeed.edges); 
     }
+
+
+    public static bool CheckIfNetworkIsEmpty(ElectricNetwork network)
+    {
+        bool isEmpty = true; 
+
+        if (network.nodes.Count > 0)
+        {
+            Debug.LogWarning($"WARNING NETWORK: Network {network} is not empty, it still has {network.nodes.Count} nodes. ");
+            isEmpty = false;
+        }
+
+        if (network.edges.Count > 0)
+        {
+            Debug.LogWarning($"WARNING NETWORK: Network {network} is not empty, it still has {network.edges.Count} edges. ");
+            isEmpty = false;
+        }
+
+        return isEmpty; 
+    }
 }

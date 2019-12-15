@@ -74,15 +74,24 @@ public class ElectricNetworkManager : MonoBehaviour
 
     public void DestroyNode(ElectricNetworkNode node)
     {
+        ElectricNetwork networkOfDestroyedNode = node.connectedNetwork; 
+
         // Could throw error, when "node.connectedNodes = null" and then "adjacentNodes[0]"? 
         List<ElectricNetworkNode> adjacentNodes = new List<ElectricNetworkNode>(node.connectedNodes);
 
         // Unregister from network 
         ElectricNetworkUtil.Unregister(node.connectedNetwork, node);
 
-        // If no nodes are connected, return 
+        // If no nodes are connected, destroy the network (the destroyed node was the last one in the network)
         if (node.connectedNodes.Count() == 0 && node.connectedEdges.Count() == 0)
+        {
+            if (ElectricNetworkUtil.CheckIfNetworkIsEmpty(networkOfDestroyedNode))
+                DestroyElectricNetwork(networkOfDestroyedNode); 
+            else
+                Debug.LogError($"ERROR DELETING NODE: Network {networkOfDestroyedNode} is not empty, but it should be. " +
+                    $"On Removal, there were no adjacent nodes, so Node {node} must be the only member. ");
             return;
+        }
 
         // Destroy cables and disconnect edges  
         List<ElectricNetworkEdge> connectedEdges = new List<ElectricNetworkEdge>(node.connectedEdges); 
