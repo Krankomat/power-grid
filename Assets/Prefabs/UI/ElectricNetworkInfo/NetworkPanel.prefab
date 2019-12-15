@@ -279,7 +279,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Edges
+  m_Text: Edges (1)
 --- !u!1 &2549925248209116348
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,6 +695,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 7585496343562762483}
+  nodesTitleLabel: {fileID: 8544945849046407764}
+  edgesTitleLabel: {fileID: 8157823379937219400}
   networkNodesContainer: {fileID: 614902157521876409}
   networkEdgesContainer: {fileID: 9038559818016093719}
 --- !u!1 &6243847560673102191
@@ -773,7 +775,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Nodes
+  m_Text: Nodes (3)
 --- !u!1 &9038559818016093719
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class ElectricNetworkPanel : MonoBehaviour
 {
-    public Text title; 
+    public Text title;
+    public Text nodesTitleLabel;
+    public Text edgesTitleLabel;
     public GameObject networkNodesContainer;
     public GameObject networkEdgesContainer;
     public Dictionary<ElectricNetworkNode, ElectricNetworkElementPanel> elementPanelsByNode = new Dictionary<ElectricNetworkNode, ElectricNetworkElementPanel>();

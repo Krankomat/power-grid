@@ -47,6 +47,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
         RemoveNodePanelsForPanelIfNecessary(network, networkPanel);
         CreateEdgePanelsForPanelIfNecessary(network, networkPanel);
         RemoveEdgePanelsForPanelIfNecessary(network, networkPanel);
+        UpdateNodesAndEdgesCount(network, networkPanel); 
     }
 
 
@@ -144,6 +145,13 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             Destroy(networkPanel.elementPanelsByEdge[possiblyOutdatedEdge].gameObject);
             networkPanel.elementPanelsByEdge.Remove(possiblyOutdatedEdge);
         }
+    }
+
+
+    private void UpdateNodesAndEdgesCount(ElectricNetwork network, ElectricNetworkPanel networkPanel)
+    {
+        networkPanel.nodesTitleLabel.text = $"Nodes ({network.nodes.Count})"; 
+        networkPanel.edgesTitleLabel.text = $"Edges ({network.edges.Count})";
     }
 
 
