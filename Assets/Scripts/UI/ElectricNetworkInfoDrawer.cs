@@ -56,7 +56,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             if (electricNetworkManager.electricNetworks.Contains(possiblyOutdatedNetwork))
                 continue;
 
-            Destroy(panelsByNetwork[possiblyOutdatedNetwork]);
+            Destroy(panelsByNetwork[possiblyOutdatedNetwork].gameObject);
             panelsByNetwork.Remove(possiblyOutdatedNetwork);
         }
     }
@@ -95,7 +95,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             if (network.nodes.Contains(possiblyOutdatedNode))
                 continue;
 
-            Destroy(networkPanel.elementPanelsByNode[possiblyOutdatedNode]);
+            Destroy(networkPanel.elementPanelsByNode[possiblyOutdatedNode].gameObject);
             networkPanel.elementPanelsByNode.Remove(possiblyOutdatedNode); 
         }
     }
