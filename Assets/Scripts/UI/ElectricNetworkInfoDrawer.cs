@@ -91,7 +91,7 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
             GameObject elementPanelGameObject = Instantiate(networkElementPrefab);
             elementPanelGameObject.transform.SetParent(networkPanel.networkNodesContainer.transform);
             ElectricNetworkElementPanel elementPanel = elementPanelGameObject.GetComponent<ElectricNetworkElementPanel>();
-            elementPanel.SetText("N " + node.connector.GetInstanceID());
+            elementPanel.SetText("N " + node.connector.Id);
             networkPanel.elementPanelsByNode.Add(node, elementPanel);
         }
     }

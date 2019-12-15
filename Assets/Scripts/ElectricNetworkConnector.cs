@@ -11,6 +11,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     public Transform connectionPointA;
     public Transform connectionPointB; 
     public ElectricNetworkNode node; 
+    public int Id { get { return gameObject.GetInstanceID(); } }
     
     public UnityEvent OnConnectorDemolished;
 
@@ -23,7 +24,7 @@ public class ElectricNetworkConnector : MonoBehaviour
     private void Start()
     {
         // Add instance ID to distinguish the objects
-        gameObject.name += $"#{gameObject.GetInstanceID()}"; 
+        gameObject.name += $"#{Id}"; 
     }
 
 
