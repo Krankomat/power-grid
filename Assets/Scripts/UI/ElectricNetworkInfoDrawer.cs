@@ -103,7 +103,8 @@ public class ElectricNetworkInfoDrawer : MonoBehaviour
 
     private void RemoveExampleContent()
     {
-        networkPanelContainer.transform.DetachChildren();
+        foreach (Transform child in networkPanelContainer.transform)
+            Destroy(child.gameObject);
     }
     
 }
