@@ -300,7 +300,7 @@ public class PlayerManager : MonoBehaviour
         Vector3 offset = GetFootprintOffsetFrom(footprint); 
         placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, Selector.SelectionRaycastMaxDistance, placingPreviewLayerMask))
+        if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, SelectionHandler.SelectionRaycastMaxDistance, placingPreviewLayerMask))
             return;
 
         placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x + offset.x, gridCellDimensions.x) - offset.x; 

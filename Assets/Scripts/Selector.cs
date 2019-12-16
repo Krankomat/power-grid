@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class Selector : MonoBehaviour
 {
-    
-    public const float SelectionRaycastMaxDistance = 100f; 
-
     public GameObject selectionMarkPrefab;
 
     private GameObject selectionMark;
@@ -83,8 +80,5 @@ public class Selector : MonoBehaviour
         Debug.LogError("Selector Error: There is no gameObject named \"" 
                 + SelectionColliderName + "\" attached to " + gameObject.name + "."); 
     }
-
-
-
 
 }

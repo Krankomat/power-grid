@@ -7,7 +7,8 @@ public class SelectionHandler : MonoBehaviour
 {
     public GameObject hoveredGameObject;
     public GameObject selectedGameObject;
-    
+
+    public const float SelectionRaycastMaxDistance = 100f;
     private Selector hoveredSelector;
     private GameObject previouslyHoveredGameObject;
     private LayerMask selectionMask;
@@ -100,7 +101,7 @@ public class SelectionHandler : MonoBehaviour
         RaycastHit hit;
 
         // Make raycast and return, if nothing was hit 
-        if (!Physics.Raycast(hoverRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
+        if (!Physics.Raycast(hoverRay, out hit, SelectionRaycastMaxDistance, selectionMask))
         {
             ClearHover();
             return;
