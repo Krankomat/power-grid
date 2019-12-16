@@ -29,17 +29,19 @@ public class SelectionHandler : MonoBehaviour
     }
 
 
-    private void OnHoveringStarted()
+    private void StartHover(Selector selector)
     {
-        hoveredSelector.Hover();
-        Debug.Log("Hover started on object " + hoveredGameObject);
+        selector.Hover();
+        OnHoveringStart.Invoke();
+        Debug.Log($"INFO SELECTION: Hover started on object {selector.gameObject}. ");
     }
 
 
-    private void OnHoveringEnded()
+    private void EndHover(Selector selector)
     {
-        previouslyHoveredGameObject.GetComponent<Selector>().Unhover();
-        Debug.Log("Hover ended on object " + previouslyHoveredGameObject);
+        selector.Unhover();
+        OnHoveringEnd.Invoke();
+        Debug.Log($"INFO SELECTION: Hover ended on object {selector.gameObject}. ");
     }
 
 
@@ -51,19 +53,19 @@ public class SelectionHandler : MonoBehaviour
         if (hoveredGameObject != null &&
             previouslyHoveredGameObject == null)
         {
-            OnHoveringStart.Invoke();
+            StartHover(hoveredSelector); 
         }
         // something hovered --> nothing hovered 
         else if (hoveredGameObject == null &&
             previouslyHoveredGameObject != null)
         {
-            OnHoveringEnd.Invoke();
+            EndHover(previouslyHoveredGameObject.GetComponent<Selector>());
         }
         // something hovered --> something else hovered 
         else if (hoveredGameObject != previouslyHoveredGameObject)
         {
-            OnHoveringEnd.Invoke();
-            OnHoveringStart.Invoke();
+            StartHover(hoveredSelector);
+            EndHover(previouslyHoveredGameObject.GetComponent<Selector>());
         }
 
     }

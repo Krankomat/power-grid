@@ -228,12 +228,6 @@ public class PlayerManager : MonoBehaviour
         switch (enteredState)
         {
             case InteractionState.Hovering:
-                // Used, when state is changed and display of hover is temporarily removed (?) 
-                //TODO: Write method for SelectionHandler UpdateHover() 
-                //if (hoveredSelector != null)
-                //    hoveredSelector.Hover();
-                break;
-
             case InteractionState.Placing:
             case InteractionState.InMenu:
                 break;
@@ -255,11 +249,6 @@ public class PlayerManager : MonoBehaviour
         switch (lastState)
         {
             case InteractionState.Hovering:
-                //TODO: Write method for SelectionHandler UpdateHover() 
-                //if (hoveredSelector != null)
-                //    hoveredSelector.Unhover();
-                break;
-
             case InteractionState.Placing: 
             case InteractionState.InMenu: 
                 break;
