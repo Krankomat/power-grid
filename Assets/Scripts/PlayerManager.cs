@@ -15,14 +15,9 @@ public class PlayerManager : MonoBehaviour
     public SelectionHandler selectionHandler;
     public InteractionStateLookingAroundHandler lookingAroundHandler;
     public InteractionStatePlacingHandler placingHandler;
-
+    public InteractionStateDemolishingHandler demolishingHandler;
 
     private List<IInteractionStateHandleable> interactionHandlers = new List<IInteractionStateHandleable>(); 
-
-    // Demolishing 
-    private Ray demolishingPreviewRay;
-    private RaycastHit demolishingPreviewHit;
-    private GameObject demolishingPreviewGameObject; 
 
     private GameHUDDisplayer hudDisplayer;
     private InteractionState currentInteractionState;
@@ -39,6 +34,8 @@ public class PlayerManager : MonoBehaviour
             RegisterInteractionHandler(lookingAroundHandler);
         if (placingHandler != null)
             RegisterInteractionHandler(placingHandler);
+        if (demolishingHandler != null)
+            RegisterInteractionHandler(demolishingHandler);
 
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
@@ -120,13 +117,6 @@ public class PlayerManager : MonoBehaviour
 
         if (currentInteractionState == InteractionState.Demolishing)
         {
-            if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.R))
-                StopDemolishingOnClick();
-
-            if (Input.GetMouseButtonDown(0))
-                if (demolishingPreviewGameObject != null)
-                    Demolish(demolishingPreviewGameObject); 
-            
             return; 
         }
 
@@ -151,8 +141,6 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Demolishing:
-                selectionHandler.HandleHovering(); 
-                //HandleDemolishing();
                 break;
 
             default:
@@ -160,20 +148,6 @@ public class PlayerManager : MonoBehaviour
                 break; 
         }
         
-    }
-    
-
-    private void MakeDemolishingPreview()
-    {
-        demolishingPreviewGameObject = selectionHandler.hoveredGameObject;
-        demolishingPreviewGameObject.GetComponent<ModelDyer>().ChangeMaterialsToNegativeHover();
-    }
-
-
-    private void HideDemolishingPreview()
-    {
-        demolishingPreviewGameObject.GetComponent<ModelDyer>().ChangeMaterialsBackToInitial();
-        demolishingPreviewGameObject = null; 
     }
 
 
@@ -188,8 +162,7 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Demolishing:
-                selectionHandler.OnHoveringStart.AddListener(MakeDemolishingPreview);
-                selectionHandler.OnHoveringEnd.AddListener(HideDemolishingPreview);
+                
                 break; 
 
             default:
@@ -209,8 +182,6 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Demolishing:
-                selectionHandler.OnHoveringStart.RemoveListener(MakeDemolishingPreview);
-                selectionHandler.OnHoveringEnd.RemoveListener(HideDemolishingPreview);
                 break; 
 
             default:
@@ -277,23 +248,12 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void StopDemolishingOnClick()
+    public void StopDemolishingOnClick()
     {
         ResetInteractionState();
     }
     
 
-    private void Demolish(GameObject gameObject)
-    {
-        ElectricNetworkConnector electricNetworkConnector = gameObject.GetComponent<ElectricNetworkConnector>();
-        
-        if (electricNetworkConnector != null) { 
-            electricNetworkConnector.HandleDemolishingBy(electricNetworkManager);
-            return; 
-        }
-
-        Destroy(gameObject); 
-    }
 
 
     private void RegisterInteractionHandler(IInteractionStateHandleable interactionHandler)
@@ -344,6 +304,10 @@ public class PlayerManager : MonoBehaviour
             case InteractionState.Placing:
                 placingHandler.Enter();
                 placingHandler.IsActive = true;
+                break;
+            case InteractionState.Demolishing:
+                demolishingHandler.Enter();
+                demolishingHandler.IsActive = true;
                 break;
                 //TODO: Implement missing handlers 
         }
