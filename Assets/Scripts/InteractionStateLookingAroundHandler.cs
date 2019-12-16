@@ -7,26 +7,65 @@ public class InteractionStateLookingAroundHandler : MonoBehaviour, IInteractionS
     public PlayerManager PlayerManager { get; set; }
     public bool IsActive { get; set; }
 
+    //TODO: Should IsActive get set here? 
     public void Enter()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("INFO INTERACTION STATE: Entered LookingAroundHandler. "); 
     }
 
     public void Exit()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("INFO INTERACTION STATE: Exited LookingAroundHandler. ");
     }
 
     public void HandleControls()
     {
-        throw new System.NotImplementedException();
+        // Select object with left mouse button 
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (PlayerManager.selectionHandler.selectedGameObject != null && PlayerManager.selectionHandler.hoveredGameObject == null)
+                PlayerManager.selectionHandler.ClearSelection();
+            else if (PlayerManager.selectionHandler.hoveredGameObject != null)
+                PlayerManager.selectionHandler.HandleSelectionOf(PlayerManager.selectionHandler.hoveredGameObject);
+
+            PlayerManager.RefreshSelectionInfoPanel(PlayerManager.selectionHandler);
+            return; 
+        }
+
+        // Clear selection with escape key 
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            if (PlayerManager.selectionHandler.selectedGameObject != null)
+            {
+                PlayerManager.selectionHandler.ClearSelection();
+                PlayerManager.RefreshSelectionInfoPanel(PlayerManager.selectionHandler);
+                return; 
+            }
+        }
+
+        // Open Build Menu 
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            PlayerManager.OpenBuildMenu();
+            return;
+        }
+
+        // Start demolishing 
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            PlayerManager.StartDemolishingOnClick();
+            Debug.Log("Start demolishing! ");
+            return;
+        }
     }
 
     public void Process()
     {
-        if (IsActive)
-            Debug.Log("Hello, this is the Interaction Handler speaking! "); 
-        //if (IsActive)
-        //    PlayerManager.selectionHandler.HandleHovering();
+        if (!IsActive)
+            return; 
+
+        Debug.Log("Hello, this is the LookingAround Interaction Handler speaking! ");
+
+        PlayerManager.selectionHandler.HandleHovering();
     }
 }

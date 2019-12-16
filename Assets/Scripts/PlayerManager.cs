@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using CustomEvents; 
+using CustomEvents;
+using System.Linq;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -49,9 +50,12 @@ public class PlayerManager : MonoBehaviour
 
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
-        currentInteractionState = InteractionState.LookingAround;
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
-        
+
+        // prepare default interactio state
+        currentInteractionState = InteractionStateDefault;
+        lookingAroundHandler.IsActive = true; 
+
         OnInteractionStateEntered.AddListener(hudDisplayer.DisplayStateIndicatorFor);
         OnInteractionStateEntered.AddListener(HandleInteractionStateEntered);
         OnInteractionStateLeft.AddListener(HandleInteractionStateLeft); 
@@ -60,25 +64,17 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        // Handle InteractionStateHandlers 
-        foreach(IInteractionStateHandleable interactionHandler in interactionHandlers)
-            interactionHandler.IsActive = false; 
-
-        switch(currentInteractionState)
+        foreach (IInteractionStateHandleable interactionHandler in interactionHandlers)
         {
-            case InteractionState.LookingAround:
-                lookingAroundHandler.IsActive = true;
-                break;
+            interactionHandler.HandleControls();
+            interactionHandler.Process();
         }
 
-        foreach (IInteractionStateHandleable interactionHandler in interactionHandlers)
-            interactionHandler.Process();
-
-        // ---
-
+        // vvv Old way to handle interaction state and controls; will be replaced with handlers 
         HandleControlsInInteractionState();
         HandleCurrentInteractionState(); 
 
+        //TODO: Move inside method ChangeInteractionStateTo() 
         if (currentInteractionState != previousInteractionState)
         {
             OnInteractionStateEntered.Invoke(currentInteractionState);
@@ -89,52 +85,17 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void SwitchInteractionStateIfNecessary()
+    public void OpenBuildMenu()
     {
-        if (Input.GetKeyUp(KeyCode.E))
-        {
-            OpenMenu(buildingMenu);
-            return; 
-        }
-
-        if (Input.GetKeyUp(KeyCode.R))
-        {
-            StartDemolishingOnClick();
-            Debug.Log("Start demolishing! "); 
-            return;
-        }
+        OpenMenu(buildingMenu);
     }
-
+    
 
     private void HandleControlsInInteractionState()
     {
 
         if (currentInteractionState == InteractionState.LookingAround)
         {
-            // Check if there are button presses that will change the interaction state
-            SwitchInteractionStateIfNecessary();
-
-            // Select object with left mouse button 
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (selectionHandler.selectedGameObject != null && selectionHandler.hoveredGameObject == null)
-                    selectionHandler.ClearSelection();
-                else if (selectionHandler.hoveredGameObject != null)
-                    selectionHandler.HandleSelectionOf(selectionHandler.hoveredGameObject);
-
-                RefreshSelectionInfoPanel(selectionHandler);
-            }
-
-            // Clear selection with escape key 
-            if (Input.GetKeyUp(KeyCode.Escape))
-            {
-                if (selectionHandler.selectedGameObject != null)
-                {
-                    selectionHandler.ClearSelection();
-                    RefreshSelectionInfoPanel(selectionHandler);
-                }
-            }
-
             return;
         }
 
@@ -195,7 +156,6 @@ public class PlayerManager : MonoBehaviour
         switch(currentInteractionState)
         {
             case InteractionState.LookingAround:
-                selectionHandler.HandleHovering();
                 break;
 
             case InteractionState.Placing:
@@ -287,7 +247,7 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void RefreshSelectionInfoPanel(SelectionHandler selectionHandler)
+    public void RefreshSelectionInfoPanel(SelectionHandler selectionHandler)
     {
         string objectName, objectDescription;
 
@@ -323,7 +283,7 @@ public class PlayerManager : MonoBehaviour
 
     public void StartPlacingGameObject(GameObject gameObjectPrefab)
     {
-        currentInteractionState = InteractionState.Placing;
+        ChangeInteractionStateTo(InteractionState.Placing);
         gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
         modelDyer = gameObjectToBePlaced.GetComponent<ModelDyer>();
         modelDyer.ChangeMaterialsToPositiveHover();
@@ -352,7 +312,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
-        currentInteractionState = InteractionStateDefault;
+        ResetInteractionState();
         Destroy(gameObjectToBePlaced);
         modelDyer = null;
     }
@@ -370,7 +330,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
-        currentInteractionState = InteractionStateDefault;
+        ResetInteractionState();
         modelDyer.ChangeMaterialsBackToInitial();
         gameObjectToBePlaced = null;
         modelDyer = null;
@@ -380,7 +340,7 @@ public class PlayerManager : MonoBehaviour
     private void OpenMenu(MenuManager menuManager)
     {
         menuManager.ShowMenu();
-        currentInteractionState = InteractionState.InMenu;
+        ChangeInteractionStateTo(InteractionState.InMenu);
     }
 
 
@@ -393,7 +353,7 @@ public class PlayerManager : MonoBehaviour
 
     private void ResetInteractionState()
     {
-        currentInteractionState = InteractionStateDefault;
+        ChangeInteractionStateTo(InteractionStateDefault);
     }
 
 
@@ -439,15 +399,15 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void StartDemolishingOnClick()
+    public void StartDemolishingOnClick()
     {
-        currentInteractionState = InteractionState.Demolishing; 
+        ChangeInteractionStateTo(InteractionState.Demolishing); 
     }
 
 
     private void StopDemolishingOnClick()
     {
-        currentInteractionState = InteractionStateDefault;
+        ResetInteractionState();
     }
     
 
@@ -496,4 +456,48 @@ public class PlayerManager : MonoBehaviour
         interactionHandlers.Add(interactionHandler);
         interactionHandler.PlayerManager = this; 
     }
+
+
+    public void ChangeInteractionStateTo(InteractionState interactionState)
+    {
+        if (interactionState == currentInteractionState)
+        {
+            Debug.Log($"INFO INTERACTION STATE: State stayed the same: State {currentInteractionState.ToString("g")}. ");
+            return;
+        }
+        ActivateCorrespondingInteractionHandler(interactionState);
+        currentInteractionState = interactionState; 
+    }
+    
+
+    private void ActivateCorrespondingInteractionHandler(InteractionState interactionState)
+    {
+        // Check how many interaction handlers are active 
+        int numberOfActiveInteractionHandlers = interactionHandlers.Count(handler => handler.IsActive);
+        if (numberOfActiveInteractionHandlers != 1)
+            Debug.LogError($"ERROR INTERACTION STATE: When trying to change the current interaction state " +
+                $"\"{currentInteractionState.ToString("g")}\" to the new state \"{interactionState.ToString("g")}\", a total of " +
+                $"{numberOfActiveInteractionHandlers} Interaction Handlers were active, but this number should be 1. "); 
+
+        // Deactivate currently active interaction Handler 
+        foreach (IInteractionStateHandleable interactionHandler in interactionHandlers)
+        {
+            if (!interactionHandler.IsActive)
+                continue;
+
+            interactionHandler.Exit(); 
+            interactionHandler.IsActive = false;
+        }
+
+        // Activate corresponding interaction handler 
+        switch (interactionState)
+        {
+            case InteractionState.LookingAround:
+                lookingAroundHandler.Enter(); 
+                lookingAroundHandler.IsActive = true;
+                break;
+            //TODO: Implement missing handlers 
+        }
+    }
+
 }
