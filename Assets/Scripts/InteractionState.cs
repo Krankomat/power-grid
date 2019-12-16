@@ -6,7 +6,7 @@
 
 public enum InteractionState
 {
-    Hovering,
+    LookingAround,
     Placing,
     Demolishing, 
     InMenu

@@ -12,7 +12,7 @@ public class PlayerManager : MonoBehaviour
     public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
     public ElectricNetworkManager electricNetworkManager;
-    public SelectionHandler selectionHandler; 
+    public SelectionHandler selectionHandler;
 
     // Building Placement 
     private GameObject gameObjectToBePlaced;
@@ -33,7 +33,7 @@ public class PlayerManager : MonoBehaviour
     private GameHUDDisplayer hudDisplayer;
     private InteractionState currentInteractionState;
     private InteractionState previousInteractionState; 
-    private const InteractionState InteractionStateDefault = InteractionState.Hovering;
+    private const InteractionState InteractionStateDefault = InteractionState.LookingAround;
     
     public InteractionStateEvent OnInteractionStateEntered; 
     public InteractionStateEvent OnInteractionStateLeft; 
@@ -43,7 +43,7 @@ public class PlayerManager : MonoBehaviour
     {
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
-        currentInteractionState = InteractionState.Hovering;
+        currentInteractionState = InteractionState.LookingAround;
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
         
         OnInteractionStateEntered.AddListener(hudDisplayer.DisplayStateIndicatorFor);
@@ -87,7 +87,7 @@ public class PlayerManager : MonoBehaviour
     private void HandleControlsInInteractionState()
     {
 
-        if (currentInteractionState == InteractionState.Hovering)
+        if (currentInteractionState == InteractionState.LookingAround)
         {
             // Check if there are button presses that will change the interaction state
             SwitchInteractionStateIfNecessary();
@@ -172,7 +172,7 @@ public class PlayerManager : MonoBehaviour
 
         switch(currentInteractionState)
         {
-            case InteractionState.Hovering:
+            case InteractionState.LookingAround:
                 selectionHandler.HandleHovering();
                 break;
 
@@ -227,7 +227,7 @@ public class PlayerManager : MonoBehaviour
     {
         switch (enteredState)
         {
-            case InteractionState.Hovering:
+            case InteractionState.LookingAround:
             case InteractionState.Placing:
             case InteractionState.InMenu:
                 break;
@@ -248,7 +248,7 @@ public class PlayerManager : MonoBehaviour
     {
         switch (lastState)
         {
-            case InteractionState.Hovering:
+            case InteractionState.LookingAround:
             case InteractionState.Placing: 
             case InteractionState.InMenu: 
                 break;

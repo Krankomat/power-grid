@@ -22,7 +22,7 @@ public class GameHUDDisplayer : MonoBehaviour
     {
         switch (state)
         {
-            case InteractionState.Hovering:
+            case InteractionState.LookingAround:
             case InteractionState.InMenu:
                 stateIndicator.currentState = UIStateIndicator.IndicatorState.None;
                 break;
