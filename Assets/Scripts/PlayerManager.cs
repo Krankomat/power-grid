@@ -12,18 +12,7 @@ public class PlayerManager : MonoBehaviour
     public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
     public ElectricNetworkManager electricNetworkManager;
-
-    // Hover 
-    private RaycastHit hit;
-    private Ray hoverRay;
-    private GameObject hoveredGameObject;
-    private GameObject hoveredColliderContainer;
-    private Selector hoveredSelector;
-    private GameObject previouslyHoveredGameObject;
-
-    // Selection 
-    private LayerMask selectionMask;
-    private GameObject selectedGameObject;
+    public SelectionHandler selectionHandler; 
 
     // Building Placement 
     private GameObject gameObjectToBePlaced;
@@ -46,23 +35,17 @@ public class PlayerManager : MonoBehaviour
     private InteractionState previousInteractionState; 
     private const InteractionState InteractionStateDefault = InteractionState.Hovering;
     
-
-    public UnityEvent OnHoveringStart;
-    public UnityEvent OnHoveringEnd;
     public InteractionStateEvent OnInteractionStateEntered; 
     public InteractionStateEvent OnInteractionStateLeft; 
     
 
     void Start()
     {
-        selectionMask = LayerMask.GetMask("ObjectSelecting");
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
         currentInteractionState = InteractionState.Hovering;
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
-
-        OnHoveringStart.AddListener(OnHoveringStarted);
-        OnHoveringEnd.AddListener(OnHoveringEnded);
+        
         OnInteractionStateEntered.AddListener(hudDisplayer.DisplayStateIndicatorFor);
         OnInteractionStateEntered.AddListener(HandleInteractionStateEntered);
         OnInteractionStateLeft.AddListener(HandleInteractionStateLeft); 
@@ -79,8 +62,7 @@ public class PlayerManager : MonoBehaviour
             OnInteractionStateEntered.Invoke(currentInteractionState);
             OnInteractionStateLeft.Invoke(previousInteractionState); 
         }
-
-        previouslyHoveredGameObject = hoveredGameObject;
+        
         previousInteractionState = currentInteractionState; 
     }
 
@@ -113,21 +95,21 @@ public class PlayerManager : MonoBehaviour
             // Select object with left mouse button 
             if (Input.GetMouseButtonDown(0))
             {
-                if (selectedGameObject != null && hoveredGameObject == null)
-                    ClearSelection();
-                else if (hoveredGameObject != null)
-                    HandleSelectionOf(hoveredGameObject);
+                if (selectionHandler.selectedGameObject != null && selectionHandler.hoveredGameObject == null)
+                    selectionHandler.ClearSelection();
+                else if (selectionHandler.hoveredGameObject != null)
+                    selectionHandler.HandleSelectionOf(selectionHandler.hoveredGameObject);
 
-                RefreshSelectionInfoPanel();
+                RefreshSelectionInfoPanel(selectionHandler);
             }
 
             // Clear selection with escape key 
             if (Input.GetKeyUp(KeyCode.Escape))
             {
-                if (selectedGameObject != null)
+                if (selectionHandler.selectedGameObject != null)
                 {
-                    ClearSelection();
-                    RefreshSelectionInfoPanel();
+                    selectionHandler.ClearSelection();
+                    RefreshSelectionInfoPanel(selectionHandler);
                 }
             }
 
@@ -191,7 +173,7 @@ public class PlayerManager : MonoBehaviour
         switch(currentInteractionState)
         {
             case InteractionState.Hovering:
-                HandleHovering();
+                selectionHandler.HandleHovering();
                 break;
 
             case InteractionState.Placing:
@@ -202,7 +184,7 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Demolishing:
-                HandleHovering(); 
+                selectionHandler.HandleHovering(); 
                 //HandleDemolishing();
                 break;
 
@@ -211,32 +193,6 @@ public class PlayerManager : MonoBehaviour
                 break; 
         }
         
-    }
-
-
-    private void HandleHovering()
-    {
-        MakeHoverRaycast();
-
-        // nothing hovered --> something hovered 
-        if (hoveredGameObject != null &&
-            previouslyHoveredGameObject == null)
-        {
-            OnHoveringStart.Invoke();
-        }
-        // something hovered --> nothing hovered 
-        else if (hoveredGameObject == null &&
-            previouslyHoveredGameObject != null)
-        {
-            OnHoveringEnd.Invoke();
-        }
-        // something hovered --> something else hovered 
-        else if (hoveredGameObject != previouslyHoveredGameObject)
-        {
-            OnHoveringEnd.Invoke();
-            OnHoveringStart.Invoke();
-        }
-
     }
 
 
@@ -254,7 +210,7 @@ public class PlayerManager : MonoBehaviour
 
     private void MakeDemolishingPreview()
     {
-        demolishingPreviewGameObject = hoveredGameObject;
+        demolishingPreviewGameObject = selectionHandler.hoveredGameObject;
         demolishingPreviewGameObject.GetComponent<ModelDyer>().ChangeMaterialsToNegativeHover();
     }
 
@@ -273,8 +229,9 @@ public class PlayerManager : MonoBehaviour
         {
             case InteractionState.Hovering:
                 // Used, when state is changed and display of hover is temporarily removed (?) 
-                if (hoveredSelector != null)
-                    hoveredSelector.Hover();
+                //TODO: Write method for SelectionHandler UpdateHover() 
+                //if (hoveredSelector != null)
+                //    hoveredSelector.Hover();
                 break;
 
             case InteractionState.Placing:
@@ -282,8 +239,8 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Demolishing:
-                OnHoveringStart.AddListener(MakeDemolishingPreview);
-                OnHoveringEnd.AddListener(HideDemolishingPreview);
+                selectionHandler.OnHoveringStart.AddListener(MakeDemolishingPreview);
+                selectionHandler.OnHoveringEnd.AddListener(HideDemolishingPreview);
                 break; 
 
             default:
@@ -298,8 +255,9 @@ public class PlayerManager : MonoBehaviour
         switch (lastState)
         {
             case InteractionState.Hovering:
-                if (hoveredSelector != null)
-                    hoveredSelector.Unhover();
+                //TODO: Write method for SelectionHandler UpdateHover() 
+                //if (hoveredSelector != null)
+                //    hoveredSelector.Unhover();
                 break;
 
             case InteractionState.Placing: 
@@ -307,8 +265,8 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Demolishing:
-                OnHoveringStart.RemoveListener(MakeDemolishingPreview);
-                OnHoveringEnd.RemoveListener(HideDemolishingPreview);
+                selectionHandler.OnHoveringStart.RemoveListener(MakeDemolishingPreview);
+                selectionHandler.OnHoveringEnd.RemoveListener(HideDemolishingPreview);
                 break; 
 
             default:
@@ -318,79 +276,18 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void MakeHoverRaycast()
-    {
-        hoverRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        // Make raycast and return, if nothing was hit 
-        if (!Physics.Raycast(hoverRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
-        {
-            ClearHover();
-            return;
-        }
-
-        hoveredColliderContainer = hit.collider.gameObject;
-        hoveredGameObject = hoveredColliderContainer.transform.parent.gameObject;
-        hoveredSelector = hoveredGameObject.GetComponent<Selector>();
-
-        if (hoveredSelector == null)
-            Debug.LogError("Hit object " + gameObject + " has no Selector component! ");
-    }
-
-
-    private void ClearHover()
-    {
-        hoveredColliderContainer = null;
-        hoveredGameObject = null;
-        hoveredSelector = null;
-    }
-
-
-    private void HandleSelectionOf(GameObject gameObject)
-    {
-        // If there is no game object in selection so far 
-        if (selectedGameObject == null)
-            Select(gameObject);
-
-        // If the selected object is already in selection, remove it from it 
-        else if (selectedGameObject == gameObject)
-            ClearSelection();
-
-        // Else clear the selection and select the current game object 
-        else
-        {
-            ClearSelection();
-            Select(gameObject);
-        }
-    }
-
-
-    private void ClearSelection()
-    {
-        selectedGameObject.GetComponent<Selector>().Deselect();
-        selectedGameObject = null;
-    }
-
-
-    private void Select(GameObject gameObject)
-    {
-        gameObject.GetComponent<Selector>().Select();
-        selectedGameObject = gameObject;
-    }
-
-
-    private void RefreshSelectionInfoPanel()
+    private void RefreshSelectionInfoPanel(SelectionHandler selectionHandler)
     {
         string objectName, objectDescription;
 
-        if (selectedGameObject == null)
+        if (selectionHandler.selectedGameObject == null)
         {
             objectName = "";
             objectDescription = "";
         } else
         {
-            objectName = selectedGameObject.GetComponent<Descriptor>().objectName;
-            objectDescription = selectedGameObject.GetComponent<Descriptor>().description;
+            objectName = selectionHandler.selectedGameObject.GetComponent<Descriptor>().objectName;
+            objectDescription = selectionHandler.selectedGameObject.GetComponent<Descriptor>().description;
         }
 
         hudDisplayer.RefreshSelectionInfoPanel(objectName, objectDescription);
@@ -529,20 +426,6 @@ public class PlayerManager : MonoBehaviour
         footprintCollisionHandler.OnCollisionHandlerEnter.RemoveListener(modelDyer.ChangeMaterialsToNegativeHover);
         footprintCollisionHandler.OnCollisionHandlerExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
     }
-
-    
-    private void OnHoveringStarted()
-    {
-        hoveredSelector.Hover();
-        Debug.Log("Hover started on object " + hoveredGameObject);
-    }
-
-
-    private void OnHoveringEnded()
-    {
-        previouslyHoveredGameObject.GetComponent<Selector>().Unhover();
-        Debug.Log("Hover ended on object " + previouslyHoveredGameObject);
-    } 
 
 
     private void StartDemolishingOnClick()

@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3310422659700455626}
   - component: {fileID: 3310422659700455625}
+  - component: {fileID: 7784457755536067719}
+  - component: {fileID: 668338497371716602}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -47,23 +49,42 @@ MonoBehaviour:
   gridCellDimensions: {x: 1, y: 1}
   buildingMenu: {fileID: 0}
   electricNetworkManager: {fileID: 0}
-  OnHoveringStart:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
-  OnHoveringEnd:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+  selectionHandler: {fileID: 7784457755536067719}
   OnInteractionStateEntered:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: CustomEvents.InteractionStateEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
   OnInteractionStateLeft:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: CustomEvents.InteractionStateEvent, Assembly-CSharp, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
+--- !u!114 &7784457755536067719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3310422659700455624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6df8fb4016fec154587e2d7394e10dfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoveredGameObject: {fileID: 0}
+  selectedGameObject: {fileID: 0}
+  OnHoveringStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHoveringEnd:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &668338497371716602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3310422659700455624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 966e7ceb66fad0c4cbdf602471518b98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
