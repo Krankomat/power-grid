@@ -64,7 +64,20 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        foreach (IInteractionStateHandleable interactionHandler in interactionHandlers)
+        // Create this list before, so if another interactionHandler gets active, it has to wait for the next frame. 
+        List<IInteractionStateHandleable> activeInteractionHandlers = 
+            new List<IInteractionStateHandleable>(interactionHandlers.Where(handler => handler.IsActive)); 
+
+        // If no handler is active (for some reason), go back to default interaction state 
+        if (activeInteractionHandlers.Count == 0)
+        {
+            Debug.LogWarning($"WARNING INTERACTION STATE: For some reason, no interaction handler was active at start of frame. " +
+                $"Resetting the interaction state, so the corresponding default interaction handler gets active. ");
+            ResetInteractionState(); 
+        }
+
+        // Handle Controls and Process 
+        foreach (IInteractionStateHandleable interactionHandler in activeInteractionHandlers)
         {
             interactionHandler.HandleControls();
             interactionHandler.Process();
