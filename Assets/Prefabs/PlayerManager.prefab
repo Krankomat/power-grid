@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3310422659700455625}
   - component: {fileID: 7784457755536067719}
   - component: {fileID: 668338497371716602}
+  - component: {fileID: 3567109408805033164}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -46,11 +47,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameHUD: {fileID: 0}
-  gridCellDimensions: {x: 1, y: 1}
   buildingMenu: {fileID: 0}
   electricNetworkManager: {fileID: 0}
   selectionHandler: {fileID: 7784457755536067719}
   lookingAroundHandler: {fileID: 668338497371716602}
+  placingHandler: {fileID: 3567109408805033164}
   OnInteractionStateEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -89,3 +90,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 966e7ceb66fad0c4cbdf602471518b98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3567109408805033164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3310422659700455624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b3dd42a47fef194fb3dd4fcfdeea37f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridCellDimensions: {x: 1, y: 1}

@@ -10,24 +10,14 @@ public class PlayerManager : MonoBehaviour
 {
 
     public GameObject gameHUD;
-    public Vector2 gridCellDimensions;
     public MenuManager buildingMenu;
     public ElectricNetworkManager electricNetworkManager;
     public SelectionHandler selectionHandler;
     public InteractionStateLookingAroundHandler lookingAroundHandler;
+    public InteractionStatePlacingHandler placingHandler;
+
 
     private List<IInteractionStateHandleable> interactionHandlers = new List<IInteractionStateHandleable>(); 
-
-    // Building Placement 
-    private GameObject gameObjectToBePlaced;
-    private ModelDyer modelDyer;
-    private Ray placingPreviewRay;
-    private RaycastHit placingPreviewHit;
-    private LayerMask placingPreviewLayerMask;
-    private Vector3 placementPosition;
-    private CollisionHandler footprintCollisionHandler;
-    private CollisionHandler electricCollisionHandler;
-
 
     // Demolishing 
     private Ray demolishingPreviewRay;
@@ -46,9 +36,10 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         if (lookingAroundHandler != null)
-            RegisterInteractionHandler(lookingAroundHandler); 
+            RegisterInteractionHandler(lookingAroundHandler);
+        if (placingHandler != null)
+            RegisterInteractionHandler(placingHandler);
 
-        placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
         buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
 
@@ -115,24 +106,6 @@ public class PlayerManager : MonoBehaviour
 
         if (currentInteractionState == InteractionState.Placing)
         {
-
-            if (Input.GetKeyUp(KeyCode.Escape))
-            {
-                CancelPlacingGameObject();
-                return;
-            }
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (footprintCollisionHandler.IsColliding())
-                    HandleIntentToPlaceDownOnBlockedSpace();
-                else
-                    CompletePlacingGameObject();
-
-                return;
-            }
-
-
             return;
         }
 
@@ -172,7 +145,6 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case InteractionState.Placing:
-                HandlePlacing();
                 break;
 
             case InteractionState.InMenu:
@@ -189,19 +161,7 @@ public class PlayerManager : MonoBehaviour
         }
         
     }
-
-
-    private void HandlePlacing()
-    {
-        MakePlacingPreviewRaycast();
-
-        if (electricCollisionHandler == null)
-            return;
-
-        if (electricCollisionHandler.IsColliding())
-            Debug.Log("The gameObject, which gets placed, is currently colliding! ");
-    }
-
+    
 
     private void MakeDemolishingPreview()
     {
@@ -278,76 +238,6 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void MakePlacingPreviewRaycast()
-    {
-        Vector2Int footprint = gameObjectToBePlaced.GetComponent<Descriptor>().footprint;
-        Vector3 offset = GetFootprintOffsetFrom(footprint); 
-        placingPreviewRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (!Physics.Raycast(placingPreviewRay, out placingPreviewHit, SelectionHandler.SelectionRaycastMaxDistance, placingPreviewLayerMask))
-            return;
-
-        placementPosition.x = MathUtil.SteppedNumber(placingPreviewHit.point.x + offset.x, gridCellDimensions.x) - offset.x; 
-        placementPosition.z = MathUtil.SteppedNumber(placingPreviewHit.point.z + offset.z, gridCellDimensions.y) - offset.z;
-
-        gameObjectToBePlaced.transform.position = placementPosition;
-    }
-
-
-    public void StartPlacingGameObject(GameObject gameObjectPrefab)
-    {
-        ChangeInteractionStateTo(InteractionState.Placing);
-        gameObjectToBePlaced = GameObject.Instantiate(gameObjectPrefab);
-        modelDyer = gameObjectToBePlaced.GetComponent<ModelDyer>();
-        modelDyer.ChangeMaterialsToPositiveHover();
-
-        GameObject footprintCollider = GetChildObject(gameObjectToBePlaced, "FootprintCollider");
-        footprintCollisionHandler = footprintCollider.GetComponent<CollisionHandler>();
-        LinkFootprintColliderHandlerToModelDyerMaterialChanging();
-
-        GameObject electricNetworkNodeCollider = GetChildObject(gameObjectToBePlaced, "ElectricNetworkNodeCollider");
-
-        // If there is no ElectricNetworkNodeCollider attached to the gameObject 
-        if (electricNetworkNodeCollider == null)
-            return;
-
-        electricCollisionHandler = electricNetworkNodeCollider.GetComponent<CollisionHandler>();
-        LinkElectricColliderToCablePreview(); 
-    }
-
-
-    public void CancelPlacingGameObject()
-    {
-        if (electricCollisionHandler != null)
-        {
-            electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
-            electricNetworkManager.ClearPreviewNetworkEdges();
-        }
-
-        UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
-        ResetInteractionState();
-        Destroy(gameObjectToBePlaced);
-        modelDyer = null;
-    }
-
-
-    public void CompletePlacingGameObject()
-    {
-        if (electricCollisionHandler != null)
-        {
-            ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
-
-            UnlinkElectricColliderFromCablePreview(); 
-            electricNetworkManager.ClearPreviewNetworkEdges();
-            electricNetworkConnector.HandlePlacement(electricNetworkManager, electricCollisionHandler); 
-        }
-
-        UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
-        ResetInteractionState();
-        modelDyer.ChangeMaterialsBackToInitial();
-        gameObjectToBePlaced = null;
-        modelDyer = null;
-    }
 
 
     private void OpenMenu(MenuManager menuManager)
@@ -364,20 +254,9 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    private void ResetInteractionState()
+    public void ResetInteractionState()
     {
         ChangeInteractionStateTo(InteractionStateDefault);
-    }
-
-
-    private static Vector3 GetFootprintOffsetFrom(Vector2Int footprint)
-    {
-        Vector3 offset = new Vector3();
-
-        offset.x = ((float)(footprint.x % 2) / 2); 
-        offset.z = ((float)(footprint.y % 2) / 2);
-
-        return offset; 
     }
 
 
@@ -389,26 +268,6 @@ public class PlayerManager : MonoBehaviour
                 return childTransform.gameObject;
 
         return null;
-    }
-
-
-    private void HandleIntentToPlaceDownOnBlockedSpace()
-    {
-        Debug.Log("You cannot place " + gameObjectToBePlaced + " here. ");
-    }
-
-
-    private void LinkFootprintColliderHandlerToModelDyerMaterialChanging()
-    {
-        footprintCollisionHandler.OnCollisionHandlerEnter.AddListener(modelDyer.ChangeMaterialsToNegativeHover);
-        footprintCollisionHandler.OnCollisionHandlerExit.AddListener(modelDyer.ChangeMaterialsToPositiveHover);
-    }
-
-
-    private void UnlinkFootprintColliderHandlerToModelDyerMaterialChanging()
-    {
-        footprintCollisionHandler.OnCollisionHandlerEnter.RemoveListener(modelDyer.ChangeMaterialsToNegativeHover);
-        footprintCollisionHandler.OnCollisionHandlerExit.RemoveListener(modelDyer.ChangeMaterialsToPositiveHover);
     }
 
 
@@ -434,33 +293,6 @@ public class PlayerManager : MonoBehaviour
         }
 
         Destroy(gameObject); 
-    }
-
-
-    private void LinkElectricColliderToCablePreview()
-    {
-        electricCollisionHandler.OnCollisionHandlerEnter.AddListener(UpdateCablePreview);
-        electricCollisionHandler.OnCollisionHandlerExit.AddListener(UpdateCablePreview);
-    }
-
-
-    private void UnlinkElectricColliderFromCablePreview()
-    {
-        electricCollisionHandler.OnCollisionHandlerEnter.RemoveListener(UpdateCablePreview);
-        electricCollisionHandler.OnCollisionHandlerExit.RemoveListener(UpdateCablePreview);
-    }
-
-
-    private void UpdateCablePreview()
-    {
-        ElectricNetworkConnector electricNetworkConnector = gameObjectToBePlaced.GetComponent<ElectricNetworkConnector>();
-
-        // First, clear all preview cables 
-        electricNetworkManager.ClearPreviewNetworkEdges(); 
-
-        // Then add them for each electric node collider 
-        //TODO: Due to refactoring this should probably only be called, when the Preview Updates (and not each tick) 
-        electricNetworkConnector.ShowPlacementPreviewOfElectricNetworkNodeAddOn(electricNetworkManager, electricCollisionHandler); 
     }
 
 
@@ -509,7 +341,11 @@ public class PlayerManager : MonoBehaviour
                 lookingAroundHandler.Enter(); 
                 lookingAroundHandler.IsActive = true;
                 break;
-            //TODO: Implement missing handlers 
+            case InteractionState.Placing:
+                placingHandler.Enter();
+                placingHandler.IsActive = true;
+                break;
+                //TODO: Implement missing handlers 
         }
     }
 
