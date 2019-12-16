@@ -10,17 +10,17 @@ public class PlayerManager : MonoBehaviour
 {
 
     public GameObject gameHUD;
-    public MenuManager buildingMenu;
     public ElectricNetworkManager electricNetworkManager;
     public SelectionHandler selectionHandler;
     public InteractionStateLookingAroundHandler lookingAroundHandler;
     public InteractionStatePlacingHandler placingHandler;
     public InteractionStateDemolishingHandler demolishingHandler;
+    public InteractionStateInMenuHandler inMenuHandler;
 
     private List<IInteractionStateHandleable> interactionHandlers = new List<IInteractionStateHandleable>(); 
 
     private GameHUDDisplayer hudDisplayer;
-    private InteractionState currentInteractionState;
+    public InteractionState currentInteractionState;
     private InteractionState previousInteractionState; 
     private const InteractionState InteractionStateDefault = InteractionState.LookingAround;
     
@@ -28,7 +28,7 @@ public class PlayerManager : MonoBehaviour
     public InteractionStateEvent OnInteractionStateLeft; 
     
 
-    void Start()
+    void Awake()
     {
         if (lookingAroundHandler != null)
             RegisterInteractionHandler(lookingAroundHandler);
@@ -36,11 +36,12 @@ public class PlayerManager : MonoBehaviour
             RegisterInteractionHandler(placingHandler);
         if (demolishingHandler != null)
             RegisterInteractionHandler(demolishingHandler);
+        if (inMenuHandler != null)
+            RegisterInteractionHandler(inMenuHandler);
 
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
-        buildingMenu.OnMenuClose.AddListener(ResetInteractionState);
 
-        // prepare default interactio state
+        // Prepare default interaction state
         currentInteractionState = InteractionStateDefault;
         lookingAroundHandler.IsActive = true; 
 
@@ -86,10 +87,6 @@ public class PlayerManager : MonoBehaviour
     }
 
 
-    public void OpenBuildMenu()
-    {
-        OpenMenu(buildingMenu);
-    }
     
 
     private void HandleControlsInInteractionState()
@@ -109,8 +106,6 @@ public class PlayerManager : MonoBehaviour
 
         if (currentInteractionState == InteractionState.InMenu)
         {
-            if (Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.E))
-                CloseMenu(buildingMenu);
 
             return;
         }
@@ -211,18 +206,6 @@ public class PlayerManager : MonoBehaviour
 
 
 
-    private void OpenMenu(MenuManager menuManager)
-    {
-        menuManager.ShowMenu();
-        ChangeInteractionStateTo(InteractionState.InMenu);
-    }
-
-
-    public void CloseMenu(MenuManager menuManager)
-    {
-        menuManager.HideMenu();
-        ResetInteractionState();
-    }
 
 
     public void ResetInteractionState()
@@ -241,6 +224,12 @@ public class PlayerManager : MonoBehaviour
         return null;
     }
 
+    public void StartPlacingGameObject(GameObject gameObjectPrefab)
+    {
+        ChangeInteractionStateTo(InteractionState.Placing);
+        placingHandler.StartPlacingGameObject(gameObjectPrefab); 
+    }
+
 
     public void StartDemolishingOnClick()
     {
@@ -252,8 +241,19 @@ public class PlayerManager : MonoBehaviour
     {
         ResetInteractionState();
     }
-    
 
+    public void OpenBuildMenu()
+    {
+        ChangeInteractionStateTo(InteractionState.InMenu);
+        inMenuHandler.OpenBuildMenu();
+    }
+
+        
+    public void CloseBuildMenu()
+    {
+        inMenuHandler.CloseBuildMenu();
+        ResetInteractionState();
+    }
 
 
     private void RegisterInteractionHandler(IInteractionStateHandleable interactionHandler)
@@ -309,7 +309,13 @@ public class PlayerManager : MonoBehaviour
                 demolishingHandler.Enter();
                 demolishingHandler.IsActive = true;
                 break;
-                //TODO: Implement missing handlers 
+            case InteractionState.InMenu:
+                inMenuHandler.Enter();
+                inMenuHandler.IsActive = true;
+                break;
+            default:
+                Debug.LogError($"ERROR INTERACTION STATE: Unsupported state \"{interactionState.ToString("g")}\". ");
+                break; 
         }
     }
 

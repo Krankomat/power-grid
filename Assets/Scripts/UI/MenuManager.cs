@@ -27,6 +27,7 @@ public class MenuManager : MonoBehaviour
     public void HideMenu()
     {
         gameObject.SetActive(false);
+        OnMenuClose.Invoke(); 
     }
 
 }
