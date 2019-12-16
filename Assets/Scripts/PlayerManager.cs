@@ -13,6 +13,9 @@ public class PlayerManager : MonoBehaviour
     public MenuManager buildingMenu;
     public ElectricNetworkManager electricNetworkManager;
     public SelectionHandler selectionHandler;
+    public InteractionStateLookingAroundHandler lookingAroundHandler;
+
+    private List<IInteractionStateHandleable> interactionHandlers = new List<IInteractionStateHandleable>(); 
 
     // Building Placement 
     private GameObject gameObjectToBePlaced;
@@ -41,6 +44,9 @@ public class PlayerManager : MonoBehaviour
 
     void Start()
     {
+        if (lookingAroundHandler != null)
+            RegisterInteractionHandler(lookingAroundHandler); 
+
         placingPreviewLayerMask = LayerMask.GetMask("ObjectPlacing");
         hudDisplayer = gameHUD.GetComponent<GameHUDDisplayer>();
         currentInteractionState = InteractionState.LookingAround;
@@ -54,6 +60,22 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
+        // Handle InteractionStateHandlers 
+        foreach(IInteractionStateHandleable interactionHandler in interactionHandlers)
+            interactionHandler.IsActive = false; 
+
+        switch(currentInteractionState)
+        {
+            case InteractionState.LookingAround:
+                lookingAroundHandler.IsActive = true;
+                break;
+        }
+
+        foreach (IInteractionStateHandleable interactionHandler in interactionHandlers)
+            interactionHandler.Process();
+
+        // ---
+
         HandleControlsInInteractionState();
         HandleCurrentInteractionState(); 
 
@@ -466,5 +488,12 @@ public class PlayerManager : MonoBehaviour
         // Then add them for each electric node collider 
         //TODO: Due to refactoring this should probably only be called, when the Preview Updates (and not each tick) 
         electricNetworkConnector.ShowPlacementPreviewOfElectricNetworkNodeAddOn(electricNetworkManager, electricCollisionHandler); 
+    }
+
+
+    private void RegisterInteractionHandler(IInteractionStateHandleable interactionHandler)
+    {
+        interactionHandlers.Add(interactionHandler);
+        interactionHandler.PlayerManager = this; 
     }
 }

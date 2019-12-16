@@ -50,6 +50,7 @@ MonoBehaviour:
   buildingMenu: {fileID: 0}
   electricNetworkManager: {fileID: 0}
   selectionHandler: {fileID: 7784457755536067719}
+  lookingAroundHandler: {fileID: 668338497371716602}
   OnInteractionStateEntered:
     m_PersistentCalls:
       m_Calls: []
