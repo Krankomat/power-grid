@@ -431,14 +431,6 @@ public class PlayerManager : MonoBehaviour
             return;
 
         electricCollisionHandler = electricNetworkNodeCollider.GetComponent<CollisionHandler>();
-        // When placing a gameObject with an electricNetworkNodeCollider, the trigger setting is OFF. 
-        // This way, the game-object-to-be-placed is a "Kinematic Rigidbody Collider" and the game-objects-already-placed 
-        // are a "Kinematic Rigidbody Trigger Collider". Because for some reason, there is no collision detection between 
-        // KRTC-KRTC and KRC-KRC - but where is one between KRTC-KRC. It's strange, because according to the 
-        // manual (https://docs.unity3d.com/2019.3/Documentation/Manual/CollidersOverview.html) under "Collision Action Matrix" 
-        // it should work. 
-        electricCollisionHandler.GetComponent<Collider>().isTrigger = false; 
-
         LinkElectricColliderToCablePreview(); 
     }
 
@@ -467,7 +459,6 @@ public class PlayerManager : MonoBehaviour
             UnlinkElectricColliderFromCablePreview(); 
             electricNetworkManager.ClearPreviewNetworkEdges();
             electricNetworkConnector.HandlePlacement(electricNetworkManager, electricCollisionHandler); 
-            electricCollisionHandler.GetComponent<Collider>().isTrigger = true;
         }
 
         UnlinkFootprintColliderHandlerToModelDyerMaterialChanging();
