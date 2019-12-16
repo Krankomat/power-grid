@@ -7,15 +7,9 @@ public class SelectionHandler : MonoBehaviour
 {
     public GameObject hoveredGameObject;
     public GameObject selectedGameObject;
-
-    // Hover 
-    private RaycastHit hit;
-    private Ray hoverRay;
-    private GameObject hoveredColliderContainer;
+    
     private Selector hoveredSelector;
     private GameObject previouslyHoveredGameObject;
-
-    // Selection 
     private LayerMask selectionMask;
 
     public UnityEvent OnHoveringStart;
@@ -76,7 +70,6 @@ public class SelectionHandler : MonoBehaviour
 
     public void ClearHover()
     {
-        hoveredColliderContainer = null;
         hoveredGameObject = null;
         hoveredSelector = null;
     }
@@ -103,7 +96,8 @@ public class SelectionHandler : MonoBehaviour
 
     private void MakeHoverRaycast(Vector3 inputPosition)
     {
-        hoverRay = Camera.main.ScreenPointToRay(inputPosition);
+        Ray hoverRay = Camera.main.ScreenPointToRay(inputPosition);
+        RaycastHit hit;
 
         // Make raycast and return, if nothing was hit 
         if (!Physics.Raycast(hoverRay, out hit, Selector.SelectionRaycastMaxDistance, selectionMask))
@@ -112,12 +106,12 @@ public class SelectionHandler : MonoBehaviour
             return;
         }
 
-        hoveredColliderContainer = hit.collider.gameObject;
+        GameObject hoveredColliderContainer = hit.collider.gameObject;
         hoveredGameObject = hoveredColliderContainer.transform.parent.gameObject;
         hoveredSelector = hoveredGameObject.GetComponent<Selector>();
 
         if (hoveredSelector == null)
-            Debug.LogError("Hit object " + gameObject + " has no Selector component! ");
+            Debug.LogError($"ERROR HOVERING: Hit object {gameObject} has no Selector component! ");
     }
 
 
