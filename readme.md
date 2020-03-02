@@ -1,31 +1,31 @@
 # Poles Plants POWER! 
 
-Unity-Prototyp für ein Kraftwerk-Simulationsspiel. 
+Prototype for a power plant simulation game. Made in Unity. 
 
 ## Features 
 
-* Navigation in Spielwelt mit Kamera 
-* Auswählen und Hover von Gebäuden 
-* Platzieren von Gebäuden in Grid 
-* Abreißen von Gebäuden 
-* Aufbau eines Stromnetzes beim Platzieren von elektrischen Gebäuden 
-* Zusammenschluss und Auflösung von Stromnetzen (Stromnetze sind *Graphen*) 
-* Einfaches User Interface
-* Einfache Gebäude-Modelle, bestehend aus *Primitives* 
+* Navigation in game world with camera 
+* Selecting and hovering buildings 
+* Placing buildings in a grid 
+* Demolishing buildings 
+* Creating of power grids when placing electric buildings 
+* Merging and dissolving of power grids (power grids are *graphs*) 
+* Simple user interface 
+* Simple models for buildings, based on *primitives* 
 
 
 ## Gifs 
 
-![Bau eines Kraftwerkes](docs/building-powerplant.gif)  
-*Bau eines Kraftwerkes* 
+![Building a powerplant](docs/building-powerplant.gif)  
+*Building a powerplant* 
 
-![Aufbau eines Stromnetzes](docs/electric-network-creation.gif)  
-*Aufbau eines Stromnetzes* 
+![Creating of a power grid](docs/electric-network-creation.gif)  
+*Creating of a power grid* 
 
-![Erzeugung, Zusammenschluss und Auflösung mehrerer Stromnetze](docs/electric-network-dissolving.gif)  
-*Erzeugung, Zusammenschluss und Auflösung mehrerer Stromnetze* 
+![Creating, merging and dissolving of multiple power grids](docs/electric-network-dissolving.gif)  
+*Creating, merging and dissolving of power grids* 
 
 
 ## Credits 
 
-Programmiert von Lukas Semmler (c) 2019. 
+Made by Lukas Semmler (c) 2019. 
